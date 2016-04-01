@@ -2,18 +2,31 @@ from pylab import *
 from matplotlib import rcParams
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
+import os
 
 from timeAboveThreshold import *
 
 class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
     ###############################################################################
     def __init__(self, thetaD, thetaP, nonlinear, Npresentations, w0):
-        self.thetaD  = thetaP
-        self.thetaP  = thetaD
+        self.thetaD  = thetaD
+        self.thetaP  = thetaP
         # determine eta based on nonlinearity factor and amplitudes
         self.nonlinear = nonlinear
         self.Npresentations = Npresentations
         self.w0 = w0
+        
+        # read in experimental data
+        dataDir = 'experimental_data/'
+        
+        jesperReg = loadtxt(dataDir+'sjoestroem_regular_all.dat')
+        jesperStoch = loadtxt(dataDir+'sjoestroem_stochastic.dat')
+
+        self.xData = jesperReg[:,[0,1]]
+        self.xData[:,1] = self.xData[:,1]/1000. # everything in sec
+        self.yData = jesperReg[:,2]+1. # Sjoestroem's data is normalized to 0
+        self.sigmaData = jesperReg[:,3]
+
 
     def calculateChangeInSynapticStrength(self, frequency,deltaT,params):
         #####
@@ -45,7 +58,7 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
         # mean value of the synaptic strength right at the end of the stimulation protocol
         mean   =  rhoBar - (rhoBar- 0.5)*exp(-self.Npresentations*interval/tauEff)
         # change in synaptic strength after/before
-        return mean/self.w0
+        return (mean/self.w0)
 
 
     def generateFig(self, paraOpt):
@@ -118,8 +131,8 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
 
         # diplay of data
         ax0.axhline(y=1.,c='0.7')
-        ax0.plot(xData[:,0][::2],yData[::2],'s',color='red',clip_on=False)
-        ax0.plot(xData[:,0][1::2],yData[1::2],'o',color='blue',clip_on=False)
+        ax0.plot(self.xData[:,0][::2],self.yData[::2],'s',color='red',clip_on=False)
+        ax0.plot(self.xData[:,0][1::2],self.yData[1::2],'o',color='blue',clip_on=False)
         ax0.plot(freq,synChange[:,0],color='red')
         ax0.plot(freq,synChange[:,1],color='blue')
 
@@ -168,7 +181,7 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
         #plt.setp(ltext, fontsize=11)
 
         ## save figure ############################################################
-        fname = os.path.basename(__file__)
+        fname = 'synChangeCa-ModelFit' #os.path.basename(__file__)
 
         savefig(fname[:-3]+'.png')
         savefig(fname[:-3]+'.pdf')

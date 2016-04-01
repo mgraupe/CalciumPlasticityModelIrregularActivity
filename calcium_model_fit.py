@@ -29,13 +29,13 @@ def errFunc(params, xData, yData, errData):
         i+=1
     return chi2
 
-def initialGuess(limits):
-    nParams = len(limits)
+def initialGuess(lim):
+    nParams = len(lim)
     params = zeros(nParams)
     randTemp = rand(nParams)
     n = 0
-    for k in limits:
-        params[n] = limits[k][0] + randTemp[n]*(limits[k][1]-limits[k][0])
+    for k in lim:
+        params[n] = lim[k][0] + randTemp[n]*(lim[k][1]-lim[k][0])
         #exec('k = %s' % initP)
         n+=1
     return params
@@ -47,32 +47,20 @@ synU = synUtils(par.thetaD,par.thetaP,par.nonlinear,par.Npresentations,par.w0)
 
 #############################################################################
 
-# read in experimental data
-dataDir = 'experimental_data/'
-
-jesperReg = loadtxt(dataDir+'sjoestroem_regular_all.dat')
-jesperStoch = loadtxt(dataDir+'sjoestroem_stochastic.dat')
-#read_datafile("../experimental_data/sjoestroem_regular_all.dat",jesper_regular,0);
-#	// experimental data - random delta-t ( scan_par[x][2] is now the error)
-#  	//read_datafile("../experimental_data/sjoestroem_stochastic.dat",jesper_stochastic,1);
-xData = jesperReg[:,[0,1]]
-xData[:,1] = xData[:,1]/1000. # everything in sec
-yData = jesperReg[:,2]+1. # Sjoestroem's data is normalized to 0
-sigmaData = jesperReg[:,3]
-
 solutions = []
 for n in range(par.Nruns):
     #Initial guess of parameters
     x0  = initialGuess(par.limits)
 
     # Apply downhill Simplex algorithm.
-    p1 = simplex(errFunc, x0, args=(xData, yData, sigmaData), full_output=1, disp=True,maxiter=1E4, maxfun=1E4)
+    p1 = simplex(errFunc, x0, args=(synU.xData, synU.yData, synU.sigmaData), full_output=1, disp=True,maxiter=1E4, maxfun=1E4)
     
-    if p1[1] < 0.3: 
+    if p1[1] < 1.: 
         solutions.append(p1)
     #errFunc(p1[0],xData,yData,sigmaData)
 
-pickle.dump(solutions,open('solutions.py','w'))
+if solutions:
+    pickle.dump(solutions,open('solutions.py','w'))
 
 
 

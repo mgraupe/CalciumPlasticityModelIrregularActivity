@@ -13,8 +13,8 @@ Nruns = 10
 # parameterLimits
 limits = OrderedDict([
     ('tauCa',[0.001,0.1]),
-    ('Cpre',[0.05,2.]),
-    ('Cpost',[0.05,2.]),
+    ('Cpre',[0.01,2.]),
+    ('Cpost',[0.01,2.]),
     ('gammaD',[0.1,1000.]),
     ('gammaP',[0.1,1000.]),
     ('tau',[1.,50000.]),
