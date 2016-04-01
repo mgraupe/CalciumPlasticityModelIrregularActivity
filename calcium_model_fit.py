@@ -55,7 +55,7 @@ for n in range(par.Nruns):
     # Apply downhill Simplex algorithm.
     p1 = simplex(errFunc, x0, args=(synU.xData, synU.yData, synU.sigmaData), full_output=1, disp=True,maxiter=1E4, maxfun=1E4)
     
-    if p1[1] < 0.3: 
+    if p1[1] < par.threshold: 
         solutions.append(p1)
     #errFunc(p1[0],xData,yData,sigmaData)
 
