@@ -84,7 +84,7 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
         DeltaTStart = DeltaTRange[0]
         DeltaTEnd = DeltaTRange[1]
         
-        deltaTs = linspace(DeltaTStart,DeltaTEnd,201)
+        deltaTs = linspace(DeltaTStart,DeltaTEnd,101)
         
         interval    = 1./frequency
         ####

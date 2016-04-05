@@ -8,8 +8,8 @@ Npresentations = 75.
 w0 = 0.5
 
 # fitting loops 
-Nruns = 100
-threshold = 0.3 # lower threshold to include parameter set
+Nruns = 10
+threshold = 1. # lower threshold to include parameter set
 
 # parameterLimits
 limits = OrderedDict([
