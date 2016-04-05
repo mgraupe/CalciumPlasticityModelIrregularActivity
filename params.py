@@ -2,7 +2,7 @@ from collections import *
 
 # fixed parameter and parameter ranges
 thetaD = 1.
-thetaP = 1.3
+thetaP = 2. #1.3
 nonlinear = 2. #2.
 Npresentations = 75.
 w0 = 0.5

@@ -15,13 +15,18 @@ import params as par
 # Y      ... array holding y-values of observed data.
 # Err    ... array holding errors of observed data.
 
-def errFunc(params, xData, yData, errData):
+def errFunc(params, xDataReg, yDataReg, xDataStoch, yDataStoch):
     # compute chi-square
     chi2 = 0.
-    for n in range(len(xData)):
-        yModel = synU.calculateChangeInSynapticStrength(xData[n,0],xData[n,1],params)
+    for n in range(len(xDataReg)):
+        yModel = synU.calculateChangeInSynapticStrength(xDataReg[n,0],xDataReg[n,1],params)
         #
-        chi2+= (yData[n] - yModel)*(yData[n] - yModel) #/(errData[n]*errData[n])
+        chi2+= (yDataReg[n] - yModel)*(yDataReg[n] - yModel) #/(errData[n]*errData[n])
+    for n in range(len(xDataStoch)):
+        yModel = synU.calculateChangeInSynapticStrengthStochastic(xDataStoch[n],params,[-0.015,0.015])
+        #
+        #print n, xDataStoch[n]
+        chi2+= (yDataStoch[n] - yModel)*(yDataStoch[n] - yModel) #/(errData[n]*errData[n])
     i=0
     for k in par.limits:
         if (params[i] < par.limits[k][0]) or (params[i] > par.limits[k][1]):
@@ -50,10 +55,10 @@ synU = synUtils(par.thetaD,par.thetaP,par.nonlinear,par.Npresentations,par.w0)
 solutions = []
 for n in range(par.Nruns):
     #Initial guess of parameters
-    x0  = initialGuess(par.limits)
+    params0  = initialGuess(par.limits)
 
     # Apply downhill Simplex algorithm.
-    p1 = simplex(errFunc, x0, args=(synU.xData, synU.yData, synU.sigmaData), full_output=1, disp=True,maxiter=1E4, maxfun=1E4)
+    p1 = simplex(errFunc, params0, args=(synU.xDataReg, synU.yDataReg, synU.xDataStoch, synU.yDataStoch), full_output=1, disp=True,maxiter=1E4, maxfun=1E4)
     
     if p1[1] < par.threshold: 
         solutions.append(p1)

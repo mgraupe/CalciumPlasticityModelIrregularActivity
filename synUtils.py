@@ -3,6 +3,7 @@ from matplotlib import rcParams
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 import os
+import time
 
 from timeAboveThreshold import *
 
@@ -17,17 +18,23 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
         self.w0 = w0
         
         # read in experimental data
-        dataDir = 'experimental_data/'
+        dataDir = '/home/mgraupe/theobio/network_1/fit_all_models/calcium_nonlinear_python_parameter_search/experimental_data/'
         
         jesperReg = loadtxt(dataDir+'sjoestroem_regular_all.dat')
         jesperStoch = loadtxt(dataDir+'sjoestroem_stochastic.dat')
 
-        self.xData = jesperReg[:,[0,1]]
-        self.xData[:,1] = self.xData[:,1]/1000. # everything in sec
-        self.yData = jesperReg[:,2]+1. # Sjoestroem's data is normalized to 0
-        self.sigmaData = jesperReg[:,3]
-
-
+        self.xDataReg = jesperReg[:,[0,1]]
+        self.xDataReg[:,1] = self.xDataReg[:,1]/1000. # everything in sec
+        self.yDataReg = jesperReg[:,2]+1. # Sjoestroem's data is normalized to 0
+        self.sigmaDataReg = jesperReg[:,3]
+        
+        
+        self.xDataStoch = jesperStoch[:,0]
+        self.yDataStoch = jesperStoch[:,1]+1. # Sjoestroem's data is normalized to 0
+        self.sigmaDataStoch = jesperStoch[:,2]
+        
+    ##########################################################################################
+    # calculate change for regular spike-pair vs frequency protocol
     def calculateChangeInSynapticStrength(self, frequency,deltaT,params):
         #####
         tauCa = params[0]
@@ -59,14 +66,58 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
         mean   =  rhoBar - (rhoBar- 0.5)*exp(-self.Npresentations*interval/tauEff)
         # change in synaptic strength after/before
         return (mean/self.w0)
-
-
+    
+    #############################################################################################
+    # calculate change for regular spike-pair vs frequency protocol
+    def calculateChangeInSynapticStrengthStochastic(self, frequency,params,DeltaTRange):
+        #####
+        tauCa = params[0]
+        Cpre = params[1]
+        Cpost = params[2]
+        #thetaD = params[3]
+        #thetaP = params[4]
+        gammaD = params[3]
+        gammaP = params[4]
+        tau = params[5]
+        D = params[6]
+        
+        DeltaTStart = DeltaTRange[0]
+        DeltaTEnd = DeltaTRange[1]
+        
+        deltaTs = linspace(DeltaTStart,DeltaTEnd,201)
+        
+        interval    = 1./frequency
+        ####
+        tat = timeAboveThreshold(self.thetaD, self.thetaP, tauCa, Cpre, Cpost, self.nonlinear)
+        timeDAvg = 0.
+        timePAvg = 0.
+        for i in range(len(deltaTs)):
+            (timeD,timeP) = tat.spikePairFrequencyNonlinear(deltaTs[i]-D,frequency)
+            timeDAvg += timeD/len(deltaTs)
+            timePAvg += timeP/len(deltaTs)
+        GammaP = gammaP*timePAvg/interval
+        GammaD = gammaD*timeDAvg/interval
+        # rhoBar: average value of rho in the limit of a very long protocol equivalent to the minimum of the quadratic potentia
+        try :
+            rhoBar = GammaP/(GammaP + GammaD)
+        except RuntimeWarning:
+            print GammaP, GammaD
+        # tauEff : characteristic time scale of the temporal evolution of the pdf of rho
+        tauEff = tau/(GammaP + GammaD)
+        #
+        # mean value of the synaptic strength right at the end of the stimulation protocol
+        mean   =  rhoBar - (rhoBar- 0.5)*exp(-self.Npresentations*interval/tauEff)
+        # change in synaptic strength after/before
+        return (mean/self.w0)
+    
+    ################################################################################################
     def generateFig(self, paraOpt):
         
         ####################################
         # calculate solution
         freq = linspace(0.1,50.,500)
         synChange = zeros((len(freq),2))
+        synChangeStoch = zeros((len(freq)))
 
         deltaTs = linspace(-0.05,0.05,1001)
         synChange2 = zeros(len(deltaTs))
@@ -75,18 +126,14 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
             #calculateChangeInSynapticStrength(frequency,deltaT,params):
             synChange[i,0] = self.calculateChangeInSynapticStrength(freq[i],0.01,paraOpt[0])
             synChange[i,1] = self.calculateChangeInSynapticStrength(freq[i],-0.01,paraOpt[0])
+            synChangeStoch[i] = self.calculateChangeInSynapticStrengthStochastic(freq[i],paraOpt[0],[-0.015,0.015])
             
         for i in range(len(deltaTs)):
             synChange2[i] = self.calculateChangeInSynapticStrength(0.1,deltaTs[i],paraOpt[0])
 
-        ###############################################################
-        # produce figure
-
-
-        # set plot attributes
 
         fig_width = 5 # width in inches
-        fig_height = 8  # height in inches
+        fig_height = 12  # height in inches
         fig_size =  [fig_width,fig_height]
         params = {'axes.labelsize': 14,
                 'axes.titlesize': 13,
@@ -112,7 +159,7 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
 
 
         # define sub-panel grid and possibly width and height ratios
-        gs = gridspec.GridSpec(2, 1,
+        gs = gridspec.GridSpec(3, 1,
                             #width_ratios=[1,1.2],
                             #height_ratios=[1,1]
                             )
@@ -131,8 +178,8 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
 
         # diplay of data
         ax0.axhline(y=1.,c='0.7')
-        ax0.plot(self.xData[:,0][::2],self.yData[::2],'s',color='red',clip_on=False)
-        ax0.plot(self.xData[:,0][1::2],self.yData[1::2],'o',color='blue',clip_on=False)
+        ax0.plot(self.xDataReg[:,0][::2],self.yDataReg[::2],'s',color='red',clip_on=False)
+        ax0.plot(self.xDataReg[:,0][1::2],self.yDataReg[1::2],'o',color='blue',clip_on=False)
         ax0.plot(freq,synChange[:,0],color='red')
         ax0.plot(freq,synChange[:,1],color='blue')
 
@@ -150,9 +197,35 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
 
         plt.xlabel('frequency (Hz)')
         plt.ylabel('change in synaptic strength')
+        
+        # first sub-plot #######################################################
+        ax0 = plt.subplot(gs[1])
+
+        # title
+        ax0.set_title('stochastic Sjoestroem')
+
+        # diplay of data
+        ax0.axhline(y=1.,c='0.7')
+        ax0.plot(self.xDataStoch,self.yDataStoch,'s',color='green',clip_on=False)
+        ax0.plot(freq,synChangeStoch,color='green')
+
+        # removes upper and right axes 
+        # and moves left and bottom axes away
+        ax0.spines['top'].set_visible(False)
+        ax0.spines['right'].set_visible(False)
+        ax0.spines['bottom'].set_position(('outward', 10))
+        ax0.spines['left'].set_position(('outward', 10))
+        ax0.yaxis.set_ticks_position('left')
+        ax0.xaxis.set_ticks_position('bottom')
+
+        # legends and labels
+        plt.legend(loc=1,frameon=False)
+
+        plt.xlabel('frequency (Hz)')
+        plt.ylabel('change in synaptic strength')
 
         # first sub-plot #######################################################
-        ax1 = plt.subplot(gs[1])
+        ax1 = plt.subplot(gs[2])
 
         # title
         #ax1.set_title('regular Sjoestroem')
