@@ -18,7 +18,7 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
         self.w0 = w0
         
         # read in experimental data
-        dataDir = '/home/mgraupe/theobio/network_1/fit_all_models/calcium_nonlinear_python_parameter_search/experimental_data/'
+        dataDir = 'experimental_data/'
         
         jesperReg = loadtxt(dataDir+'sjoestroem_regular_all.dat')
         jesperStoch = loadtxt(dataDir+'sjoestroem_stochastic.dat')
