@@ -15,18 +15,18 @@ import params as par
 # Y      ... array holding y-values of observed data.
 # Err    ... array holding errors of observed data.
 
-def errFunc(params, xDataReg, yDataReg, xDataStoch, yDataStoch):
+def errFunc(params, xDataReg, yDataReg, errData, xDataStoch, yDataStoch, errStochData):
     # compute chi-square
     chi2 = 0.
     for n in range(len(xDataReg)):
         yModel = synU.calculateChangeInSynapticStrength(xDataReg[n,0],xDataReg[n,1],params)
         #
-        chi2+= (yDataReg[n] - yModel)*(yDataReg[n] - yModel) #/(errData[n]*errData[n])
+        chi2+= (yDataReg[n] - yModel)*(yDataReg[n] - yModel)/(errData[n]*errData[n])
     for n in range(len(xDataStoch)):
         yModel = synU.calculateChangeInSynapticStrengthStochastic(xDataStoch[n],params,[-0.015,0.015])
         #
         #print n, xDataStoch[n]
-        chi2+= (yDataStoch[n] - yModel)*(yDataStoch[n] - yModel) #/(errData[n]*errData[n])
+        chi2+= (yDataStoch[n] - yModel)*(yDataStoch[n] - yModel)/(errStochData[n]*errStochData[n])
     i=0
     for k in par.limits:
         if (params[i] < par.limits[k][0]) or (params[i] > par.limits[k][1]):
@@ -58,7 +58,7 @@ for n in range(par.Nruns):
     params0  = initialGuess(par.limits)
 
     # Apply downhill Simplex algorithm.
-    p1 = simplex(errFunc, params0, args=(synU.xDataReg, synU.yDataReg, synU.xDataStoch, synU.yDataStoch), full_output=1, disp=True,maxiter=1E4, maxfun=1E4)
+    p1 = simplex(errFunc, params0, args=(synU.xDataReg, synU.yDataReg, synU.sigmaDataReg, synU.xDataStoch, synU.yDataStoch, synU.sigmaDataStoch), full_output=1, disp=True,maxiter=1E4, maxfun=1E4)
     
     if p1[1] < par.threshold: 
         solutions.append(p1)
