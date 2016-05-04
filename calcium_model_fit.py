@@ -62,7 +62,6 @@ for n in range(par.Nruns):
     
     if p1[1] < par.threshold: 
         solutions.append(p1)
-    #errFunc(p1[0],xData,yData,sigmaData)
 
 if solutions:
     pickle.dump(solutions,open('solutions.py','w'))

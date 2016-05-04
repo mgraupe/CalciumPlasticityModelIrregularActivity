@@ -174,7 +174,8 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
         ax0 = plt.subplot(gs[0])
 
         # title
-        ax0.set_title('regular Sjoestroem , chi2='+str(paraOpt[1]))
+        ax0.set_title('regular Sjoestroem \n tauCa=%.6f, Cpre=%.6f, Cpost=%.6f\n gammaD=%.6f, gammaP=%.6f, tau=%.6f, D=%.6f\n chi2=%.3f' % (paraOpt[0][0],paraOpt[0][1],paraOpt[0][2],paraOpt[0][3],paraOpt[0][4],paraOpt[0][5],paraOpt[0][6],paraOpt[1]),y=1.05,fontsize=11)
+        #, chi2='+str(paraOpt[1]))
 
         # diplay of data
         ax0.axhline(y=1.,c='0.7')
