@@ -111,7 +111,7 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
         return (mean/self.w0)
     
     ################################################################################################
-    def generateFig(self, paraOpt):
+    def generateFig(self, paraOpt, figName = None):
         
         ####################################
         # calculate solution
@@ -179,8 +179,8 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
 
         # diplay of data
         ax0.axhline(y=1.,c='0.7')
-        ax0.plot(self.xDataReg[:,0][::2],self.yDataReg[::2],'s',color='red',clip_on=False)
-        ax0.plot(self.xDataReg[:,0][1::2],self.yDataReg[1::2],'o',color='blue',clip_on=False)
+        ax0.errorbar(self.xDataReg[:,0][::2],self.yDataReg[::2],yerr=self.sigmaDataReg[::2],fmt='s',color='red',clip_on=False)
+        ax0.errorbar(self.xDataReg[:,0][1::2],self.yDataReg[1::2],yerr=self.sigmaDataReg[1::2],fmt='o',color='blue',clip_on=False)
         ax0.plot(freq,synChange[:,0],color='red')
         ax0.plot(freq,synChange[:,1],color='blue')
 
@@ -207,7 +207,7 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
 
         # diplay of data
         ax0.axhline(y=1.,c='0.7')
-        ax0.plot(self.xDataStoch,self.yDataStoch,'s',color='green',clip_on=False)
+        ax0.errorbar(self.xDataStoch,self.yDataStoch,yerr=self.sigmaDataStoch,fmt='s',color='green',clip_on=False)
         ax0.plot(freq,synChangeStoch,color='green')
 
         # removes upper and right axes 
@@ -255,7 +255,15 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
         #plt.setp(ltext, fontsize=11)
 
         ## save figure ############################################################
-        fname = 'synChangeCa-ModelFit' #os.path.basename(__file__)
+        ## save figure ############################################################
+        if figName:
+            fname = 'fitFigures/' + figName #os.path.basename(__file__)
+        else:
+            fname = 'synChangeCa-ModelFit' #os.path.basename(__file__)
 
-        savefig(fname[:-3]+'.png')
-        savefig(fname[:-3]+'.pdf')
+        savefig(fname+'.png')
+        savefig(fname+'.pdf')
+        # close figures to avoid out of memory
+        if figName:
+            plt.close(fig)
+            #fig.clf()

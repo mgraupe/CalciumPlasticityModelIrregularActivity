@@ -15,18 +15,31 @@ import params as par
 # Y      ... array holding y-values of observed data.
 # Err    ... array holding errors of observed data.
 
+###########################################################################
+# the calcuation of mse is defined here 
 def errFunc(params, xDataReg, yDataReg, errData, xDataStoch, yDataStoch, errStochData):
-    # compute chi-square
+    # mse for regular Sjoestroem data
     chi2 = 0.
     for n in range(len(xDataReg)):
         yModel = synU.calculateChangeInSynapticStrength(xDataReg[n,0],xDataReg[n,1],params)
         #
         chi2+= (yDataReg[n] - yModel)*(yDataReg[n] - yModel)/(errData[n]*errData[n])
+    # mse for stochastic Sjoestroem data
     for n in range(len(xDataStoch)):
         yModel = synU.calculateChangeInSynapticStrengthStochastic(xDataStoch[n],params,[-0.015,0.015])
         #
         #print n, xDataStoch[n]
         chi2+= (yDataStoch[n] - yModel)*(yDataStoch[n] - yModel)/(errStochData[n]*errStochData[n])
+    # add smoothness constraint
+    frequencies = linspace(5.,50.,10.)
+    synChangePlus  = zeros(len(frequencies))
+    synChangeMinus = zeros(len(frequencies))
+    for n in range(len(frequencies)):
+        synChangePlus[n]  = synU.calculateChangeInSynapticStrength(frequencies[n],0.01,params)
+        synChangeMinus[n] = synU.calculateChangeInSynapticStrength(frequencies[n],-0.01,params)
+    chi2 += par.smoothnessWeight*(sum((mean(synChangePlus)-synChangePlus)**2))
+    chi2 += par.smoothnessWeight*(sum((mean(synChangeMinus)-synChangeMinus)**2))
+    # penalize if parameters are outside pre-defined limits
     i=0
     for k in par.limits:
         if (params[i] < par.limits[k][0]) or (params[i] > par.limits[k][1]):
@@ -34,6 +47,8 @@ def errFunc(params, xDataReg, yDataReg, errData, xDataStoch, yDataStoch, errStoc
         i+=1
     return chi2
 
+
+############################################################################
 def initialGuess(lim):
     nParams = len(lim)
     params = zeros(nParams)

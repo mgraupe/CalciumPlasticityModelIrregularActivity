@@ -11,6 +11,8 @@ w0 = 0.5
 Nruns = 10
 threshold = 1000. # lower threshold to include parameter set
 
+smoothnessWeight = 1.
+
 # parameterLimits
 limits = OrderedDict([
     ('tauCa',[0.001,0.1]),
@@ -21,3 +23,4 @@ limits = OrderedDict([
     ('tau',[1.,50000.]),
     ('D',[0.,0.05]),
 ])
+
