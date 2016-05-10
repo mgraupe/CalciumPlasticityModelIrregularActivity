@@ -31,7 +31,7 @@ def errFunc(params, xDataReg, yDataReg, errData, xDataStoch, yDataStoch, errStoc
         #print n, xDataStoch[n]
         chi2+= (yDataStoch[n] - yModel)*(yDataStoch[n] - yModel)/(errStochData[n]*errStochData[n])
     # add smoothness constraint
-    frequencies = linspace(5.,50.,10.)
+    frequencies = linspace(1.,50.,50)
     synChangePlus  = zeros(len(frequencies))
     synChangeMinus = zeros(len(frequencies))
     for n in range(len(frequencies)):
