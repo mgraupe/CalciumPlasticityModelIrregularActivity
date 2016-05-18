@@ -25,8 +25,10 @@ def generateAllFigs(sol,fn):
 synU = synUtils(par.thetaD,par.thetaP,par.nonlinear,par.Npresentations,par.w0)
 
 s2 = readSol('solutions_stoch2.py')
+s3 = readSol('solutions_stoch3.py')
+s4 = readSol('solutions_stoch4.py')
 
-generateAllFigs(s2,'solutionsStoch2_')
+#generateAllFigs(s4,'solutionsStoch4_')
 
 #sorted(s1, key=lambda s1: s1[1])
 

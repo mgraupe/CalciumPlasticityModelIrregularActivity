@@ -45,6 +45,10 @@ def errFunc(params, xDataReg, yDataReg, errData, xDataStoch, yDataStoch, errStoc
         if (params[i] < par.limits[k][0]) or (params[i] > par.limits[k][1]):
            chi2+=100.
         i+=1
+    # impose Cpost>Cpre
+    if params[1] > params[2]:
+        chi2+=100.
+    
     return chi2
 
 

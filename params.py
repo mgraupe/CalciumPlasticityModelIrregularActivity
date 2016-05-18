@@ -16,11 +16,11 @@ smoothnessWeight = 1.
 # parameterLimits
 limits = OrderedDict([
     ('tauCa',[0.001,0.1]),
-    ('Cpre',[0.01,1.3]),
-    ('Cpost',[0.01,1.3]),
+    ('Cpre',[0.01,0.8]),
+    ('Cpost',[0.8,1.3]),
     ('gammaD',[0.1,1000.]),
     ('gammaP',[0.1,1000.]),
     ('tau',[1.,50000.]),
-    ('D',[0.,0.05]),
+    ('D',[-0.005,0.005]),
 ])
 
