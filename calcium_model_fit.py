@@ -31,14 +31,14 @@ def errFunc(params, xDataReg, yDataReg, errData, xDataStoch, yDataStoch, errStoc
         #print n, xDataStoch[n]
         chi2+= (yDataStoch[n] - yModel)*(yDataStoch[n] - yModel)/(errStochData[n]*errStochData[n])
     # add smoothness constraint
-    frequencies = linspace(1.,50.,50)
-    synChangePlus  = zeros(len(frequencies))
-    synChangeMinus = zeros(len(frequencies))
-    for n in range(len(frequencies)):
-        synChangePlus[n]  = synU.calculateChangeInSynapticStrength(frequencies[n],0.01,params)
-        synChangeMinus[n] = synU.calculateChangeInSynapticStrength(frequencies[n],-0.01,params)
-    chi2 += par.smoothnessWeight*(sum((mean(synChangePlus)-synChangePlus)**2))
-    chi2 += par.smoothnessWeight*(sum((mean(synChangeMinus)-synChangeMinus)**2))
+    #frequencies = linspace(1.,50.,50)
+    #synChangePlus  = zeros(len(frequencies))
+    #synChangeMinus = zeros(len(frequencies))
+    #for n in range(len(frequencies)):
+    #    synChangePlus[n]  = synU.calculateChangeInSynapticStrength(frequencies[n],0.01,params)
+    #    synChangeMinus[n] = synU.calculateChangeInSynapticStrength(frequencies[n],-0.01,params)
+    #chi2 += par.smoothnessWeight*(sum((mean(synChangePlus)-synChangePlus)**2))
+    #chi2 += par.smoothnessWeight*(sum((mean(synChangeMinus)-synChangeMinus)**2))
     # penalize if parameters are outside pre-defined limits
     i=0
     for k in par.limits:

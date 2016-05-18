@@ -11,7 +11,7 @@ w0 = 0.5
 Nruns = 10
 threshold = 1000. # lower threshold to include parameter set
 
-smoothnessWeight = 1.
+# smoothnessWeight = 1.
 
 # parameterLimits
 limits = OrderedDict([
