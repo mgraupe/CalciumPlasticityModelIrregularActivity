@@ -64,7 +64,7 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
         tauEff = tau/(GammaP + GammaD)
         #
         # mean value of the synaptic strength right at the end of the stimulation protocol
-        mean   =  rhoBar - (rhoBar- 0.5)*exp(-self.Npresentations*interval/tauEff)
+        mean   =  rhoBar - (rhoBar- self.w0)*exp(-self.Npresentations*interval/tauEff)
         # change in synaptic strength after/before
         return (mean/self.w0)
     
@@ -85,19 +85,15 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
         DeltaTStart = DeltaTRange[0]
         DeltaTEnd = DeltaTRange[1]
         
-        deltaTs = linspace(DeltaTStart,DeltaTEnd,101)
+        #deltaTs = linspace(DeltaTStart,DeltaTEnd,101)
         
         interval    = 1./frequency
         ####
         tat = timeAboveThreshold(self.thetaD, self.thetaP, tauCa, Cpre, Cpost, self.nonlinear)
-        timeDAvg = 0.
-        timePAvg = 0.
-        for i in range(len(deltaTs)):
-            (timeD,timeP) = tat.spikePairFrequencyNonlinear(deltaTs[i]-D,frequency)
-            timeDAvg += timeD/len(deltaTs)
-            timePAvg += timeP/len(deltaTs)
-        GammaP = gammaP*timePAvg/interval
-        GammaD = gammaD*timeDAvg/interval
+        (timeD,timeP) = tat.spikePairStochastic(DeltaTStart-D,DeltaTEnd-D,frequency,self.Npresentations)
+        # average potentiation and depression rates
+        GammaP = gammaP*timeP/interval
+        GammaD = gammaD*timeD/interval
         # rhoBar: average value of rho in the limit of a very long protocol equivalent to the minimum of the quadratic potentia
         try :
             rhoBar = GammaP/(GammaP + GammaD)
@@ -107,7 +103,7 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
         tauEff = tau/(GammaP + GammaD)
         #
         # mean value of the synaptic strength right at the end of the stimulation protocol
-        mean   =  rhoBar - (rhoBar- 0.5)*exp(-self.Npresentations*interval/tauEff)
+        mean   =  rhoBar - (rhoBar- self.w0)*exp(-self.Npresentations*interval/tauEff)
         # change in synaptic strength after/before
         return (mean/self.w0)
     
@@ -127,6 +123,7 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
             #calculateChangeInSynapticStrength(frequency,deltaT,params):
             synChange[i,0] = self.calculateChangeInSynapticStrength(freq[i],0.01,paraOpt[0])
             synChange[i,1] = self.calculateChangeInSynapticStrength(freq[i],-0.01,paraOpt[0])
+            #synChangeStoch[i] = self.calculateChangeInSynapticStrengthStochastic(freq[i],paraOpt[0],[-0.015,0.015])
             synChangeStoch[i] = self.calculateChangeInSynapticStrengthStochastic(freq[i],paraOpt[0],[-0.015,0.015])
             
         for i in range(len(deltaTs)):

@@ -24,11 +24,13 @@ def generateAllFigs(sol,fn):
 # instance of synaptic Change and figure class  
 synU = synUtils(par.thetaD,par.thetaP,par.nonlinear,par.Npresentations,par.w0)
 
-s2 = readSol('solutions_stoch2.py')
-s3 = readSol('solutions_stoch3.py')
-s4 = readSol('solutions_stoch4.py')
+#s5 = readSol('solutions_stoch5.py')
+#s6 = readSol('solutions_stoch6.py')
+s0 = readSol('solutions_thetap0.py')
+s1 = readSol('solutions_thetap1.py')
 
-#generateAllFigs(s4,'solutionsStoch4_')
+#generateAllFigs(s13,'solutionsStoch13_')
+#generateAllFigs(s14,'solutionsStoch14_')
 
 #sorted(s1, key=lambda s1: s1[1])
 
