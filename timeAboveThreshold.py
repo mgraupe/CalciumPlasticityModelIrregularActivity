@@ -370,6 +370,7 @@ class timeAboveThreshold():
                 
                 tD = 0.
                 tP = 0.
+                random.seed(7)
                 tPre = arange(Npres)/freq + tStart + (DeltaTStart + rand(Npres)*(DeltaTEnd-DeltaTStart))
                 tPost = tPre +  (DeltaTStart + rand(Npres)*(DeltaTEnd-DeltaTStart))
                 
