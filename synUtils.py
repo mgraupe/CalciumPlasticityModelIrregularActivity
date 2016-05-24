@@ -18,8 +18,8 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
         self.w0 = w0
         
         # read in experimental data
-        #dataDir = '/home/mgraupe/theobio/network_1/fit_all_models/calcium_nonlinear_python_parameter_search/experimental_data/'
-        dataDir = 'experimental_data/'
+        dataDir = '/home/mgraupe/theobio/network_1/fit_all_models/calcium_nonlinear_python_parameter_search/experimental_data/'
+        #dataDir = 'experimental_data/'
         
         jesperReg = loadtxt(dataDir+'sjoestroem_regular_all.dat')
         jesperStoch = loadtxt(dataDir+'sjoestroem_stochastic.dat')
@@ -106,7 +106,48 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
         mean   =  rhoBar - (rhoBar- self.w0)*exp(-self.Npresentations*interval/tauEff)
         # change in synaptic strength after/before
         return (mean/self.w0)
-    
+    #############################################################################################
+    # calculate change for regular spike-pair vs frequency protocol
+    def calculateChangeInSynapticStrengthStochasticOld(self, frequency,params,DeltaTRange):
+        #####
+        tauCa = params[0]
+        Cpre = params[1]
+        Cpost = params[2]
+        #thetaD = params[3]
+        #thetaP = params[4]
+        gammaD = params[3]
+        gammaP = params[4]
+        tau = params[5]
+        D = params[6]
+        
+        DeltaTStart = DeltaTRange[0]
+        DeltaTEnd = DeltaTRange[1]
+        
+        deltaTs = linspace(DeltaTStart,DeltaTEnd,101)
+        
+        interval    = 1./frequency
+        ####
+        tat = timeAboveThreshold(self.thetaD, self.thetaP, tauCa, Cpre, Cpost, self.nonlinear)
+        timeDAvg = 0.
+        timePAvg = 0.
+        for i in range(len(deltaTs)):
+            (timeD,timeP) = tat.spikePairFrequencyNonlinear(deltaTs[i]-D,frequency)
+            timeDAvg += timeD/len(deltaTs)
+            timePAvg += timeP/len(deltaTs)
+        GammaP = gammaP*timePAvg/interval
+        GammaD = gammaD*timeDAvg/interval
+        # rhoBar: average value of rho in the limit of a very long protocol equivalent to the minimum of the quadratic potentia
+        try :
+            rhoBar = GammaP/(GammaP + GammaD)
+        except RuntimeWarning:
+            print GammaP, GammaD
+        # tauEff : characteristic time scale of the temporal evolution of the pdf of rho
+        tauEff = tau/(GammaP + GammaD)
+        #
+        # mean value of the synaptic strength right at the end of the stimulation protocol
+        mean   =  rhoBar - (rhoBar- self.w0)*exp(-self.Npresentations*interval/tauEff)
+        # change in synaptic strength after/before
+        return (mean/self.w0)
     ################################################################################################
     def generateFig(self, paraOpt, figName = None):
         

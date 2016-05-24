@@ -365,53 +365,55 @@ class timeAboveThreshold():
         def spikePairStochastic(self,DeltaTStart,DeltaTEnd,freq,Npres):
                 tStart = 0.1 # start time at 100 ms
                 
-                timeAbove = zeros((5,2))
+                Npres = Npres*12
+                timeAbove = zeros((1,2))
                 
-                for n in range(len(timeAbove)):
-                        tPre = arange(Npres)/freq + tStart + (DeltaTStart + rand(Npres)*(DeltaTEnd-DeltaTStart))
-                        tPost = tPre +  (DeltaTStart + rand(Npres)*(DeltaTEnd-DeltaTStart))
-                        
-                        tAll = zeros((2*Npres,2))
-                        
-                        tAll[:,0] = hstack((tPre,tPost))
-                        tAll[:,1] = hstack((zeros(Npres),ones(Npres)))
-                        tList = tAll.tolist()
-                        
-                        tListSorted = sorted(tList, key=lambda tList: tList[0])
-                        
-                        tListSorted.append([Npres/freq,2])
-                        
-                        ca = []
-                        ca.append([0.,0.])
-                        pre = 0
-                        post = 0
-                        for i in tListSorted:
-                                #
-                                caOld  = ca[-1][0]
-                                tOld   = ca[-1][1]
-                                caTemp = caOld*exp(-(i[0]-tOld)/self.tauCa)
-                                if caOld > self.thetaD:
-                                        if caTemp > self.thetaD:
-                                                timeAbove[n,0] += i[0]-tOld
-                                        else:
-                                                timeAbove[n,0] += (self.tauCa)*log(caOld/self.thetaD)
-                                if caOld > self.thetaP:
-                                        if caTemp > self.thetaP:
-                                                timeAbove[n,1] += i[0]-tOld
-                                        else:
-                                                timeAbove[n,1] += (self.tauCa)*log(caOld/self.thetaP)
-                                # presynaptic spike
-                                if i[1] == 0:
-                                        caTemp += self.Cpre
-                                        pre+=1
-                                # postsynaptic spike
-                                if i[1] == 1:
-                                        caTemp += self.Cpost
-                                        post+=1
-                                ca.append([caTemp,i[0]])
+                tD = 0.
+                tP = 0.
+                tPre = arange(Npres)/freq + tStart + (DeltaTStart + rand(Npres)*(DeltaTEnd-DeltaTStart))
+                tPost = tPre +  (DeltaTStart + rand(Npres)*(DeltaTEnd-DeltaTStart))
+                
+                tAll = zeros((2*Npres,2))
+                
+                tAll[:,0] = hstack((tPre,tPost))
+                tAll[:,1] = hstack((zeros(Npres),ones(Npres)))
+                tList = tAll.tolist()
+                
+                tListSorted = sorted(tList, key=lambda tList: tList[0])
+                
+                tListSorted.append([Npres/freq,2])
+                
+                ca = []
+                ca.append([0.,0.])
+                pre = 0
+                post = 0
+                for i in tListSorted:
+                        #
+                        caOld  = ca[-1][0]
+                        tOld   = ca[-1][1]
+                        caTemp = caOld*exp(-(i[0]-tOld)/self.tauCa)
+                        if caOld > self.thetaD:
+                                if caTemp > self.thetaD:
+                                        tD += i[0]-tOld
+                                else:
+                                        tD += (self.tauCa)*log(caOld/self.thetaD)
+                        if caOld > self.thetaP:
+                                if caTemp > self.thetaP:
+                                        tP += i[0]-tOld
+                                else:
+                                        tP += (self.tauCa)*log(caOld/self.thetaP)
+                        # presynaptic spike
+                        if i[1] == 0:
+                                caTemp += self.Cpre
+                                pre+=1
+                        # postsynaptic spike
+                        if i[1] == 1:
+                                caTemp += self.Cpost
+                                post+=1
+                        ca.append([caTemp,i[0]])
                 #
                 #pdb.set_trace()
-                return (mean(timeAbove[:,0])/float(Npres),mean(timeAbove[:,1])/float(Npres))
+                return (tD/float(Npres),tP/float(Npres))
                 
             
             
