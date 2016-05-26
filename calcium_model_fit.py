@@ -56,6 +56,7 @@ def errFunc(params, xDataReg, yDataReg, errData, xDataStoch, yDataStoch, errStoc
 def initialGuess(lim):
     nParams = len(lim)
     params = zeros(nParams)
+    random.seed(int64((time.time()-base)*100))
     randTemp = rand(nParams)
     n = 0
     for k in lim:
@@ -64,6 +65,8 @@ def initialGuess(lim):
         n+=1
     return params
 
+os.nice(19)
+base = 1464200000.
 
 ##############################################################################
 # instance of synaptic Change and figure class
