@@ -22,12 +22,12 @@ def errFunc(params, stimFrequencies, fitData1Hz,fitData3Hz,fitData5Hz,fitData10H
     chi2 = 0.
     for n in range(len(stimFrequencies)):
         exec('dataSet = fitData%sHz' % stimFrequencies[n])
-        print stimFrequencies[n], dataSet
+        # print stimFrequencies[n], dataSet
 
         for i in range(len(dataSet)):
                 yModel = synU.calculateChangeInSynapticStrength(stimFrequencies[n],dataSet[i,0]/1000.,params)
                 #
-                print yModel, dataSet[i,1]/100.
+                # print yModel, dataSet[i,1]/100.
                 chi2+= ((dataSet[i,1]/100. - yModel)**2)/((dataSet[i,2]/100.)**2)
 
     # add smoothness constraint
