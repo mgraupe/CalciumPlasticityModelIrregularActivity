@@ -71,8 +71,8 @@ class timeAboveThreshold():
                                 elif ( A <= Ct and B <= Ct and D <= Ct and C <= Ct ) :
                                         I = 0.
                                 else :
-                                        print A, B, C, D, Ct, frequency, deltaT 
-                                        print "post-pre : Problem in spikePairFrequency!"
+                                        print(A, B, C, D, Ct, frequency, deltaT)
+                                        print("post-pre : Problem in spikePairFrequency!")
                                         sys.exit(1)
                         # pre-post
                         else:
@@ -91,8 +91,8 @@ class timeAboveThreshold():
                                 elif ( E <= Ct and F <= Ct and G <= Ct and H <= Ct ) :
                                         I = 0.
                                 else :
-                                        print E, F, G, H, Ct, frequency, deltaT
-                                        print "pre-post : Problem in spikePairFrequency! " 
+                                        print(E, F, G, H, Ct, frequency, deltaT)
+                                        print("pre-post : Problem in spikePairFrequency! ")
                                         sys.exit(1)
                         #
                         timeAbove[i] = I

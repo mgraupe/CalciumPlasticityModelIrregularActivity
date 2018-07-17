@@ -17,19 +17,19 @@ import params as par
 
 ###########################################################################
 # the calcuation of mse is defined here 
-def errFunc(params, xDataReg, yDataReg, errData, xDataStoch, yDataStoch, errStochData):
-    # mse for regular Sjoestroem data
+def errFunc(params, stimFrequencies, fitData1Hz,fitData3Hz,fitData5Hz,fitData10Hz):
+    # mse for data vs. model
     chi2 = 0.
-    for n in range(len(xDataReg)):
-        yModel = synU.calculateChangeInSynapticStrength(xDataReg[n,0],xDataReg[n,1],params)
-        #
-        chi2+= (yDataReg[n] - yModel)*(yDataReg[n] - yModel)/(errData[n]*errData[n])
-    # mse for stochastic Sjoestroem data
-    for n in range(len(xDataStoch)):
-        yModel = synU.calculateChangeInSynapticStrengthStochastic(xDataStoch[n],params,[-0.015,0.015])
-        #
-        #print n, xDataStoch[n]
-        chi2+= (yDataStoch[n] - yModel)*(yDataStoch[n] - yModel)/(errStochData[n]*errStochData[n])
+    for n in range(len(stimFrequencies)):
+        exec('dataSet = fitData%sHz' % stimFrequencies[n])
+        print stimFrequencies[n], dataSet
+
+        for i in range(len(dataSet)):
+                yModel = synU.calculateChangeInSynapticStrength(stimFrequencies[n],dataSet[i,0]/1000.,params)
+                #
+                print yModel, dataSet[i,1]/100.
+                chi2+= ((dataSet[i,1]/100. - yModel)**2)/((dataSet[i,2]/100.)**2)
+
     # add smoothness constraint
     #frequencies = linspace(1.,50.,50)
     #synChangePlus  = zeros(len(frequencies))
@@ -40,14 +40,15 @@ def errFunc(params, xDataReg, yDataReg, errData, xDataStoch, yDataStoch, errStoc
     #chi2 += par.smoothnessWeight*(sum((mean(synChangePlus)-synChangePlus)**2))
     #chi2 += par.smoothnessWeight*(sum((mean(synChangeMinus)-synChangeMinus)**2))
     # penalize if parameters are outside pre-defined limits
-    i=0
+    #i=0
     for k in par.limits:
         if (params[i] < par.limits[k][0]) or (params[i] > par.limits[k][1]):
-           chi2+=100.
-        i+=1
+            #print 'penalized'
+            chi2+=100.
+        #i+=1
     # impose Cpost>Cpre
-    if params[1] > params[2]:
-        chi2+=100.
+    #if params[1] > params[2]:
+    #    chi2+=100.
     
     return chi2
 
@@ -65,27 +66,29 @@ def initialGuess(lim):
         n+=1
     return params
 
-os.nice(19)
-base = 1464200000.
+
+#os.nice(19)
+base = 1531818909
 
 ##############################################################################
 # instance of synaptic Change and figure class
 synU = synUtils(par.thetaD,par.thetaP,par.nonlinear,par.Npresentations,par.w0)
 
 #############################################################################
-
+#pdb.set_trace()
 solutions = []
 for n in range(par.Nruns):
     #Initial guess of parameters
     params0  = initialGuess(par.limits)
 
     # Apply downhill Simplex algorithm.
-    p1 = simplex(errFunc, params0, args=(synU.xDataReg, synU.yDataReg, synU.sigmaDataReg, synU.xDataStoch, synU.yDataStoch, synU.sigmaDataStoch), full_output=1, disp=True,maxiter=1E4, maxfun=1E4)
-    
+    p1 = simplex(errFunc, params0, args=(synU.stimFrequencies,synU.rawData1Hz,synU.rawData3Hz,synU.rawData5Hz,synU.rawData10Hz), full_output=1, disp=True,maxiter=1E4, maxfun=1E4)
+    #print p1
     if p1[1] < par.threshold: 
         solutions.append(p1)
 
 if solutions:
+    sorted(solutions, key=lambda solutions: solutions[1])
     pickle.dump(solutions,open('solutions.py','w'))
 
 

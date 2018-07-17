@@ -15,23 +15,22 @@ def sort(sol):
 
 def generateAllFigs(sol,fn):
     for i in range(len(sol)):
-        print i
+        print(i)
         synU.generateFig(sol[i],figName=fn+str(i))
 
 
 
 ##############################################################################
 # instance of synaptic Change and figure class  
-synU = synUtils(par.thetaD,par.thetaP,par.nonlinear,par.Npresentations,par.w0)
+synU = synUtils(par.thetaD,par.thetaP,par.nonlinear,par.Npresentations,par.w0,dataSet='venance')
 
-#s5 = readSol('solutions_stoch5.py')
+s0 = readSol('solutions.py')
 #s6 = readSol('solutions_stoch6.py')
-s0 = readSol('solutions_thetap0.py')
-s1 = readSol('solutions_thetap1.py')
+#s0 = readSol('solutions_thetap0.py')
+#s1 = readSol('solutions_thetap1.py')
 
 #generateAllFigs(s13,'solutionsStoch13_')
 #generateAllFigs(s14,'solutionsStoch14_')
 
-#sorted(s1, key=lambda s1: s1[1])
 
 #synU.generateFig()

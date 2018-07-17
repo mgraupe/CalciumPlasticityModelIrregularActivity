@@ -4,12 +4,12 @@ from collections import *
 thetaD = 1.
 thetaP = 1.3 #1.3
 nonlinear = 1. #2.
-Npresentations = 75.
+Npresentations = 100.
 w0 = 0.5
 
 # fitting loops 
-Nruns = 10
-threshold = 1000. # lower threshold to include parameter set
+Nruns = 100000
+threshold = 100. # lower threshold to include parameter set
 
 # smoothnessWeight = 1.
 
