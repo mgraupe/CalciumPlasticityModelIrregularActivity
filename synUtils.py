@@ -9,13 +9,14 @@ from timeAboveThreshold import *
 
 class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
     ###############################################################################
-    def __init__(self, thetaD, thetaP, nonlinear, Npresentations, w0,dataSet='venance'):
+    def __init__(self, thetaD, thetaP, nonlinear, Npresentations, w0,dataSet='venance',modelV='multiplicative'):
         self.thetaD  = thetaD
         self.thetaP  = thetaP
         # determine eta based on nonlinearity factor and amplitudes
         self.nonlinear = nonlinear
         self.Npresentations = Npresentations
         self.w0 = w0
+        self.modelVersion = modelV
         
         # read in experimental data
         #dataDir = '/home/mgraupe/theobio/network_1/fit_all_models/calcium_nonlinear_python_parameter_search/experimental_data/'
@@ -78,10 +79,12 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
         tauEff = tau/(GammaP + GammaD)
         #
         # mean value of the synaptic strength right at the end of the stimulation protocol
-        mean         =  rhoBar - (rhoBar- self.w0)*exp(-self.Npresentations*interval/tauEff)
-        meanAdditive =  self.w0 + self.Npresentations*interval*(GammaP-GammaD)/tau
+        if self.modelVersion == 'multiplicative':
+            mean         =  rhoBar - (rhoBar- self.w0)*exp(-self.Npresentations*interval/tauEff)
+        elif self.modelVersion == 'additive':
+            mean =  self.w0 + self.Npresentations*interval*(GammaP-GammaD)/tau
         # change in synaptic strength after/before
-        return (meanAdditive/self.w0)
+        return (mean/self.w0)
     
     #############################################################################################
     # calculate change for regular spike-pair vs frequency protocol

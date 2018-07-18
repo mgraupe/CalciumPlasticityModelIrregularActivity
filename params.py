@@ -6,6 +6,7 @@ thetaP = 1.5 #1.3
 nonlinear = 1. #2.
 Npresentations = 100.
 w0 = 0.5
+modelVersion = 'additive'
 
 # fitting loops 
 Nruns = 1000

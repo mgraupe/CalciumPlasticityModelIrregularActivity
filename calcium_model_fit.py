@@ -73,7 +73,7 @@ base = 1531818909
 
 ##############################################################################
 # instance of synaptic Change and figure class
-synU = synUtils(par.thetaD,par.thetaP,par.nonlinear,par.Npresentations,par.w0,dataSet='venance')
+synU = synUtils(par.thetaD,par.thetaP,par.nonlinear,par.Npresentations,par.w0,dataSet='venance',modelV=par.modelVersion)
 
 #############################################################################
 #pdb.set_trace()
