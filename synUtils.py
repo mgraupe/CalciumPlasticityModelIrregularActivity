@@ -36,6 +36,7 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
             self.sigmaDataStoch = jesperStoch[:,2]
         elif dataSet == 'venance':
             self.stimFrequencies = [1,3,5,10]
+            self.fitWeights = [10.,1.,1.,1.]
             self.rawData1Hz  = loadtxt(self.dataDir+'STDP_1Hz_100pairings_binned.dat')
             self.rawData3Hz = loadtxt(self.dataDir+'STDP_2.5-3Hz_100pairings_binned.dat')
             self.rawData5Hz = loadtxt(self.dataDir+'STDP_5Hz_100pairings_binned.dat')

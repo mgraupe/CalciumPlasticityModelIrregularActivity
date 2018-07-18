@@ -17,18 +17,18 @@ import params as par
 
 ###########################################################################
 # the calcuation of mse is defined here 
-def errFunc(params, stimFrequencies, fitData1Hz,fitData3Hz,fitData5Hz,fitData10Hz):
+def errFunc(params, stimFrequencies, fitWeights, fitData1Hz,fitData3Hz,fitData5Hz,fitData10Hz):
     # mse for data vs. model
     chi2 = 0.
     for n in range(len(stimFrequencies)):
         exec('dataSet = fitData%sHz' % stimFrequencies[n])
         # print stimFrequencies[n], dataSet
 
-        for i in range(1):
+        for i in range(len(dataSet)):
                 yModel = synU.calculateChangeInSynapticStrength(stimFrequencies[n],dataSet[i,0]/1000.,params)
                 #
                 # print yModel, dataSet[i,1]/100.
-                chi2+= ((dataSet[i,1]/100. - yModel)**2)/((dataSet[i,2]/100.)**2)
+                chi2+= fitWeights[n]*((dataSet[i,1]/100. - yModel)**2)/((dataSet[i,2]/100.)**2)
 
     # add smoothness constraint
     #frequencies = linspace(1.,50.,50)
@@ -84,7 +84,7 @@ for n in range(par.Nruns):
     params0 = initialGuess(par.limits)
     #pdb.set_trace()
     # Apply downhill Simplex algorithm.
-    p1 = simplex(errFunc, params0, args=(synU.stimFrequencies,synU.rawData1Hz,synU.rawData3Hz,synU.rawData5Hz,synU.rawData10Hz), full_output=1, disp=True,maxiter=1E4, maxfun=1E4)
+    p1 = simplex(errFunc, params0, args=(synU.stimFrequencies,synU.fitWeights,synU.rawData1Hz,synU.rawData3Hz,synU.rawData5Hz,synU.rawData10Hz), full_output=1, disp=True,maxiter=1E4, maxfun=1E4)
     #print p1
     if p1[1] < par.threshold: 
         solutions.append(p1)

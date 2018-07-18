@@ -8,8 +8,8 @@ Npresentations = 100.
 w0 = 0.5
 
 # fitting loops 
-Nruns = 1
-threshold = 5. # lower threshold to include parameter set
+Nruns = 1000
+threshold = 300. # lower threshold to include parameter set
 
 # smoothnessWeight = 1.
 
