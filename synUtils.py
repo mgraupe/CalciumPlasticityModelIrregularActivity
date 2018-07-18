@@ -34,7 +34,7 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
             self.xDataStoch = jesperStoch[:,0]
             self.yDataStoch = jesperStoch[:,1]+1. # Sjoestroem's data is normalized to 0
             self.sigmaDataStoch = jesperStoch[:,2]
-        if dataSet == 'venance':
+        elif dataSet == 'venance':
             self.stimFrequencies = [1,3,5,10]
             self.rawData1Hz  = loadtxt(self.dataDir+'STDP_1Hz_100pairings_binned.dat')
             self.rawData3Hz = loadtxt(self.dataDir+'STDP_2.5-3Hz_100pairings_binned.dat')
@@ -397,13 +397,20 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
         fig_width = 12  # width in inches
         fig_height = 10  # height in inches
         fig_size = [fig_width, fig_height]
-        params = {'axes.labelsize': 14, 'axes.titlesize': 13, 'font.size': 11, 'xtick.labelsize': 11, 'ytick.labelsize': 11, 'figure.figsize': fig_size, 'savefig.dpi': 600,
-                  'axes.linewidth': 1.3, 'ytick.major.size': 4,  # major tick size in points
+        params = {'axes.labelsize': 14,
+                  'axes.titlesize': 13,
+                  'font.size': 11,
+                  'xtick.labelsize': 11,
+                  'ytick.labelsize': 11,
+                  'figure.figsize': fig_size,
+                  #'savefig.dpi': 600,
+                  'axes.linewidth': 1.3,
+                  'ytick.major.size': 4,  # major tick size in points
                   'xtick.major.size': 4,  # major tick size in points
-                  # 'edgecolor' : None
-                  # 'xtick.major.size' : 2,
-                  # 'ytick.major.size' : 2,
-                  }
+                   # 'edgecolor' : None
+                   # 'xtick.major.size' : 2,
+                   # 'ytick.major.size' : 2,
+                   }
         rcParams.update(params)
         # plt.rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
         # plt.rc('text', usetex=True)
@@ -636,5 +643,5 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
 
         savefig(fname + '.png')
         savefig(fname + '.pdf')
-        clf()
+        #clf()
         #dsN += 1

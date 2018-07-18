@@ -24,7 +24,7 @@ def errFunc(params, stimFrequencies, fitData1Hz,fitData3Hz,fitData5Hz,fitData10H
         exec('dataSet = fitData%sHz' % stimFrequencies[n])
         # print stimFrequencies[n], dataSet
 
-        for i in range(len(dataSet)):
+        for i in range(1):
                 yModel = synU.calculateChangeInSynapticStrength(stimFrequencies[n],dataSet[i,0]/1000.,params)
                 #
                 # print yModel, dataSet[i,1]/100.
@@ -40,12 +40,13 @@ def errFunc(params, stimFrequencies, fitData1Hz,fitData3Hz,fitData5Hz,fitData10H
     #chi2 += par.smoothnessWeight*(sum((mean(synChangePlus)-synChangePlus)**2))
     #chi2 += par.smoothnessWeight*(sum((mean(synChangeMinus)-synChangeMinus)**2))
     # penalize if parameters are outside pre-defined limits
-    #i=0
+    i=0
     for k in par.limits:
+        #print k, params[i]
         if (params[i] < par.limits[k][0]) or (params[i] > par.limits[k][1]):
             #print 'penalized'
             chi2+=100.
-        #i+=1
+        i+=1
     # impose Cpost>Cpre
     #if params[1] > params[2]:
     #    chi2+=100.
@@ -72,15 +73,16 @@ base = 1531818909
 
 ##############################################################################
 # instance of synaptic Change and figure class
-synU = synUtils(par.thetaD,par.thetaP,par.nonlinear,par.Npresentations,par.w0)
+synU = synUtils(par.thetaD,par.thetaP,par.nonlinear,par.Npresentations,par.w0,dataSet='venance')
 
 #############################################################################
 #pdb.set_trace()
 solutions = []
 for n in range(par.Nruns):
     #Initial guess of parameters
-    params0  = initialGuess(par.limits)
-
+    #params0  = [0.0667179, 1.45248, 0.405039, 2.0, 15.973, 16.3457, -0.00156591] #
+    params0 = initialGuess(par.limits)
+    #pdb.set_trace()
     # Apply downhill Simplex algorithm.
     p1 = simplex(errFunc, params0, args=(synU.stimFrequencies,synU.rawData1Hz,synU.rawData3Hz,synU.rawData5Hz,synU.rawData10Hz), full_output=1, disp=True,maxiter=1E4, maxfun=1E4)
     #print p1
