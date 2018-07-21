@@ -20,6 +20,7 @@ import params as par
 def errFunc(params, stimFrequencies, fitWeights, fitData1Hz,fitData3Hz,fitData5Hz,fitData10Hz):
     # mse for data vs. model
     chi2 = 0.
+    chi3 = 0.
     for n in range(len(stimFrequencies)):
         exec('dataSet = fitData%sHz' % stimFrequencies[n])
         # print stimFrequencies[n], dataSet
@@ -27,8 +28,10 @@ def errFunc(params, stimFrequencies, fitWeights, fitData1Hz,fitData3Hz,fitData5H
         for i in range(len(dataSet)):
                 yModel = synU.calculateChangeInSynapticStrength(stimFrequencies[n],dataSet[i,0]/1000.,params)
                 #
-                # print yModel, dataSet[i,1]/100.
-                chi2+= fitWeights[n]*((dataSet[i,1]/100. - yModel)**2)/((dataSet[i,2]/100.)**2)
+                #print dataSet[i,0]/1000., yModel, dataSet[i,1]/100.
+                chi2+= synU.fitWeights[n]*((dataSet[i,1]/100. - yModel)**2)/((dataSet[i,2]/100.)**2)
+                #chi3+= ((dataSet[i,1]/100. - 1.)**2)/((dataSet[i,2]/100.)**2)
+
 
     # add smoothness constraint
     #frequencies = linspace(1.,50.,50)
@@ -46,11 +49,12 @@ def errFunc(params, stimFrequencies, fitWeights, fitData1Hz,fitData3Hz,fitData5H
         if (params[i] < par.limits[k][0]) or (params[i] > par.limits[k][1]):
             #print 'penalized'
             chi2+=100.
+            #chi3+=100.
         i+=1
     # impose Cpost>Cpre
     #if params[1] > params[2]:
     #    chi2+=100.
-    
+    #print chi3
     return chi2
 
 
@@ -82,6 +86,8 @@ for n in range(par.Nruns):
     #Initial guess of parameters
     #params0  = [0.0667179, 1.45248, 0.405039, 2.0, 15.973, 16.3457, -0.00156591] #
     params0 = initialGuess(par.limits)
+    #synU.determineGammaP(1.,-0.2,params0)
+    #params0 = [0.0667179, 1.45248, 0.405039, 2.0, 15.973, 16.3457, -0.00156591]
     #pdb.set_trace()
     # Apply downhill Simplex algorithm.
     p1 = simplex(errFunc, params0, args=(synU.stimFrequencies,synU.fitWeights,synU.rawData1Hz,synU.rawData3Hz,synU.rawData5Hz,synU.rawData10Hz), full_output=1, disp=True,maxiter=1E4, maxfun=1E4)
@@ -89,9 +95,9 @@ for n in range(par.Nruns):
     if p1[1] < par.threshold: 
         solutions.append(p1)
 
-if solutions:
-    sorted(solutions, key=lambda solutions: solutions[1])
-    pickle.dump(solutions,open('solutions.py','w'))
+    if solutions:
+        sorted(solutions, key=lambda solutions: solutions[1])
+        pickle.dump(solutions,open('solutions.py','w'))
 
 
 

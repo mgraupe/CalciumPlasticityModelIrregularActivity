@@ -37,7 +37,7 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
             self.sigmaDataStoch = jesperStoch[:,2]
         elif dataSet == 'venance':
             self.stimFrequencies = [1,3,5,10]
-            self.fitWeights = [10.,1.,1.,1.]
+            self.fitWeights = [1.,1.,1.,1.]
             self.rawData1Hz  = loadtxt(self.dataDir+'STDP_1Hz_100pairings_binned.dat')
             self.rawData3Hz = loadtxt(self.dataDir+'STDP_2.5-3Hz_100pairings_binned.dat')
             self.rawData5Hz = loadtxt(self.dataDir+'STDP_5Hz_100pairings_binned.dat')
@@ -48,6 +48,27 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
             #self.fitData[1] = {'freq':3.,'data':rawData3Hz}
             #self.fitData[2] = {'freq':5.,'data':rawData5Hz}
             #self.fitData[3] = {'freq':10.,'data':rawData10Hz}
+    ##########################################################################################
+    # calculate change for regular spike-pair vs frequency protocol
+    def determineGammaP(self, frequency, deltaT, params):
+        #####
+        tauCa = params[0]
+        self.Cpre = params[1]
+        self.Cpost = params[2]
+        #thetaD = params[3]
+        #thetaP = params[4]
+        gammaD = params[3]
+        #gammaP = params[4]
+        tau = params[4]
+        D = params[5]
+
+        interval    = 1./frequency
+        ####
+        tat = timeAboveThreshold(self.thetaD, self.thetaP, tauCa, self.Cpre, self.Cpost, self.nonlinear)
+        (timeD,timeP) = tat.spikePairFrequencyNonlinear(deltaT-D,frequency)
+        # average potentiation and depression rates
+        self.gammaP =  gammaD*timeD/timeP
+        #GammaD = gammaD*timeD/interval
 
     ##########################################################################################
     # calculate change for regular spike-pair vs frequency protocol
@@ -59,7 +80,7 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
         #thetaD = params[3]
         #thetaP = params[4]
         gammaD = params[3]
-        gammaP = params[4]
+        gammaP = params[4] #self.gammaP
         tau = params[5]
         D = params[6]
         
