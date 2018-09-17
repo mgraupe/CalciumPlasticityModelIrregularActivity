@@ -101,7 +101,9 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
         #
         # mean value of the synaptic strength right at the end of the stimulation protocol
         if self.modelVersion == 'multiplicative':
+            #print rhoBar,self.w0,self.Npresentations,interval,tauEff
             mean         =  rhoBar - (rhoBar- self.w0)*np.exp(-self.Npresentations*interval/tauEff)
+            #print mean, rhoBar, self.w0, self.Npresentations, interval, tauEff
         elif self.modelVersion == 'additive':
             mean =  self.w0 + self.Npresentations*interval*(GammaP-GammaD)/tau
         # change in synaptic strength after/before
@@ -370,20 +372,20 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
         deltaTend = 0.3
         steps = 3001.
 
-        stimFreq = [1,3,5,10]
+        #stimFreq = [1,3,5,10]
 
         deltaT = linspace(deltaTstart, deltaTend, steps)
-        synChange = zeros((len(deltaT), len(stimFreq)+1))
+        synChange = zeros((len(deltaT), len(self.stimFrequencies)+1))
 
-        for n in range(len(stimFreq)):
+        for n in range(len(self.stimFrequencies)):
             #frequency = stimFreq[n]
-            interval = 1. / stimFreq[n]
+            interval = 1. / self.stimFrequencies[n]
             for i in range(len(deltaT)):
                 if n == 0:
                     synChange[i, 0] = deltaT[i]
                 #  calculateChangeInSynapticStrength(self, frequency,deltaT,params):
                 #sol = [0.0667179, 1.45248, 0.405039, 2.0, 15.973, 16.3457, -0.00156591]
-                synChange[i, n+1] = self.calculateChangeInSynapticStrength(stimFreq[n], deltaT[i], paraOpt[0])
+                synChange[i, n+1] = self.calculateChangeInSynapticStrength(self.stimFrequencies[n], deltaT[i], paraOpt[0])
             #
         #pdb.set_trace()
 
@@ -676,8 +678,8 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
         ax4.axvline(x=0, ls='--', color='0.7', lw=2)
         #ax4.plot(stdp5Hz[:, 0], stdp5Hz[:, 1], 'o', ms=4, c='0.5', markeredgecolor='0.5')
         #ax4.errorbar(stdp5binned[:, 0], stdp5binned[:, 1], yerr=stdp5binned[:, 2], fmt='o-', markeredgecolor='C0')
-        for i in range(len(stimFreq)):
-            ax4.plot(synChange[:, 0] * 1000., synChange[:, i+1] * 100.,label=str(stimFreq[i]))
+        for i in range(len(self.stimFrequencies)):
+            ax4.plot(synChange[:, 0] * 1000., synChange[:, i+1] * 100.,label=str(self.stimFrequencies[i]))
         #ax4.plot(synChange[:, 0] * 1000., synChange[:, 2] * 100.)
         #ax4.plot(synChange[:, 0] * 1000., synChange[:, 3] * 100.)
 

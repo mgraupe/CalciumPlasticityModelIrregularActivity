@@ -24,13 +24,13 @@ def errFunc(params, stimFrequencies, fitWeights, fitData1Hz,fitData3Hz,fitData5H
     for n in range(len(stimFrequencies)):
         exec('dataSet = fitData%sHz' % stimFrequencies[n])
         # print stimFrequencies[n], dataSet
-
-        for i in range(len(dataSet)):
-                yModel = synU.calculateChangeInSynapticStrength(float(stimFrequencies[n]),dataSet[i,0]/1000.,params)
-                #
-                #print dataSet[i,0]/1000., yModel, dataSet[i,1]/100.
-                chi2+= fitWeights[n]*((dataSet[i,1]/100. - yModel)**2)/((dataSet[i,2]/100.)**2)
-                #chi3+= ((dataSet[i,1]/100. - 1.)**2)/((dataSet[i,2]/100.)**2)
+        if fitWeights[n]:
+            for i in range(len(dataSet)):
+                    yModel = synU.calculateChangeInSynapticStrength(float(stimFrequencies[n]),dataSet[i,0]/1000.,params)
+                    #
+                    #print dataSet[i,0]/1000., yModel, dataSet[i,1]/100.
+                    chi2+= fitWeights[n]*((dataSet[i,1]/100. - yModel)**2) #/((dataSet[i,2]/100.)**2)
+                    #chi3+= ((dataSet[i,1]/100. - 1.)**2)/((dataSet[i,2]/100.)**2)
 
 
     # add smoothness constraint
@@ -73,7 +73,7 @@ def initialGuess(lim):
 
 
 #os.nice(19)
-base = 1531818909
+base = 1537192766
 
 ##############################################################################
 # instance of synaptic Change and figure class
@@ -88,7 +88,9 @@ for n in range(par.Nruns):
     params0 = initialGuess(par.limits)
     #synU.determineGammaP(1.,-0.2,params0)
     #params0 = [0.0667179, 1.45248, 0.405039, 2.0, 15.973, 16.3457, -0.00156591]
-    #pdb.set_trace()
+    #params0 = [  1.95999168e-02,   1.00006302e+00,   7.70511415e-01,\
+    #             3.97098825e+01,   1.00000000e+03,   1.00019323e+02,\
+    #            -8.35150431e-04]
     # Apply downhill Simplex algorithm.
     p1 = simplex(errFunc, params0, args=(synU.stimFrequencies,par.fitWeights,synU.rawData1Hz,synU.rawData3Hz,synU.rawData5Hz,synU.rawData10Hz), full_output=1, disp=True,maxiter=1E4, maxfun=1E4)
     #print p1
@@ -100,5 +102,4 @@ for n in range(par.Nruns):
         pickle.dump(solutions,open('solutions.py','w'))
 
 
-
-
+print solutions[0]
