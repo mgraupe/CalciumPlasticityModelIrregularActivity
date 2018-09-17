@@ -26,7 +26,7 @@ def errFunc(params, stimFrequencies, fitWeights, fitData1Hz,fitData3Hz,fitData5H
         # print stimFrequencies[n], dataSet
 
         for i in range(len(dataSet)):
-                yModel = synU.calculateChangeInSynapticStrength(stimFrequencies[n],dataSet[i,0]/1000.,params)
+                yModel = synU.calculateChangeInSynapticStrength(float(stimFrequencies[n]),dataSet[i,0]/1000.,params)
                 #
                 #print dataSet[i,0]/1000., yModel, dataSet[i,1]/100.
                 chi2+= synU.fitWeights[n]*((dataSet[i,1]/100. - yModel)**2)/((dataSet[i,2]/100.)**2)
@@ -77,7 +77,7 @@ base = 1531818909
 
 ##############################################################################
 # instance of synaptic Change and figure class
-synU = synUtils(par.thetaD,par.thetaP,par.nonlinear,par.Npresentations,par.w0,dataSet='venance',modelV=par.modelVersion)
+synU = synUtils(par.thetaD,par.thetaP,par.nonlinear,par.Npresentations,par.w0,dataSet='venance',modelV=par.modelVersion,stimF=par.stimulationFrequencies)
 
 #############################################################################
 #pdb.set_trace()
@@ -96,7 +96,7 @@ for n in range(par.Nruns):
         solutions.append(p1)
 
     if solutions:
-        sorted(solutions, key=lambda solutions: solutions[1])
+        solutions = sorted(solutions, key=lambda solutions: solutions[1])
         pickle.dump(solutions,open('solutions.py','w'))
 
 

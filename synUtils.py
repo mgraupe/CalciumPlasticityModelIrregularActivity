@@ -9,7 +9,7 @@ from timeAboveThreshold import *
 
 class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
     ###############################################################################
-    def __init__(self, thetaD, thetaP, nonlinear, Npresentations, w0,dataSet='venance',modelV='multiplicative'):
+    def __init__(self, thetaD, thetaP, nonlinear, Npresentations, w0,dataSet='venance',modelV='multiplicative',stimF=[]):
         self.thetaD  = thetaD
         self.thetaP  = thetaP
         # determine eta based on nonlinearity factor and amplitudes
@@ -36,8 +36,8 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
             self.yDataStoch = jesperStoch[:,1]+1. # Sjoestroem's data is normalized to 0
             self.sigmaDataStoch = jesperStoch[:,2]
         elif dataSet == 'venance':
-            self.stimFrequencies = [1,3,5,10]
-            self.fitWeights = [1.,1.,1.,1.]
+            self.stimFrequencies = stimF
+            self.fitWeights = [4.,1.,1.,1.]
             self.rawData1Hz  = loadtxt(self.dataDir+'STDP_1Hz_100pairings_binned.dat')
             self.rawData3Hz = loadtxt(self.dataDir+'STDP_2.5-3Hz_100pairings_binned.dat')
             self.rawData5Hz = loadtxt(self.dataDir+'STDP_5Hz_100pairings_binned.dat')
@@ -370,18 +370,20 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
         deltaTend = 0.3
         steps = 3001.
 
-        deltaT = linspace(deltaTstart, deltaTend, steps)
-        synChange = zeros((len(deltaT), len(self.stimFrequencies)+1))
+        stimFreq = [1,3,5,10]
 
-        for n in range(len(self.stimFrequencies)):
-            #frequency = self.stimFrequencies[n]
-            interval = 1. / self.stimFrequencies[n]
+        deltaT = linspace(deltaTstart, deltaTend, steps)
+        synChange = zeros((len(deltaT), len(stimFreq)+1))
+
+        for n in range(len(stimFreq)):
+            #frequency = stimFreq[n]
+            interval = 1. / stimFreq[n]
             for i in range(len(deltaT)):
                 if n == 0:
                     synChange[i, 0] = deltaT[i]
                 #  calculateChangeInSynapticStrength(self, frequency,deltaT,params):
                 #sol = [0.0667179, 1.45248, 0.405039, 2.0, 15.973, 16.3457, -0.00156591]
-                synChange[i, n+1] = self.calculateChangeInSynapticStrength(self.stimFrequencies[n], deltaT[i], paraOpt[0])
+                synChange[i, n+1] = self.calculateChangeInSynapticStrength(stimFreq[n], deltaT[i], paraOpt[0])
             #
         #pdb.set_trace()
 
@@ -420,7 +422,7 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
         #######################################################
         # plot data
         fig_width = 12  # width in inches
-        fig_height = 10  # height in inches
+        fig_height = 15  # height in inches
         fig_size = [fig_width, fig_height]
         params = {'axes.labelsize': 14,
                   'axes.titlesize': 13,
@@ -458,7 +460,7 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
         fig = plt.figure()
 
         # define sub-panel grid and possibly width and height ratios
-        gs = gridspec.GridSpec(2, 2  # width_ratios=[1,1.2],
+        gs = gridspec.GridSpec(3, 2  # width_ratios=[1,1.2],
                                # height_ratios=[1,1]
                                )
 
@@ -466,7 +468,7 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
         gs.update(wspace=0.2, hspace=0.35)
 
         fig.suptitle(
-            r'STDP data, $C_{\rm pre} = %s$, $C_{\rm post} = %s$, (100 regular- and irregular-spaced spike-pairs)' % (self.Cpre, self.Cpost),
+            r'STDP data, $C_{\rm pre} = %s$, $C_{\rm post} = %s$, (RMS = %s)' % (np.round(self.Cpre,4), np.round(self.Cpost,4), np.round(paraOpt[1],4)),
             fontsize=14)
         # possibly change outer margins of the figure
         plt.subplots_adjust(left=0.14, right=0.92, top=0.92, bottom=0.08)
@@ -627,7 +629,7 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
         # legends and labels
         # plt.legend(loc=1,frameon=False)
 
-        plt.xlabel(r'$\Delta t$ (ms)')
+        #plt.xlabel(r'$\Delta t$ (ms)')
         plt.ylabel('change in synaptic strength')
 
         # fourth sub-plot #######################################################
@@ -660,8 +662,45 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
         # legends and labels
         # plt.legend(loc=1,frameon=False)
 
-        plt.xlabel(r'$\Delta t$ (ms)')
+        #plt.xlabel(r'$\Delta t$ (ms)')
         # plt.ylabel('change in synaptic strength')
+
+        # third sub-plot #######################################################
+        ax4 = plt.subplot(gs[4])
+
+        # title
+        ax4.set_title('all frequency solutions')
+
+        # diplay of data
+        ax4.axhline(y=100, ls='--', color='0.7', lw=2)
+        ax4.axvline(x=0, ls='--', color='0.7', lw=2)
+        #ax4.plot(stdp5Hz[:, 0], stdp5Hz[:, 1], 'o', ms=4, c='0.5', markeredgecolor='0.5')
+        #ax4.errorbar(stdp5binned[:, 0], stdp5binned[:, 1], yerr=stdp5binned[:, 2], fmt='o-', markeredgecolor='C0')
+        for i in range(len(stimFreq)):
+            ax4.plot(synChange[:, 0] * 1000., synChange[:, i+1] * 100.,label=str(stimFreq[i]))
+        #ax4.plot(synChange[:, 0] * 1000., synChange[:, 2] * 100.)
+        #ax4.plot(synChange[:, 0] * 1000., synChange[:, 3] * 100.)
+
+        # if 'old'==oldNew:
+        # ax2.plot(-model5Hz[:,3]+2.*synapticChange.D*1000.,model5Hz[:,18]*100.)
+        # else:
+        # ax2.plot(modelNew[:, 0] * 1000., modelNew[:, 3] * 100.)
+
+        # removes upper and right axes
+        # and moves left and bottom axes away
+        ax4.spines['top'].set_visible(False)
+        ax4.spines['right'].set_visible(False)
+        ax4.spines['bottom'].set_position(('outward', 10))
+        ax4.spines['left'].set_position(('outward', 10))
+        ax4.yaxis.set_ticks_position('left')
+        ax4.xaxis.set_ticks_position('bottom')
+
+        ax4.set_xlim(-300, 300)
+        # legends and labels
+        plt.legend(loc=1,frameon=False)
+
+        plt.xlabel(r'$\Delta t$ (ms)')
+        plt.ylabel('change in synaptic strength')
 
         ## save figure ############################################################
         fname = 'regularDataFitVenance' #_dataSet#' + str(dataSetNumber)

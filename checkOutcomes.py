@@ -22,14 +22,14 @@ def generateAllFigs(sol,fn):
 
 ##############################################################################
 # instance of synaptic Change and figure class  
-synU = synUtils(par.thetaD,par.thetaP,par.nonlinear,par.Npresentations,par.w0,dataSet='venance',modelV=par.modelVersion)
+synU = synUtils(par.thetaD,par.thetaP,par.nonlinear,par.Npresentations,par.w0,dataSet='venance',modelV=par.modelVersion,stimF=par.stimulationFrequencies)
 
 s0 = readSol('solutions.py')
 #s6 = readSol('solutions_stoch6.py')
 #s0 = readSol('solutions_thetap0.py')
 #s1 = readSol('solutions_thetap1.py')
 
-# synU.generateVenFig(s0[0])
+#synU.generateVenFig(s0[0])
 #generateAllFigs(s13,'solutionsStoch13_')
 #generateAllFigs(s14,'solutionsStoch14_')
 
