@@ -423,7 +423,7 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
 
         #######################################################
         # plot data
-        fig_width = 12  # width in inches
+        fig_width = 10  # width in inches
         fig_height = 15  # height in inches
         fig_size = [fig_width, fig_height]
         params = {'axes.labelsize': 14,
@@ -470,7 +470,7 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
         gs.update(wspace=0.2, hspace=0.35)
 
         fig.suptitle(
-            r'STDP data, $C_{\rm pre} = %s$, $C_{\rm post} = %s$, (RMS = %s)' % (np.round(self.Cpre,4), np.round(self.Cpost,4), np.round(paraOpt[1],4)),
+            r'STDP data, %s, $C_{\rm pre} = %s$, $C_{\rm post} = %s$, (RMS = %s)' % (self.modelVersion,np.round(self.Cpre,4), np.round(self.Cpost,4), np.round(paraOpt[1],4)),
             fontsize=14)
         # possibly change outer margins of the figure
         plt.subplots_adjust(left=0.14, right=0.92, top=0.92, bottom=0.08)
@@ -528,7 +528,7 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
         # plt.xlabel(r'$\Delta t$ (ms)')
         plt.ylabel('change in synaptic strength')
 
-        ax_inset = plt.axes((0.35, 0.71, 0.15, 0.2))
+        ax_inset = plt.axes((0.37, 0.81, 0.13, 0.15))
         # plt.hist(residuals, fc='0.8',ec='w', lw=2)
         ax_inset.axhline(y=100, ls='--', color='0.7', lw=2)
         ax_inset.axvline(x=0, ls='--', color='0.7', lw=2)
@@ -664,7 +664,7 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
         # legends and labels
         # plt.legend(loc=1,frameon=False)
 
-        #plt.xlabel(r'$\Delta t$ (ms)')
+        plt.xlabel(r'$\Delta t$ (ms)')
         # plt.ylabel('change in synaptic strength')
 
         # third sub-plot #######################################################
@@ -704,6 +704,8 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
         plt.xlabel(r'$\Delta t$ (ms)')
         plt.ylabel('change in synaptic strength')
 
+
+        ax4.text(400,100,'%s\n%s\n%s\n%s\n%s\n%s\n%s' % (paraOpt[0][0],paraOpt[0][1],paraOpt[0][2],paraOpt[0][3],paraOpt[0][4],paraOpt[0][5],paraOpt[0][6]))
         ## save figure ############################################################
         fname = 'regularDataFitVenance' #_dataSet#' + str(dataSetNumber)
 

@@ -29,7 +29,7 @@ s0 = readSol('solutions.py')
 #s0 = readSol('solutions_thetap0.py')
 #s1 = readSol('solutions_thetap1.py')
 
-#synU.generateVenFig(s0[0])
+synU.generateVenFig(s0[0])
 #generateAllFigs(s13,'solutionsStoch13_')
 #generateAllFigs(s14,'solutionsStoch14_')
 

@@ -106,9 +106,10 @@ class timeAboveThreshold():
                 timeAbove = zeros(2)
                 
                 # in case deltaT is larger then one interval
-                if ( fabs(deltaT) > 1./frequency ):
-                        deltaT = -(fabs(deltaT) - 1./frequency)
-                
+                while (deltaT > 1./(2.*frequency) ):
+                        deltaT = deltaT - 1./frequency
+                while (deltaT < -1./(2.*frequency) ):
+                        deltaT = deltaT + 1./frequency
                 # determine amplitude of the discontinous points of the calcium trace
                 # post-pre
                 if ( exp(1./(frequency*self.tauCa)) == NaN ) :

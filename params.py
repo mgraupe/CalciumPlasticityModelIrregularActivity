@@ -7,7 +7,7 @@ nonlinear = 1. #2.
 Npresentations = 100.
 w0 = 0.5
 modelVersion =  'multiplicative' #''additive'
-fitWeights = [4.,1.,1.,1.]
+fitWeights = [5.,1.,1.,1.]
 
 # fitting loops 
 Nruns = 10
