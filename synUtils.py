@@ -9,7 +9,7 @@ from timeAboveThreshold import *
 
 class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
     ###############################################################################
-    def __init__(self, thetaD, thetaP, nonlinear, Npresentations, w0,dataSet='venance',modelV='multiplicative',stimF=[]):
+    def __init__(self, thetaD, thetaP, nonlinear, Npresentations, w0,dataSet='venance',modelV='multiplicative'):
         self.thetaD  = thetaD
         self.thetaP  = thetaP
         # determine eta based on nonlinearity factor and amplitudes
@@ -36,8 +36,8 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
             self.yDataStoch = jesperStoch[:,1]+1. # Sjoestroem's data is normalized to 0
             self.sigmaDataStoch = jesperStoch[:,2]
         elif dataSet == 'venance':
-            self.stimFrequencies = stimF
-            self.fitWeights = [4.,1.,1.,1.]
+            self.stimFrequencies = [1,3,5,10]
+            #self.fitWeights = [4.,1.,1.,1.]
             self.rawData1Hz  = loadtxt(self.dataDir+'STDP_1Hz_100pairings_binned.dat')
             self.rawData3Hz = loadtxt(self.dataDir+'STDP_2.5-3Hz_100pairings_binned.dat')
             self.rawData5Hz = loadtxt(self.dataDir+'STDP_5Hz_100pairings_binned.dat')
@@ -101,7 +101,7 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
         #
         # mean value of the synaptic strength right at the end of the stimulation protocol
         if self.modelVersion == 'multiplicative':
-            mean         =  rhoBar - (rhoBar- self.w0)*exp(-self.Npresentations*interval/tauEff)
+            mean         =  rhoBar - (rhoBar- self.w0)*np.exp(-self.Npresentations*interval/tauEff)
         elif self.modelVersion == 'additive':
             mean =  self.w0 + self.Npresentations*interval*(GammaP-GammaD)/tau
         # change in synaptic strength after/before

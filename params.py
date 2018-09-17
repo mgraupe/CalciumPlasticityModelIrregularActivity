@@ -6,8 +6,8 @@ thetaP = 1.3 #1.3
 nonlinear = 1. #2.
 Npresentations = 100.
 w0 = 0.5
-modelVersion =  'additive' #''additive'
-stimulationFrequencies = [1] #,3,5,10]
+modelVersion =  'multiplicative' #''additive'
+fitWeights = [1.,0.,0.,0.]
 
 # fitting loops 
 Nruns = 10
@@ -18,7 +18,7 @@ threshold = 300. # lower threshold to include parameter set
 # parameterLimits
 limits = OrderedDict([
     ('tauCa',[0.001,0.2]),
-    ('Cpre',[1.2,2.]),
+    ('Cpre',[1.,3.]),
     ('Cpost',[0.1,1.]),
     ('gammaD',[0.1,1000.]),
     ('gammaP',[0.1,1000.]),
