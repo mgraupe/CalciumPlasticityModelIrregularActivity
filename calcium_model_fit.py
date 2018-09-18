@@ -28,11 +28,11 @@ def errFunc(params, stimFrequencies, fitWeights, fitData1Hz,fitData3Hz,fitData5H
             for i in range(len(dataSet)):
                     yModel = synU.calculateChangeInSynapticStrength(float(stimFrequencies[n]),dataSet[i,0]/1000.,params)
                     #
-                    if stimFrequencies[n] == 1:
-                        chi2 += fitWeights[n] * ((dataSet[i, 1] / 100. - yModel) ** 2) * (dataSet[i, 2])
-                        #print dataSet[i,0]/1000., yModel, dataSet[i,1]/100., dataSet[i,2]
-                    else:
-                        chi2+= fitWeights[n]*((dataSet[i,1]/100. - yModel)**2) #*(dataSet[i,2])
+                    #if stimFrequencies[n] == 1:
+                    #    chi2 += fitWeights[n] * ((dataSet[i, 1] / 100. - yModel) ** 2) * (dataSet[i, 2])
+                    #    #print dataSet[i,0]/1000., yModel, dataSet[i,1]/100., dataSet[i,2]
+                    #else:
+                    chi2+= fitWeights[n]*((dataSet[i,1]/100. - yModel)**2) #*(dataSet[i,2])
                     #chi3+= ((dataSet[i,1]/100. - 1.)**2)/((dataSet[i,2]/100.)**2)
 
 

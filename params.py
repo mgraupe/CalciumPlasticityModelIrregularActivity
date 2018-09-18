@@ -10,15 +10,15 @@ modelVersion =  'multiplicative' #''additive'
 fitWeights = [5.,1.,1.,1.]
 
 # fitting loops 
-Nruns = 10
+Nruns = 100
 threshold = 300. # lower threshold to include parameter set
 
 # smoothnessWeight = 1.
 
 # parameterLimits
 limits = OrderedDict([
-    ('tauCa',[0.01,0.1]),
-    ('Cpre',[1.2,2.]),
+    ('tauCa',[0.05,0.1]),
+    ('Cpre',[1.1,2.]),
     ('Cpost',[0.1,1.]),
     ('gammaD',[0.1,1000.]),
     ('gammaP',[0.1,1000.]),
