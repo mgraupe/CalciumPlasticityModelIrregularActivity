@@ -25,7 +25,7 @@ import pdb
 #import synapticChange
 import params as par
 #from synUtils import *
-import bestSolutions as bS
+#import bestSolutions as bS
 from timeAboveThreshold import timeAboveThreshold
 from synapticChange import synapticChange
 
@@ -75,8 +75,8 @@ nl = 1.  # nonlinearity factor
 ###########################################################
 # initiate synaptic change class and chose parameter set from file
 
-params = 'VenanceSmult6'
-synChange = synapticChange(params, fromFile=True, nonlinear=nl)
+params = 'linearCaModel'
+synChange = synapticChange(params,source='fromFile', nonlinear=nl) #,threshold=par.thetaP)
 # initiate class to calculate fraction of time above threshold
 print 'Parameters :',synChange.tauCa, synChange.Cpre, synChange.Cpost, synChange.thetaD, synChange.thetaP, nl
 tat = timeAboveThreshold(synChange.tauCa, synChange.Cpre, synChange.Cpost, synChange.thetaD, synChange.thetaP, nonlinear=nl)

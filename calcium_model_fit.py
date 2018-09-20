@@ -1,10 +1,15 @@
-from pylab import *
+import numpy as np
 from scipy.optimize import fmin as simplex
 import os
 import pickle
-
-from synUtils import *
+import random as rrr
+import time
+#from synUtils import *
 import params as par
+
+from timeAboveThreshold import timeAboveThreshold
+from synapticChange import synapticChange
+
 
 # "fmin" is not a sensible name for an optimisation package.
 # Rename fmin to "simplex"
@@ -20,18 +25,27 @@ import params as par
 def errFunc(params, stimFrequencies, fitWeights, fitData1Hz,fitData3Hz,fitData5Hz,fitData10Hz):
     # mse for data vs. model
     chi2 = 0.
+    sChange.choseParameterSet('Venance',source='fromDictionary',params=params)
+    # initiate class to calculate fraction of time above threshold
+    tat = timeAboveThreshold(sChange.tauCa, sChange.Cpre, sChange.Cpost, sChange.thetaD, sChange.thetaP, nonlinear=par.nonlinear)
+    #print 'Parameters :', sChange.tauCa, sChange.Cpre, sChange.Cpost, sChange.thetaD, sChange.thetaP, sChange.D
+
     for n in range(len(stimFrequencies)):
         exec('dataSet = fitData%sHz' % stimFrequencies[n])
         # print stimFrequencies[n], dataSet
         if fitWeights[n]:
             for i in range(len(dataSet)):
-                yModel = synU.calculateChangeInSynapticStrength(float(stimFrequencies[n]),dataSet[i,0]/1000.,params)
+                (alphaD, alphaP) = tat.spikePairFrequencyNonlinear(dataSet[i,0]/1000. - sChange.D, float(stimFrequencies[n]))
+                # print dT, preRate, alphaD, alphaP
+                sChange.changeInSynapticStrength(sChange.Npresentations/ float(stimFrequencies[n]), par.w0, alphaD, alphaP)
+                #yModel = synU.calculateChangeInSynapticStrength(float(stimFrequencies[n]),dataSet[i,0]/1000.,params)
                 #
                 #if stimFrequencies[n] == 1:
                 #    chi2 += fitWeights[n] * ((dataSet[i, 1] / 100. - yModel) ** 2) * (dataSet[i, 2])
                 #    #print dataSet[i,0]/1000., yModel, dataSet[i,1]/100., dataSet[i,2]
                 #else:
-                chi2+= fitWeights[n]*((dataSet[i,1]/100. - yModel)**2) #*(dataSet[i,2])
+                #print dataSet[i,1]/100., sChange.mean/par.w0
+                chi2+= fitWeights[n]*((dataSet[i,1]/100. - sChange.mean/par.w0)**2) #*(dataSet[i,2])
                 #chi3+= ((dataSet[i,1]/100. - 1.)**2)/((dataSet[i,2]/100.)**2)
 
 
@@ -63,9 +77,9 @@ def errFunc(params, stimFrequencies, fitWeights, fitData1Hz,fitData3Hz,fitData5H
 ############################################################################
 def initialGuess(lim):
     nParams = len(lim)
-    params = zeros(nParams)
-    random.seed(int64((time.time()-base)*100))
-    randTemp = rand(nParams)
+    params = np.zeros(nParams)
+    rrr.seed(np.int64((time.time()-base)*100))
+    randTemp = np.random.rand(nParams)
     n = 0
     for k in lim:
         params[n] = lim[k][0] + randTemp[n]*(lim[k][1]-lim[k][0])
@@ -79,7 +93,9 @@ base = 1537192766
 
 ##############################################################################
 # instance of synaptic Change and figure class
-synU = synUtils(par.thetaD,par.thetaP,par.nonlinear,par.Npresentations,par.w0,dataSet='venance',modelV=par.modelVersion)
+sChange = synapticChange('Venance') #, source='fromDictionary', nonlinear=par.nonlinear,parameter=params)
+
+#synU = synUtils(par.thetaD,par.thetaP,par.nonlinear,par.Npresentations,par.w0,dataSet='venance',modelV=par.modelVersion)
 
 #############################################################################
 #pdb.set_trace()
@@ -88,13 +104,17 @@ for n in range(par.Nruns):
     #Initial guess of parameters
     #params0  = [0.0667179, 1.45248, 0.405039, 2.0, 15.973, 16.3457, -0.00156591] #
     params0 = initialGuess(par.limits)
+    #print params0
     #synU.determineGammaP(1.,-0.2,params0)
     #params0 = [0.0667179, 1.45248, 0.405039, 2.0, 15.973, 16.3457, -0.00156591]
-    #params0 = [  1.95999168e-02,   1.00006302e+00,   7.70511415e-01,\
+    #params0 = [  8.65515703e-02,   1.00000000e+00,   4.99651697e-01,
+    #      4.22749986e+01,   7.90669559e+02,   4.45068348e+02,
+    #     -5.18967722e-03]
+    #[  1.95999168e-02,   1.00006302e+00,   7.70511415e-01,\
     #             3.97098825e+01,   1.00000000e+03,   1.00019323e+02,\
     #            -8.35150431e-04]
     # Apply downhill Simplex algorithm.
-    p1 = simplex(errFunc, params0, args=(synU.stimFrequencies,par.fitWeights,synU.rawData1Hz,synU.rawData3Hz,synU.rawData5Hz,synU.rawData10Hz), full_output=1, disp=True,maxiter=1E4, maxfun=1E4)
+    p1 = simplex(errFunc, params0, args=(sChange.stimFrequencies,par.fitWeights,sChange.rawData1Hz,sChange.rawData3Hz,sChange.rawData5Hz,sChange.rawData10Hz), full_output=1, disp=True,maxiter=1E4, maxfun=1E4)
     #print p1
     if p1[1] < par.threshold: 
         solutions.append(p1)

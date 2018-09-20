@@ -1,5 +1,5 @@
-from scipy import *
-from numpy import *
+import scipy as sci
+import numpy as np
 import pdb
 import sys
 import commands
@@ -66,17 +66,17 @@ class timeAboveThreshold():
                         # post-pre
                         if (deltaT < 0.):
                                 if ( A <= Ct and B > Ct ) :
-                                        I = self.tauCa*log(D/Ct) + fabs(deltaT)
+                                        I = self.tauCa*np.log(D/Ct) + fabs(deltaT)
                                 elif ( A > Ct and B > Ct) :
                                         I = 1./frequency
                                 elif ( A > Ct and B <= Ct ) :
-                                        I = self.tauCa*log(C/Ct) + fabs(1./frequency) - fabs(deltaT)
+                                        I = self.tauCa*np.log(C/Ct) + fabs(1./frequency) - fabs(deltaT)
                                 elif ( A <= Ct and B <= Ct and D > Ct and C > Ct ) :
-                                        I = self.tauCa*log(C/Ct) + self.tauCa*log(D/Ct)
+                                        I = self.tauCa*np.log(C/Ct) + self.tauCa*np.log(D/Ct)
                                 elif ( A <= Ct and B <= Ct and D <= Ct and C > Ct ) :
-                                        I = self.tauCa*log(C/Ct)
+                                        I = self.tauCa*np.log(C/Ct)
                                 elif( A <= Ct and B <= Ct and D > Ct and C <= Ct ) :
-                                        I = self.tauCa*log(D/Ct)
+                                        I = self.tauCa*np.log(D/Ct)
                                 elif ( A <= Ct and B <= Ct and D <= Ct and C <= Ct ) :
                                         I = 0.
                                 else :
@@ -86,17 +86,17 @@ class timeAboveThreshold():
                         # pre-post
                         else:
                                 if ( E <= Ct and F > Ct ) :
-                                        I = self.tauCa*log(H/Ct) + fabs(deltaT)
+                                        I = self.tauCa*np.log(H/Ct) + fabs(deltaT)
                                 elif ( E > Ct and F > Ct) :
                                         I = 1./frequency
                                 elif ( E > Ct and F <= Ct ) :
-                                        I = self.tauCa*log(G/Ct) + fabs(1./frequency) - fabs(deltaT)
+                                        I = self.tauCa*np.log(G/Ct) + fabs(1./frequency) - fabs(deltaT)
                                 elif ( E <= Ct and F <= Ct and G > Ct and H > Ct ) :
-                                        I = self.tauCa*log(G/Ct) + self.tauCa*log(H/Ct)
+                                        I = self.tauCa*np.log(G/Ct) + self.tauCa*np.log(H/Ct)
                                 elif ( E <= Ct and F <= Ct and H <= Ct and G > Ct ) :
-                                        I = self.tauCa*log(G/Ct)
+                                        I = self.tauCa*np.log(G/Ct)
                                 elif ( E <= Ct and F <= Ct and H > Ct and G <= Ct ) :
-                                        I = self.tauCa*log(H/Ct)
+                                        I = self.tauCa*np.log(H/Ct)
                                 elif ( E <= Ct and F <= Ct and G <= Ct and H <= Ct ) :
                                         I = 0.
                                 else :
@@ -115,7 +115,7 @@ class timeAboveThreshold():
                 #
                 interval = 1./frequency
                 
-                timeAbove = zeros(2)
+                timeAbove = np.zeros(2)
                 
                 # in case deltaT is larger then one interval
                 while (deltaT > 1./(2.*frequency) ):
@@ -126,25 +126,25 @@ class timeAboveThreshold():
 
                 # determine amplitude of the discontinous points of the calcium trace
                 # post-pre
-                if ( exp(1./(frequency*self.tauCa)) == NaN ) :
+                if ( np.exp(1./(frequency*self.tauCa)) == np.NaN ) :
                         A = 0.
-                        B = self.Cpost*exp(-fabs(deltaT)/self.tauCa)
+                        B = self.Cpost*np.exp(-fabs(deltaT)/self.tauCa)
                 else :
-                        A  = (self.Cpost + (self.eta*exp(-1./(frequency*self.tauCa))/(1.-exp(-1./(frequency*self.tauCa))) + 1.)*self.Cpre*exp(fabs(deltaT)/self.tauCa))/(exp(1./(frequency*self.tauCa)) - 1.)
-                        B  = self.Cpre*(1. + self.eta/(1.-exp(-1./(frequency*self.tauCa))))/(exp(1./(frequency*self.tauCa)) - 1.) + self.Cpost*exp(-fabs(deltaT)/self.tauCa)/(1. - exp(-1./(frequency*self.tauCa)))
-                C  = A + self.Cpost + self.eta*self.Cpre*exp((fabs(deltaT)-1./frequency)/self.tauCa)/(1.-exp(-1./(frequency*self.tauCa)))
+                        A  = (self.Cpost + (self.eta*np.exp(-1./(frequency*self.tauCa))/(1.-np.exp(-1./(frequency*self.tauCa))) + 1.)*self.Cpre*np.exp(np.fabs(deltaT)/self.tauCa))/(np.exp(1./(frequency*self.tauCa)) - 1.)
+                        B  = self.Cpre*(1. + self.eta/(1.-np.exp(-1./(frequency*self.tauCa))))/(np.exp(1./(frequency*self.tauCa)) - 1.) + self.Cpost*np.exp(-np.fabs(deltaT)/self.tauCa)/(1. - np.exp(-1./(frequency*self.tauCa)))
+                C  = A + self.Cpost + self.eta*self.Cpre*np.exp((np.fabs(deltaT)-1./frequency)/self.tauCa)/(1.-np.exp(-1./(frequency*self.tauCa)))
                 D  = B + self.Cpre
 
                 # pre-post
-                if ( exp(1./(frequency*self.tauCa)) == NaN ) :
+                if ( np.exp(1./(frequency*self.tauCa)) == np.NaN ) :
                         E = 0.
-                        F = self.Cpre*exp(-fabs(deltaT)/self.tauCa)
+                        F = self.Cpre*np.exp(-np.fabs(deltaT)/self.tauCa)
                 else :
-                        E  = (self.Cpre*(1. + self.eta/(1.-exp(-1./(frequency*self.tauCa)))) + self.Cpost*exp(fabs(deltaT)/self.tauCa))/(exp(1./(frequency*self.tauCa)) - 1.)
-                        F  = (self.Cpost + self.eta/(1.-exp(-1./(frequency*self.tauCa)))*self.Cpre*exp(-fabs(deltaT)/self.tauCa))/(exp(1./(frequency*self.tauCa)) - 1.) + self.Cpre*exp(-fabs(deltaT)/self.tauCa)/(1. - exp(-1./(frequency*self.tauCa)))
+                        E  = (self.Cpre*(1. + self.eta/(1.-np.exp(-1./(frequency*self.tauCa)))) + self.Cpost*np.exp(np.fabs(deltaT)/self.tauCa))/(np.exp(1./(frequency*self.tauCa)) - 1.)
+                        F  = (self.Cpost + self.eta/(1.-np.exp(-1./(frequency*self.tauCa)))*self.Cpre*np.exp(-np.fabs(deltaT)/self.tauCa))/(np.exp(1./(frequency*self.tauCa)) - 1.) + self.Cpre*np.exp(-np.fabs(deltaT)/self.tauCa)/(1. - np.exp(-1./(frequency*self.tauCa)))
                         
                 G  = E + self.Cpre 
-                H  = F + self.Cpost + self.eta*self.Cpre*exp(-fabs(deltaT)/self.tauCa)/(1.-exp(-1./(frequency*self.tauCa)))
+                H  = F + self.Cpost + self.eta*self.Cpre*np.exp(-np.fabs(deltaT)/self.tauCa)/(1.-np.exp(-1./(frequency*self.tauCa)))
                 
                 # loop over depression and potentiation threshold
                 for i in range(2):
@@ -155,17 +155,17 @@ class timeAboveThreshold():
                         # post-pre
                         if (deltaT < 0.):
                                 if ( A <= Ct and B > Ct ) :
-                                        I = self.tauCa*log(D/Ct) + fabs(deltaT)
+                                        I = self.tauCa*np.log(D/Ct) + np.fabs(deltaT)
                                 elif ( A > Ct and B > Ct) :
                                         I = 1./frequency
                                 elif ( A > Ct and B <= Ct ) :
-                                        I = self.tauCa*log(C/Ct) + fabs(1./frequency) - fabs(deltaT)
+                                        I = self.tauCa*np.log(C/Ct) + np.fabs(1./frequency) - np.fabs(deltaT)
                                 elif ( A <= Ct and B <= Ct and D > Ct and C > Ct ) :
-                                        I = self.tauCa*log(C/Ct) + self.tauCa*log(D/Ct)
+                                        I = self.tauCa*np.log(C/Ct) + self.tauCa*np.log(D/Ct)
                                 elif ( A <= Ct and B <= Ct and D <= Ct and C > Ct ) :
-                                        I = self.tauCa*log(C/Ct)
+                                        I = self.tauCa*np.log(C/Ct)
                                 elif( A <= Ct and B <= Ct and D > Ct and C <= Ct ) :
-                                        I = self.tauCa*log(D/Ct)
+                                        I = self.tauCa*np.log(D/Ct)
                                 elif ( A <= Ct and B <= Ct and D <= Ct and C <= Ct ) :
                                         I = 0.
                                 else :
@@ -175,17 +175,17 @@ class timeAboveThreshold():
                         # pre-post
                         else:
                                 if ( E <= Ct and F > Ct ) :
-                                        I = self.tauCa*log(H/Ct) + fabs(deltaT)
+                                        I = self.tauCa*np.log(H/Ct) + np.fabs(deltaT)
                                 elif ( E > Ct and F > Ct) :
                                         I = 1./frequency
                                 elif ( E > Ct and F <= Ct ) :
-                                        I = self.tauCa*log(G/Ct) + fabs(1./frequency) - fabs(deltaT)
+                                        I = self.tauCa*np.log(G/Ct) + np.fabs(1./frequency) - np.fabs(deltaT)
                                 elif ( E <= Ct and F <= Ct and G > Ct and H > Ct ) :
-                                        I = self.tauCa*log(G/Ct) + self.tauCa*log(H/Ct)
+                                        I = self.tauCa*np.log(G/Ct) + self.tauCa*np.log(H/Ct)
                                 elif ( E <= Ct and F <= Ct and H <= Ct and G > Ct ) :
-                                        I = self.tauCa*log(G/Ct)
+                                        I = self.tauCa*np.log(G/Ct)
                                 elif ( E <= Ct and F <= Ct and H > Ct and G <= Ct ) :
-                                        I = self.tauCa*log(H/Ct)
+                                        I = self.tauCa*np.log(H/Ct)
                                 elif ( E <= Ct and F <= Ct and G <= Ct and H <= Ct ) :
                                         I = 0.
                                 else :
@@ -207,34 +207,34 @@ class timeAboveThreshold():
                 
                 timeAbove = zeros(2)
                 #
-                if ( fabs(deltaT) > 1./frequency ):
-                        deltaT = -(fabs(deltaT) - 1./frequency)
+                if ( np.fabs(deltaT) > 1./frequency ):
+                        deltaT = -(np.fabs(deltaT) - 1./frequency)
                         
                 #########################################
                 # post-post-pre
-                M = self.Cpost*exp(-(fabs(deltaBurst))/self.tauCa)
-                N = self.Cpost*exp(-(fabs(deltaBurst) + fabs(deltaT))/self.tauCa) + self.Cpost*exp(-fabs(deltaT)/self.tauCa)
+                M = self.Cpost*np.exp(-(np.fabs(deltaBurst))/self.tauCa)
+                N = self.Cpost*np.exp(-(np.fabs(deltaBurst) + np.fabs(deltaT))/self.tauCa) + self.Cpost*np.exp(-np.fabs(deltaT)/self.tauCa)
 
-                if ( exp(1./(frequency*self.tauCa)) == NaN ):
+                if ( np.exp(1./(frequency*self.tauCa)) == NaN ):
                         A = 0.
                 else :
-                        A  = (self.Cpost + self.Cpost*exp(fabs(deltaBurst)/self.tauCa) + self.Cpre*exp((fabs(deltaBurst) + fabs(deltaT))/self.tauCa))/(exp(1./(frequency*self.tauCa)) -1.)
-                        M = (self.Cpost + self.Cpre*exp(fabs(deltaT)/self.tauCa) + self.Cpost*exp((1./frequency - fabs(deltaBurst))/self.tauCa))/(exp(1./(frequency*self.tauCa)) -1.)
-                        N = (self.Cpre + self.Cpost*exp((1./frequency - fabs(deltaT) - fabs(deltaBurst))/self.tauCa) + self.Cpost*exp((1./frequency - fabs(deltaT))/self.tauCa))/(exp(1./(frequency*self.tauCa)) -1.)
+                        A  = (self.Cpost + self.Cpost*np.exp(np.fabs(deltaBurst)/self.tauCa) + self.Cpre*np.exp((np.fabs(deltaBurst) + np.fabs(deltaT))/self.tauCa))/(np.exp(1./(frequency*self.tauCa)) -1.)
+                        M = (self.Cpost + self.Cpre*np.exp(np.fabs(deltaT)/self.tauCa) + self.Cpost*np.exp((1./frequency - np.fabs(deltaBurst))/self.tauCa))/(np.exp(1./(frequency*self.tauCa)) -1.)
+                        N = (self.Cpre + self.Cpost*np.exp((1./frequency - np.fabs(deltaT) - np.fabs(deltaBurst))/self.tauCa) + self.Cpost*np.exp((1./frequency - np.fabs(deltaT))/self.tauCa))/(np.exp(1./(frequency*self.tauCa)) -1.)
 
                 O  = M + self.Cpost
                 P  = N + self.Cpre
                 
                 #########################################
                 # post-pre-post
-                Q = self.Cpost*exp(-(fabs(deltaBurst) - fabs(deltaT))/self.tauCa)
-                R = self.Cpost*exp(- fabs(deltaBurst)/self.tauCa) + self.Cpre*exp(-fabs(deltaT)/self.tauCa)
-                if ( exp(1./(frequency*self.tauCa)) == NaN ) :
+                Q = self.Cpost*np.exp(-(np.fabs(deltaBurst) - np.fabs(deltaT))/self.tauCa)
+                R = self.Cpost*np.exp(- np.fabs(deltaBurst)/self.tauCa) + self.Cpre*np.exp(-np.fabs(deltaT)/self.tauCa)
+                if ( np.exp(1./(frequency*self.tauCa)) == NaN ) :
                         A = 0.
                 else :
-                        A  = (self.Cpost + self.Cpre*exp((fabs(deltaBurst)-fabs(deltaT))/self.tauCa) + self.Cpost*exp(fabs(deltaBurst)/self.tauCa))/(exp(1./(frequency*self.tauCa)) -1.)
-                        Q = (self.Cpre + self.Cpost*exp(fabs(deltaT)/self.tauCa) + self.Cpost*exp((1./frequency - (fabs(deltaBurst) - fabs(deltaT)))/self.tauCa))/(exp(1./(frequency*self.tauCa)) -1.)
-                        R = (self.Cpost + self.Cpost*exp((1./frequency - fabs(deltaBurst))/self.tauCa) + self.Cpre*exp((1./frequency - fabs(deltaT))/self.tauCa))/(exp(1./(frequency*self.tauCa)) -1.)
+                        A  = (self.Cpost + self.Cpre*np.exp((np.fabs(deltaBurst)-np.fabs(deltaT))/self.tauCa) + self.Cpost*np.exp(np.fabs(deltaBurst)/self.tauCa))/(np.exp(1./(frequency*self.tauCa)) -1.)
+                        Q = (self.Cpre + self.Cpost*np.exp(np.fabs(deltaT)/self.tauCa) + self.Cpost*np.exp((1./frequency - (np.fabs(deltaBurst) - np.fabs(deltaT)))/self.tauCa))/(np.exp(1./(frequency*self.tauCa)) -1.)
+                        R = (self.Cpost + self.Cpost*np.exp((1./frequency - np.fabs(deltaBurst))/self.tauCa) + self.Cpre*np.exp((1./frequency - np.fabs(deltaT))/self.tauCa))/(np.exp(1./(frequency*self.tauCa)) -1.)
 
                 S  = Q + self.Cpre
                 T  = R + self.Cpost
@@ -242,15 +242,15 @@ class timeAboveThreshold():
                 
                 #########################################
                 # pre-post-post
-                U = self.Cpre*exp(-(fabs(deltaT)-fabs(deltaBurst))/self.tauCa)
-                V = self.Cpre*exp(- fabs(deltaT)/self.tauCa) + self.Cpost*exp(-fabs(deltaBurst)/self.tauCa)
+                U = self.Cpre*np.exp(-(np.fabs(deltaT)-np.fabs(deltaBurst))/self.tauCa)
+                V = self.Cpre*np.exp(- np.fabs(deltaT)/self.tauCa) + self.Cpost*np.exp(-np.fabs(deltaBurst)/self.tauCa)
                 
-                if ( exp(1./(frequency*self.tauCa)) == NaN ):
+                if ( np.exp(1./(frequency*self.tauCa)) == NaN ):
                         A = 0.
                 else :
-                        A  = (self.Cpre + self.Cpost*exp((fabs(deltaT)-fabs(deltaBurst))/self.tauCa) + self.Cpost*exp(fabs(deltaT)/self.tauCa))/(exp(1./(frequency*self.tauCa)) -1.)
-                        U = (self.Cpost + self.Cpost*exp(fabs(deltaBurst)/self.tauCa) + self.Cpre*exp((1./frequency - (fabs(deltaT) - fabs(deltaBurst)))/self.tauCa))/(exp(1./(frequency*self.tauCa)) -1.)
-                        V = (self.Cpost + self.Cpre*exp((1./frequency - fabs(deltaT))/self.tauCa) + self.Cpost*exp((1./frequency - fabs(deltaBurst))/self.tauCa))/(exp(1./(frequency*self.tauCa)) -1.)
+                        A  = (self.Cpre + self.Cpost*np.exp((np.fabs(deltaT)-np.fabs(deltaBurst))/self.tauCa) + self.Cpost*np.exp(np.fabs(deltaT)/self.tauCa))/(np.exp(1./(frequency*self.tauCa)) -1.)
+                        U = (self.Cpost + self.Cpost*np.exp(np.fabs(deltaBurst)/self.tauCa) + self.Cpre*np.exp((1./frequency - (np.fabs(deltaT) - np.fabs(deltaBurst)))/self.tauCa))/(np.exp(1./(frequency*self.tauCa)) -1.)
+                        V = (self.Cpost + self.Cpre*np.exp((1./frequency - np.fabs(deltaT))/self.tauCa) + self.Cpost*np.exp((1./frequency - np.fabs(deltaBurst))/self.tauCa))/(np.exp(1./(frequency*self.tauCa)) -1.)
 
                 W  = U + self.Cpost
                 X  = V + self.Cpost
@@ -268,29 +268,29 @@ class timeAboveThreshold():
                                 if ( M > Ct and N > Ct and A > Ct) :
                                         Int = 1./frequency
                                 elif ( M > Ct and N > Ct and A <= Ct) :
-                                        Int = self.tauCa*log(P/Ct) + fabs(deltaT) + fabs(deltaBurst)
+                                        Int = self.tauCa*np.log(P/Ct) + np.fabs(deltaT) + np.fabs(deltaBurst)
                                 elif ( M > Ct and N <= Ct and P > Ct) :
-                                        Int = self.tauCa*log(O/Ct) + fabs(deltaBurst) + self.tauCa*log(P/Ct)
+                                        Int = self.tauCa*np.log(O/Ct) + np.fabs(deltaBurst) + self.tauCa*np.log(P/Ct)
                                 elif ( M > Ct and P <= Ct) :
-                                        Int = self.tauCa*log(O/Ct) + fabs(deltaBurst)
+                                        Int = self.tauCa*np.log(O/Ct) + np.fabs(deltaBurst)
                                 elif ( (A+self.Cpost) > Ct and M <= Ct and N > Ct ) :
-                                        Int = self.tauCa*log((A+self.Cpost)/Ct) + self.tauCa*log(P/Ct) + fabs(deltaT)
+                                        Int = self.tauCa*np.log((A+self.Cpost)/Ct) + self.tauCa*np.log(P/Ct) + np.fabs(deltaT)
                                 elif ( (A+self.Cpost) > Ct and M <= Ct and N <= Ct and P > Ct ) :
-                                        Int = self.tauCa*log((A+self.Cpost)/Ct) + self.tauCa*log(O/Ct) +  self.tauCa*log(P/Ct)
+                                        Int = self.tauCa*np.log((A+self.Cpost)/Ct) + self.tauCa*np.log(O/Ct) +  self.tauCa*np.log(P/Ct)
                                 elif ( (A+self.Cpost) > Ct and M <= Ct and P <= Ct ) :
-                                        Int = self.tauCa*log((A+self.Cpost)/Ct) + self.tauCa*log(O/Ct)
+                                        Int = self.tauCa*np.log((A+self.Cpost)/Ct) + self.tauCa*np.log(O/Ct)
                                 elif ( (A+self.Cpost) > Ct and O <= Ct and P <= Ct) :
-                                        Int = self.tauCa*log((A+self.Cpost)/Ct)
+                                        Int = self.tauCa*np.log((A+self.Cpost)/Ct)
                                 elif ( (A+self.Cpost) > Ct and O <= Ct and P > Ct) :
-                                        Int = self.tauCa*log((A+self.Cpost)/Ct) + self.tauCa*log(P/Ct)
+                                        Int = self.tauCa*np.log((A+self.Cpost)/Ct) + self.tauCa*np.log(P/Ct)
                                 elif ( (A+self.Cpost) <= Ct and N > Ct ) :
-                                        Int = self.tauCa*log(P/Ct) + fabs(deltaT)
+                                        Int = self.tauCa*np.log(P/Ct) + np.fabs(deltaT)
                                 elif ( (A+self.Cpost) <= Ct and O > Ct and N <= Ct and P > Ct) :
-                                        Int = self.tauCa*log(O/Ct) + self.tauCa*log(P/Ct)
+                                        Int = self.tauCa*np.log(O/Ct) + self.tauCa*np.log(P/Ct)
                                 elif ( (A+self.Cpost) <= Ct and O > Ct and P <= Ct) :
-                                        Int = self.tauCa*log(O/Ct)
+                                        Int = self.tauCa*np.log(O/Ct)
                                 elif ( (A+self.Cpost) <= Ct and O <= Ct and P > Ct) :
-                                        Int = self.tauCa*log(P/Ct)
+                                        Int = self.tauCa*np.log(P/Ct)
                                 elif ( (A+self.Cpost) <= Ct and O <= Ct and P <= Ct) :
                                         Int = 0.
                                 else :
@@ -303,29 +303,29 @@ class timeAboveThreshold():
                                 if ( Q > Ct and R > Ct and A > Ct) :
                                         Int = 1./frequency
                                 elif ( Q > Ct and R > Ct and A <= Ct) :
-                                        Int = self.tauCa*log(T/Ct) + fabs(deltaBurst)
+                                        Int = self.tauCa*np.log(T/Ct) + np.fabs(deltaBurst)
                                 elif ( Q > Ct and R <= Ct and T > Ct ) :
-                                        Int = self.tauCa*log(S/Ct) + fabs(deltaBurst) - fabs(deltaT) +  self.tauCa*log(T/Ct)	
+                                        Int = self.tauCa*np.log(S/Ct) + np.fabs(deltaBurst) - np.fabs(deltaT) +  self.tauCa*np.log(T/Ct)
                                 elif ( Q > Ct and T <= Ct and A <= Ct ) :
-                                        Int = self.tauCa*log(S/Ct) + fabs(deltaBurst) - fabs(deltaT)	
+                                        Int = self.tauCa*np.log(S/Ct) + np.fabs(deltaBurst) - np.fabs(deltaT)
                                 elif ( (A+self.Cpost) > Ct and Q <= Ct and R > Ct ) :
-                                        Int = self.tauCa*log((A+self.Cpost)/Ct) + self.tauCa*log(T/Ct) + fabs(deltaT)
+                                        Int = self.tauCa*np.log((A+self.Cpost)/Ct) + self.tauCa*np.log(T/Ct) + np.fabs(deltaT)
                                 elif ( (A+self.Cpost) > Ct and Q <= Ct and S > Ct and R <= Ct and T > Ct ) :
-                                        Int = self.tauCa*log((A+self.Cpost)/Ct) + self.tauCa*log(S/Ct) + self.tauCa*log(T/Ct)
+                                        Int = self.tauCa*np.log((A+self.Cpost)/Ct) + self.tauCa*np.log(S/Ct) + self.tauCa*np.log(T/Ct)
                                 elif ( (A+self.Cpost) > Ct and Q <= Ct and S > Ct and T <= Ct ) :
-                                        Int = self.tauCa*log((A+self.Cpost)/Ct) + self.tauCa*log(S/Ct)
+                                        Int = self.tauCa*np.log((A+self.Cpost)/Ct) + self.tauCa*np.log(S/Ct)
                                 elif ( (A+self.Cpost) > Ct and S <= Ct and T > Ct ) :
-                                        Int = self.tauCa*log((A+self.Cpost)/Ct) + self.tauCa*log(T/Ct)
+                                        Int = self.tauCa*np.log((A+self.Cpost)/Ct) + self.tauCa*np.log(T/Ct)
                                 elif ( (A+self.Cpost) > Ct and S <= Ct and T <= Ct ) :
-                                        Int = self.tauCa*log((A+self.Cpost)/Ct)
+                                        Int = self.tauCa*np.log((A+self.Cpost)/Ct)
                                 elif ( (A+self.Cpost) <= Ct and S > Ct and T <= Ct ) :
-                                        Int = self.tauCa*log(S/Ct)
+                                        Int = self.tauCa*np.log(S/Ct)
                                 elif ( (A+self.Cpost) <= Ct and S <= Ct and T > Ct) :
-                                        Int = self.tauCa*log(T/Ct)
+                                        Int = self.tauCa*np.log(T/Ct)
                                 elif ( (A+self.Cpost) <= Ct and S > Ct and R <= Ct and T > Ct) :
-                                        Int = self.tauCa*log(S/Ct) + self.tauCa*log(T/Ct)
+                                        Int = self.tauCa*np.log(S/Ct) + self.tauCa*np.log(T/Ct)
                                 elif ( (A+self.Cpost) <= Ct  and R > Ct) :
-                                        Int = self.tauCa*log(T/Ct) + fabs(deltaT)
+                                        Int = self.tauCa*np.log(T/Ct) + np.fabs(deltaT)
                                 elif ( (A+self.Cpost) <= Ct and S <= Ct and T <= Ct) :
                                         Int = 0.
                                 else :
@@ -338,29 +338,29 @@ class timeAboveThreshold():
                                 if ( U > Ct and V > Ct and A > Ct ) :
                                         Int = 1./frequency
                                 elif ( U > Ct and V > Ct and A <= Ct) :
-                                        Int = self.tauCa*log(X/Ct) + fabs(deltaT)
+                                        Int = self.tauCa*np.log(X/Ct) + np.fabs(deltaT)
                                 elif ( U > Ct and V <= Ct and X > Ct ) :
-                                        Int = self.tauCa*log(W/Ct) + fabs(deltaT) - fabs(deltaBurst) + self.tauCa*log(X/Ct)
+                                        Int = self.tauCa*np.log(W/Ct) + np.fabs(deltaT) - np.fabs(deltaBurst) + self.tauCa*np.log(X/Ct)
                                 elif ( U > Ct and X <= Ct ) :
-                                        Int = self.tauCa*log(W/Ct) + fabs(deltaT) - fabs(deltaBurst)
+                                        Int = self.tauCa*np.log(W/Ct) + np.fabs(deltaT) - np.fabs(deltaBurst)
                                 elif ( (A+self.Cpre) > Ct and U <= Ct and  V > Ct) :
-                                        Int = self.tauCa*log((A+self.Cpre)/Ct) + self.tauCa*log(X/Ct) + fabs(deltaBurst)	
+                                        Int = self.tauCa*np.log((A+self.Cpre)/Ct) + self.tauCa*np.log(X/Ct) + np.fabs(deltaBurst)
                                 elif ( (A+self.Cpre) > Ct and U <= Ct and  V <= Ct and W > Ct and X > Ct ) :
-                                        Int = self.tauCa*log((A+self.Cpre)/Ct) + self.tauCa*log(W/Ct) + self.tauCa*log(X/Ct)
+                                        Int = self.tauCa*np.log((A+self.Cpre)/Ct) + self.tauCa*np.log(W/Ct) + self.tauCa*np.log(X/Ct)
                                 elif ( (A+self.Cpre) > Ct and U <= Ct and W > Ct and X <= Ct ) :
-                                        Int = self.tauCa*log((A+self.Cpre)/Ct) + self.tauCa*log(W/Ct)
+                                        Int = self.tauCa*np.log((A+self.Cpre)/Ct) + self.tauCa*np.log(W/Ct)
                                 elif ( (A+self.Cpre) > Ct and W <= Ct and X > Ct ) :
-                                        Int = self.tauCa*log((A+self.Cpre)/Ct) + self.tauCa*log(X/Ct)
+                                        Int = self.tauCa*np.log((A+self.Cpre)/Ct) + self.tauCa*np.log(X/Ct)
                                 elif ( (A+self.Cpre) > Ct and W <= Ct and X <= Ct ) :
-                                        Int = self.tauCa*log((A+self.Cpre)/Ct)
+                                        Int = self.tauCa*np.log((A+self.Cpre)/Ct)
                                 elif ( (A+self.Cpre) <= Ct and V > Ct ) :
-                                        Int = self.tauCa*log(X/Ct) + fabs(deltaBurst)
+                                        Int = self.tauCa*np.log(X/Ct) + np.fabs(deltaBurst)
                                 elif ( (A+self.Cpre) <= Ct  and V <= Ct and W > Ct and X > Ct ) :
-                                        Int = self.tauCa*log(W/Ct) + self.tauCa*log(X/Ct)
+                                        Int = self.tauCa*np.log(W/Ct) + self.tauCa*np.log(X/Ct)
                                 elif ( (A+self.Cpre) <= Ct  and W <= Ct and X > Ct ) :
-                                        Int = self.tauCa*log(X/Ct)
+                                        Int = self.tauCa*np.log(X/Ct)
                                 elif ( (A+self.Cpre) <= Ct  and W > Ct and X <= Ct ) :
-                                        Int = self.tauCa*log(W/Ct)
+                                        Int = self.tauCa*np.log(W/Ct)
                                 elif ( (A+self.Cpre) <= Ct  and W <= Ct and X <= Ct ) :
                                         Int = 0.
                                 else :
@@ -461,7 +461,7 @@ class timeAboveThreshold():
             tPre.append(0)
             tPostInd.append(0)
 
-            for i in range(10000):
+            for i in range(2000):
                 tPre.append(tPre[-1] + random.exponential(1. / preRate))
                 if rand() < ppp:
                     tPostCorr.append(tPre[-1] + deltaT)
@@ -525,7 +525,7 @@ class timeAboveThreshold():
                 if U != 0.:
                         cpre[0] = 1.
                         for i in range(1, len(tPre[1:])):
-                                cpre[i] = 1. - (1. - (cpre[i - 1] - U * cpre[i - 1])) * exp(-(tPre[i+1]-tPre[i])/tauRec)
+                                cpre[i] = 1. - (1. - (cpre[i - 1] - U * cpre[i - 1])) * np.exp(-(tPre[i+1]-tPre[i])/tauRec)
                         cpre *= U * self.Cpre
                 else:
                         cpre[:] = self.Cpre
@@ -666,13 +666,13 @@ class timeAboveThreshold():
                         x[0] = 1.
                         cpre[0] = u[0] * x[0]
                         for i in range(1, len(tPre[1:])):
-                                u[i] = u[i - 1] * exp(-(tPre[i+1]-tPre[i]) / tauFac) + U * (1. - u[i - 1] * exp(-(tPre[i+1]-tPre[i]) / tauFac))
-                                x[i] = 1. - (1. - (x[i - 1] - u[i - 1] * x[i - 1])) * exp(-(tPre[i+1]-tPre[i]) / tauDep)
+                                u[i] = u[i - 1] * np.exp(-(tPre[i+1]-tPre[i]) / tauFac) + U * (1. - u[i - 1] * np.exp(-(tPre[i+1]-tPre[i]) / tauFac))
+                                x[i] = 1. - (1. - (x[i - 1] - u[i - 1] * x[i - 1])) * np.exp(-(tPre[i+1]-tPre[i]) / tauDep)
                                 cpre[i] = u[i] * x[i]
                         cpre *= self.Cpre
                         #cpre[0] = 1.
                         #for i in range(1, len(tPre[1:])):
-                        #        cpre[i] = 1. - (1. - (cpre[i - 1] - U * cpre[i - 1])) * exp(-(tPre[i+1]-tPre[i])/tauRec)
+                        #        cpre[i] = 1. - (1. - (cpre[i - 1] - U * cpre[i - 1])) * np.exp(-(tPre[i+1]-tPre[i])/tauRec)
                         #cpre *= U * self.Cpre
                 else:
                         cpre[:] = self.Cpre
@@ -751,7 +751,7 @@ class timeAboveThreshold():
                 if U != 0:
                     cpre[0] = 1.
                     for i in range(1, Npres):
-                        cpre[i] = 1. - (1. - (cpre[i-1] - U*cpre[i-1]))*exp(-1./(freq * tauRec))
+                        cpre[i] = 1. - (1. - (cpre[i-1] - U*cpre[i-1]))*np.exp(-1./(freq * tauRec))
                     cpre *= U*self.Cpre
                 else:
                     cpre[:] = self.Cpre
@@ -847,14 +847,14 @@ class timeAboveThreshold():
                         x[0] = 1.
                         cpre[0] = u[0] * x[0]
                         for i in range(1, len(tPre[1:])):
-                                u[i] = u[i - 1] * exp(-1./(freq*tauFac)) + U * (1. - u[i - 1] * exp(-1./(freq*tauFac)))
-                                x[i] = 1. - (1. - (x[i - 1] - u[i - 1] * x[i - 1])) * exp(
+                                u[i] = u[i - 1] * np.exp(-1./(freq*tauFac)) + U * (1. - u[i - 1] * np.exp(-1./(freq*tauFac)))
+                                x[i] = 1. - (1. - (x[i - 1] - u[i - 1] * x[i - 1])) * np.exp(
                                         -1./(freq*tauDep))
                                 cpre[i] = u[i] * x[i]
                         cpre *= self.Cpre
                         #cpre[0] = 1.
                         #for i in range(1, Npres):
-                        #    cpre[i] = 1. - (1. - (cpre[i-1] - U*cpre[i-1]))*exp(-1./(freq * tauRec))
+                        #    cpre[i] = 1. - (1. - (cpre[i-1] - U*cpre[i-1]))*np.exp(-1./(freq * tauRec))
                         #cpre *= U*self.Cpre
                 else:
                         cpre[:] = self.Cpre
@@ -898,7 +898,7 @@ class timeAboveThreshold():
                 cpre = zeros(Npres)
                 cpre[0] = self.Cpre * U
                 for i in range(1, Npres):
-                    cpre[i] = cpre[i - 1] * (1. - U * exp(-(tPre[i] - tPre[i - 1]) / (tauRec)))
+                    cpre[i] = cpre[i - 1] * (1. - U * np.exp(-(tPre[i] - tPre[i - 1]) / (tauRec)))
                 tAll[:, 0] = hstack((tPre, tPost))
                 tAll[:, 1] = hstack((zeros(Npres), ones(Npres)))
                 tAll[:, 2] = hstack((cpre, repeat(self.Cpost, Npres)))
@@ -937,20 +937,20 @@ class timeAboveThreshold():
                         caPreOld    = ca[-1][1]
                         caPostOld   = ca[-1][2]
                         tOld        = ca[-1][3]
-                        #caTotTemp  = caTotOld*exp(-(i[0]-tOld)/self.tauCa)
-                        caPreTemp  = caPreOld*exp(-(i[0]-tOld)/self.tauCa)
-                        caPostTemp = caPostOld*exp(-(i[0]-tOld)/self.tauCa)
+                        #caTotTemp  = caTotOld*np.exp(-(i[0]-tOld)/self.tauCa)
+                        caPreTemp  = caPreOld*np.exp(-(i[0]-tOld)/self.tauCa)
+                        caPostTemp = caPostOld*np.exp(-(i[0]-tOld)/self.tauCa)
                         caTotTemp  = caPreTemp + caPostTemp
                         if caTotOld > self.thetaD:
                                 if caTotTemp > self.thetaD:
                                         tD += i[0]-tOld
                                 else:
-                                        tD += (self.tauCa)*log(caTotOld/self.thetaD)
+                                        tD += (self.tauCa)*np.log(caTotOld/self.thetaD)
                         if caTotOld > self.thetaP:
                                 if caTotTemp > self.thetaP:
                                         tP += i[0]-tOld
                                 else:
-                                        tP += (self.tauCa)*log(caTotOld/self.thetaP)
+                                        tP += (self.tauCa)*np.log(caTotOld/self.thetaP)
                         # postsynaptic spike
                         if i[1] == 1:
                                 caPostTemp += i[2] + self.eta*caPreTemp

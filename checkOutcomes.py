@@ -24,7 +24,7 @@ def generateAllFigs(sol,fn):
 
 ##############################################################################
 # instance of synaptic Change and figure class  
-synU = synUtils(par.thetaD,par.thetaP,par.nonlinear,par.Npresentations,par.w0,dataSet='venance',modelV=par.modelVersion)
+synU = synUtils(dataSet='venance',modelV=par.modelVersion)
 
 #s0 = readSol('solutions.py')
 #s6 = readSol('solutions_stoch6.py')
@@ -32,8 +32,8 @@ synU = synUtils(par.thetaD,par.thetaP,par.nonlinear,par.Npresentations,par.w0,da
 #s1 = readSol('solutions_thetap1.py')
 
 #synU.generateVenFig(pfs.VenanceSmult5,modelV='m')
-#synU.generateVenFig(pfs.linearCaModelMod,modelV='m',irrData='linearCaModelMod')
-synU.generateVenFig('VenanceSmult6',modelV='m')
+synU.generateVenFig('VenanceSmult8',modelV='m')
+#synU.generateVenFig('VenanceSmult7',modelV='m')
 #generateAllFigs(s13,'solutionsStoch13_')
 #generateAllFigs(s14,'solutionsStoch14_')
 

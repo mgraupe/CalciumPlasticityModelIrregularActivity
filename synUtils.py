@@ -5,20 +5,21 @@ import matplotlib.gridspec as gridspec
 import os
 import time
 
-from timeAboveThreshold import *
+from timeAboveThreshold import timeAboveThreshold
+from synapticChange import synapticChange
 import parameter_fit_solutions as pfs
 
 class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
     ###############################################################################
-    def __init__(self, thetaD, thetaP, nonlinear, Npresentations, w0,dataSet='venance',modelV='multiplicative'):
-        self.thetaD  = thetaD
-        self.thetaP  = thetaP
+    def __init__(self, dataSet='venance',modelV='multiplicative'):
+        #self.thetaD  = thetaD
+        #self.thetaP  = thetaP
         # determine eta based on nonlinearity factor and amplitudes
-        self.nonlinear = nonlinear
-        self.Npresentations = Npresentations
-        self.w0 = w0
+        #self.nonlinear = nonlinear
+        #self.Npresentations = Npresentations
+        #self.w0 = w0
         self.modelVersion = modelV
-        
+        self.nonlinear = 1.
         # read in experimental data
         #dataDir = '/home/mgraupe/theobio/network_1/fit_all_models/calcium_nonlinear_python_parameter_search/experimental_data/'
         self.dataDir = 'experimental_data/'
@@ -40,6 +41,7 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
         elif dataSet == 'venance':
             self.stimFrequencies = [1,3,5,10]
             #self.fitWeights = [4.,1.,1.,1.]
+            self.Npresentations = 100
             self.rawData1Hz  = loadtxt(self.dataDir+'STDP_1Hz_100pairings_binned.dat')
             self.rawData3Hz = loadtxt(self.dataDir+'STDP_2.5-3Hz_100pairings_binned.dat')
             self.rawData5Hz = loadtxt(self.dataDir+'STDP_5Hz_100pairings_binned.dat')
@@ -50,151 +52,7 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
             #self.fitData[1] = {'freq':3.,'data':rawData3Hz}
             #self.fitData[2] = {'freq':5.,'data':rawData5Hz}
             #self.fitData[3] = {'freq':10.,'data':rawData10Hz}
-    ##########################################################################################
-    # calculate change for regular spike-pair vs frequency protocol
-    def determineGammaP(self, frequency, deltaT, params):
-        #####
-        tauCa = params[0]
-        self.Cpre = params[1]
-        self.Cpost = params[2]
-        #thetaD = params[3]
-        #thetaP = params[4]
-        gammaD = params[3]
-        #gammaP = params[4]
-        tau = params[4]
-        D = params[5]
 
-        interval    = 1./frequency
-        ####
-        tat = timeAboveThreshold(self.thetaD, self.thetaP, tauCa, self.Cpre, self.Cpost, self.nonlinear)
-        (timeD,timeP) = tat.spikePairFrequencyNonlinear(deltaT-D,frequency)
-        # average potentiation and depression rates
-        self.gammaP =  gammaD*timeD/timeP
-        #GammaD = gammaD*timeD/interval
-
-    ##########################################################################################
-    # calculate change for regular spike-pair vs frequency protocol
-    def calculateChangeInSynapticStrength(self, frequency,deltaT,params):
-        #####
-        tauCa = params[0]
-        self.Cpre = params[1]
-        self.Cpost = params[2]
-        #thetaD = params[3]
-        #thetaP = params[4]
-        gammaD = params[3]
-        gammaP = params[4] #self.gammaP
-        tau = params[5]
-        D = params[6]
-        
-        interval    = 1./frequency
-        ####
-        #print tauCa, self.Cpre, self.Cpost,self.thetaD, self.thetaP, self.nonlinear
-        tat = timeAboveThreshold(tauCa, self.Cpre, self.Cpost,self.thetaD, self.thetaP, nonlinear=self.nonlinear)
-        (timeD,timeP) = tat.spikePairFrequencyNonlinear(deltaT-D,frequency)
-        #print deltaT, frequency, timeD,timeP
-        # average potentiation and depression rates
-        GammaP = gammaP*timeP #/interval
-        GammaD = gammaD*timeD #/interval
-        # rhoBar: average value of rho in the limit of a very long protocol equivalent to the minimum of the quadratic potentia
-        try :
-            rhoBar = GammaP/(GammaP + GammaD)
-        except RuntimeWarning:
-            print(GammaP, GammaD)
-        # tauEff : characteristic time scale of the temporal evolution of the pdf of rho
-        tauEff = tau/(GammaP + GammaD)
-        #
-        # mean value of the synaptic strength right at the end of the stimulation protocol
-        if self.modelVersion == 'multiplicative':
-            #print rhoBar,self.w0,self.Npresentations,interval,tauEff
-            mean         =  rhoBar - (rhoBar- self.w0)*np.exp(-self.Npresentations*interval/tauEff)
-            #print mean, rhoBar, self.w0, self.Npresentations, interval, tauEff
-        elif self.modelVersion == 'additive':
-            mean =  self.w0 + self.Npresentations*interval*(GammaP-GammaD)/tau
-        # change in synaptic strength after/before
-        return (mean/self.w0)
-
-
-
-    #############################################################################################
-    # calculate change for regular spike-pair vs frequency protocol
-    def calculateChangeInSynapticStrengthStochastic(self, frequency,params,DeltaTRange):
-        #####
-        tauCa = params[0]
-        Cpre = params[1]
-        Cpost = params[2]
-        #thetaD = params[3]
-        #thetaP = params[4]
-        gammaD = params[3]
-        gammaP = params[4]
-        tau = params[5]
-        D = params[6]
-        
-        DeltaTStart = DeltaTRange[0]
-        DeltaTEnd = DeltaTRange[1]
-        
-        #deltaTs = linspace(DeltaTStart,DeltaTEnd,101)
-        
-        interval    = 1./frequency
-        ####
-        tat = timeAboveThreshold(self.thetaD, self.thetaP, tauCa, Cpre, Cpost, self.nonlinear)
-        (timeD,timeP) = tat.spikePairStochastic(DeltaTStart-D,DeltaTEnd-D,frequency,self.Npresentations)
-        # average potentiation and depression rates
-        GammaP = gammaP*timeP/interval
-        GammaD = gammaD*timeD/interval
-        # rhoBar: average value of rho in the limit of a very long protocol equivalent to the minimum of the quadratic potentia
-        try :
-            rhoBar = GammaP/(GammaP + GammaD)
-        except RuntimeWarning:
-            print(GammaP, GammaD)
-        # tauEff : characteristic time scale of the temporal evolution of the pdf of rho
-        tauEff = tau/(GammaP + GammaD)
-        #
-        # mean value of the synaptic strength right at the end of the stimulation protocol
-        mean   =  rhoBar - (rhoBar- self.w0)*exp(-self.Npresentations*interval/tauEff)
-        # change in synaptic strength after/before
-        return (mean/self.w0)
-    #############################################################################################
-    # calculate change for regular spike-pair vs frequency protocol
-    def calculateChangeInSynapticStrengthStochasticOld(self, frequency,params,DeltaTRange):
-        #####
-        tauCa = params[0]
-        Cpre = params[1]
-        Cpost = params[2]
-        #thetaD = params[3]
-        #thetaP = params[4]
-        gammaD = params[3]
-        gammaP = params[4]
-        tau = params[5]
-        D = params[6]
-        
-        DeltaTStart = DeltaTRange[0]
-        DeltaTEnd = DeltaTRange[1]
-        
-        deltaTs = linspace(DeltaTStart,DeltaTEnd,101)
-        
-        interval    = 1./frequency
-        ####
-        tat = timeAboveThreshold(self.thetaD, self.thetaP, tauCa, Cpre, Cpost, self.nonlinear)
-        timeDAvg = 0.
-        timePAvg = 0.
-        for i in range(len(deltaTs)):
-            (timeD,timeP) = tat.spikePairFrequencyNonlinear(deltaTs[i]-D,frequency)
-            timeDAvg += timeD/len(deltaTs)
-            timePAvg += timeP/len(deltaTs)
-        GammaP = gammaP*timePAvg/interval
-        GammaD = gammaD*timeDAvg/interval
-        # rhoBar: average value of rho in the limit of a very long protocol equivalent to the minimum of the quadratic potentia
-        try :
-            rhoBar = GammaP/(GammaP + GammaD)
-        except RuntimeWarning:
-            print(GammaP, GammaD)
-        # tauEff : characteristic time scale of the temporal evolution of the pdf of rho
-        tauEff = tau/(GammaP + GammaD)
-        #
-        # mean value of the synaptic strength right at the end of the stimulation protocol
-        mean   =  rhoBar - (rhoBar- self.w0)*exp(-self.Npresentations*interval/tauEff)
-        # change in synaptic strength after/before
-        return (mean/self.w0)
     ################################################################################################
     def generateFig(self, paraOpt, figName = None):
         
@@ -357,6 +215,7 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
     ################################################################################################
     def generateVenFig(self, paraName, figName=None, modelV = None):
 
+        self.w0 = 0.5
         exec('paraOpt = pfs.%s' % paraName)
         #synapticChange.choseParameterSet(analyticalLocation + 'parameters.par', fromFile=True)
         stdp1Hz = np.loadtxt(self.dataDir + 'STDP_1Hz_100pairings.dat')
@@ -374,6 +233,8 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
             irrData = True
             modelNew = np.load(self.figDir+'irregularSpikePairs_vs_deltaT_differentFreqs_%s.npy' % paraName)
             modelNewReg = np.load(self.figDir+'regularSpikePairs_vs_deltaT_differentFreqs_%s.npy' % paraName)
+        else:
+            irrData = False
         #Npairs = 100.
         #tat = timeAboveThreshold(synapticChange.thetaD, synapticChange.thetaP, synapticChange.tauCa, synapticChange.Cpre * CaTest / Ca0, synapticChange.Cpost * CaTest / Ca0)
 
@@ -397,51 +258,28 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
         deltaT = linspace(deltaTstart, deltaTend, steps)
         synChange = zeros((len(deltaT), len(self.stimFrequencies)+1))
 
+        sChange = synapticChange('Venance') #,threshold=par.thetaP)
+        sChange.choseParameterSet(paraName, source='fromFile')
+        # initiate class to calculate fraction of time above threshold
+        tat = timeAboveThreshold(sChange.tauCa, sChange.Cpre, sChange.Cpost, sChange.thetaD, sChange.thetaP, nonlinear=1.)
+        print 'Parameters :', sChange.tauCa, sChange.Cpre, sChange.Cpost, sChange.thetaD, sChange.thetaP
+
         for n in range(len(self.stimFrequencies)):
             #frequency = stimFreq[n]
             interval = 1. / self.stimFrequencies[n]
             for i in range(len(deltaT)):
+                (alphaD, alphaP) = tat.spikePairFrequencyNonlinear(deltaT[i] - sChange.D, self.stimFrequencies[n])
+                # print dT, preRate, alphaD, alphaP
+                sChange.changeInSynapticStrength(self.Npresentations / self.stimFrequencies[n], self.w0, alphaD, alphaP)
+
                 if n == 0:
                     synChange[i, 0] = deltaT[i]
                 #  calculateChangeInSynapticStrength(self, frequency,deltaT,params):
                 #sol = [0.0667179, 1.45248, 0.405039, 2.0, 15.973, 16.3457, -0.00156591]
-                synChange[i, n+1] = self.calculateChangeInSynapticStrength(self.stimFrequencies[n], deltaT[i], paraOpt[0])
+                synChange[i, n+1] = sChange.mean/self.w0
                 #print self.stimFrequencies[n], deltaT[i], synChange[i, n+1]
             #
         #pdb.set_trace()
-
-        # ###########################################################
-        # # change as function of frequency for four different delta t values
-        #
-        # freqStart = 0.1
-        # freqEnd   = 10.
-        # freqSteps = 2001
-        #
-        # frequencies = linspace(freqStart,freqEnd,freqSteps)
-        # synChangeFreq = zeros((len(frequencies),5))
-        #
-        # deltaT = 0.05
-        # for n in range(len(frequencies)):
-        #     synChangeFreq[n,0] = frequencies[n]
-        #     synChangeFreq[n,1] = calculateSnapticeChange(deltaT,frequencies[n],1./frequencies[n],tat)
-        # #
-        # deltaT = 0.1
-        # for n in range(len(frequencies)):
-        #     synChangeFreq[n,2] = calculateSnapticeChange(deltaT,frequencies[n],1./frequencies[n],tat)
-        # #
-        # deltaT = 0.15
-        # for n in range(len(frequencies)):
-        #     synChangeFreq[n,3] = calculateSnapticeChange(deltaT,frequencies[n],1./frequencies[n],tat)
-        # #
-        # deltaT = 0.2
-        # for n in range(len(frequencies)):
-        #     synChangeFreq[n,4] = calculateSnapticeChange(deltaT,frequencies[n],1./frequencies[n],tat)
-
-        # pdb.set_trace()
-        # mask = (synChange[:,0]*1000.>15.) & (synChange[:,0]*1000.<20.)
-        # amountOfChange[dsN,0] = synapticChange.tauCa
-        # amountOfChange[dsN,1] = mean(synChange[:,1][mask]*100.)
-
         #######################################################
         # plot data
         fig_width = 10  # width in inches
@@ -491,7 +329,7 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
         gs.update(wspace=0.2, hspace=0.35)
 
         fig.suptitle(
-            r'STDP data, %s, $C_{\rm pre} = %s$, $C_{\rm post} = %s$, (RMS = %s)' % (self.modelVersion,np.round(self.Cpre,4), np.round(self.Cpost,4), np.round(paraOpt[1],4)),
+            r'STDP data, %s, $C_{\rm pre} = %s$, $C_{\rm post} = %s$, (RMS = %s)' % (self.modelVersion,np.round(sChange.Cpre,4), np.round(sChange.Cpost,4), np.round(paraOpt[1],4)),
             fontsize=14)
         # possibly change outer margins of the figure
         plt.subplots_adjust(left=0.14, right=0.92, top=0.92, bottom=0.08)
@@ -699,7 +537,7 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
         ax3.set_xlim(-300, 300)
         # legends and labels
         # plt.legend(loc=1,frameon=False)
-        ax3.text(100,250,'%s\n%s\n%s\n%s\n%s\n%s\n%s' % (paraOpt[0][0],paraOpt[0][1],paraOpt[0][2],paraOpt[0][3],paraOpt[0][4],paraOpt[0][5],paraOpt[0][6]),fontsize=9)
+        ax3.text(100,230,'%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s' % (paraOpt[0][0],paraOpt[0][1],paraOpt[0][2],sChange.thetaD,sChange.thetaP,paraOpt[0][3],paraOpt[0][4],paraOpt[0][5],paraOpt[0][6]),fontsize=9)
 
         if not irrData :
             plt.xlabel(r'$\Delta t$ (ms)')

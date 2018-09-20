@@ -3,8 +3,8 @@ import math
 import sys
 import pdb
 
-import parameter_fit_solutions
-            
+import parameter_fit_solutions as pfs
+import params as par
 
 ##########################################################
 # Parameter sets for the calcium and synaptic weight dynamics
@@ -13,13 +13,13 @@ class synapticChange():
         class to calculate the change in synaptic strenght 
     '''
     ###############################################################################
-    def __init__(self, plasticityCase,fromFile=False,nonlinear=1.):
+    def __init__(self, plasticityCase): #,source=False,threshold=None,parameter=None):
         # read in experimental data
         dataDir = 'experimental_data/'
 
         # chose parameters from predefined set or from file
-        self.choseParameterSet(plasticityCase, fromFile)
-
+        #self.choseParameterSet(plasticityCase, source, threshold,params=parameter)
+        #print self.tauCa,self.Cpre, self.Cpost
         self.Npairs = 5
 
         if plasticityCase == 'stpJesperCaModel':
@@ -51,7 +51,15 @@ class synapticChange():
             jesperReg = np.loadtxt(dataDir + 'sjoestroem_regular_all.dat')
             jesperStoch = np.loadtxt(dataDir + 'sjoestroem_stochastic.dat')
 
-
+        elif plasticityCase == 'Venance':
+            self.stimFrequencies = [1,3,5,10]
+            self.Npresentations = 100
+            #self.fitWeights = [4.,1.,1.,1.]
+            self.dataDir = 'experimental_data/'
+            self.rawData1Hz  = np.loadtxt(self.dataDir+'STDP_1Hz_100pairings_binned.dat')
+            self.rawData3Hz = np.loadtxt(self.dataDir+'STDP_2.5-3Hz_100pairings_binned.dat')
+            self.rawData5Hz = np.loadtxt(self.dataDir+'STDP_5Hz_100pairings_binned.dat')
+            self.rawData10Hz = np.loadtxt(self.dataDir+'STDP_10Hz_100pairings_binned.dat')
 
         # self.xDataReg = jesperReg[:,[0,1]]
         # self.xDataReg[:,1] = self.xDataReg[:,1]/1000. # everything in sec
@@ -96,8 +104,8 @@ class synapticChange():
         self.tauEff = self.tau/(self.GammaP + self.GammaD)
         #
         # UP and the DOWN transition probabilities
-        self.UP   = self.transitionProbability(T_total,0.,self.rhoBar,self.sigmaRhoSquared,self.tauEff)
-        self.DOWN = self.transitionProbability(T_total,1.,self.rhoBar,self.sigmaRhoSquared,self.tauEff)
+        #self.UP   = self.transitionProbability(T_total,0.,self.rhoBar,self.sigmaRhoSquared,self.tauEff)
+        #self.DOWN = self.transitionProbability(T_total,1.,self.rhoBar,self.sigmaRhoSquared,self.tauEff)
         
         # mean value of the synaptic strength right at the end of the stimulation protocol
         self.meanUP   =  self.rhoBar - (self.rhoBar - 0.)*np.exp(-T_total/self.tauEff)
@@ -113,14 +121,14 @@ class synapticChange():
         self.mean     =  self.rhoBar - (self.rhoBar - rho0)*np.exp(-T_total/self.tauEff)
         
         # change in synaptic strength after/before
-        self.synChange = ((self.beta*(1.-self.UP) + (1.-self.beta)*self.DOWN) + (self.beta*self.UP+ (1.-self.beta)*(1.-self.DOWN))*self.b)/(self.beta + (1.-self.beta)*self.b)
+        #self.synChange = ((self.beta*(1.-self.UP) + (1.-self.beta)*self.DOWN) + (self.beta*self.UP+ (1.-self.beta)*(1.-self.DOWN))*self.b)/(self.beta + (1.-self.beta)*self.b)
         
         #synChange = synapticChange.changeSynapticStrength(synapticChange.beta,UP,DOWN,synapticChange.b)
         
         
     ##########################################################
     # chose parameter set or read file
-    def choseParameterSet(self, plasticityCase,fromFile=False):
+    def choseParameterSet(self, plasticityCase,source=False,params=None):
         if plasticityCase == 'DP':
             print 'DP'
             self.tauCa = 0.02 # in sec
@@ -257,8 +265,8 @@ class synapticChange():
             self.beta    = 0.5
             self.b       = 5.40988
         
-        elif fromFile:
-            exec('sol = parameter_fit_solutions.%s' % plasticityCase)
+        elif source == 'fromFile':
+            exec('sol = pfs.%s' % plasticityCase)
             
             if len(sol[0]) == 7 :
                 #print sol
@@ -266,7 +274,7 @@ class synapticChange():
                 self.Cpre  = sol[0][1]
                 self.Cpost = sol[0][2]
                 self.thetaD = 1.
-                self.thetaP = 1.3
+                self.thetaP = par.thetaP
                 self.gammaD = sol[0][3]
                 self.gammaP = sol[0][4]
                 self.sigma  = 1.
@@ -291,6 +299,39 @@ class synapticChange():
                 self.beta   = 0.5
                 self.b      = 2.
             self.mse= sol[1]
+        # required for the data fitting routine
+        elif source == 'fromDictionary':
+            if len(params) == 7 :
+                #print sol
+                self.tauCa = params[0]
+                self.Cpre  = params[1]
+                self.Cpost = params[2]
+                self.thetaD = 1.
+                self.thetaP = par.thetaP
+                self.gammaD = params[3]
+                self.gammaP = params[4]
+                self.sigma  = 1.
+                self.tau    = params[5]
+                self.rhoStar= 0.5
+                self.D      = params[6]
+                self.beta   = 0.5
+                self.b      = 2.
+            elif len(sol[0]) == 8:
+                #print sol
+                self.tauCa = params[0]
+                self.Cpre  = params[1]
+                self.Cpost = params[2]
+                self.thetaD = 1.
+                self.thetaP = params[3]
+                self.gammaD = params[4]
+                self.gammaP = params[5]
+                self.sigma  = 1.
+                self.tau    = params[6]
+                self.rhoStar= 0.5
+                self.D      = params[7]
+                self.beta   = 0.5
+                self.b      = 2.
+            #self.mse= sol[1]
         else:
             print 'Choose from one of the available parameter sets!'
             sys.exit(1)
