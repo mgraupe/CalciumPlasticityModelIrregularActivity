@@ -9,7 +9,7 @@ fitWeights = [2.,1.,1.,1.]
 
 # fitting loops 
 Nruns = 100
-threshold = 300. # lower threshold to include parameter set
+threshold = 3. # lower threshold to include parameter set
 
 # smoothnessWeight = 1.
 

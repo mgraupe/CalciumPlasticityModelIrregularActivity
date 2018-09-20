@@ -1,8 +1,9 @@
-import scipy as sci
+#import scipy as sci
 import numpy as np
 import pdb
 import sys
 import commands
+#import random as rrr
 
 class timeAboveThreshold():
         ''' 
@@ -401,7 +402,7 @@ class timeAboveThreshold():
                     # construction of the spike train
                     #tStart = 0.1 # start time at 100 ms
                     
-                    random.seed(7)
+                    rrr.seed(7)
                     
                     tPre = []
                     tPostCorr = []
@@ -411,11 +412,11 @@ class timeAboveThreshold():
                     tPostInd.append(0)
                     
                     for i in range(10000):
-                        tPre.append(tPre[-1] + random.exponential(1./preRate))
-                        if rand()<ppp:
+                        tPre.append(tPre[-1] + np.random.exponential(1./preRate))
+                        if np.random.rand()<ppp:
                             tPostCorr.append(tPre[-1]+deltaT)
                         if (postRate-ppp*preRate) > 0.:
-                            tPostInd.append(tPostInd[-1] + random.exponential(1./(postRate-ppp*preRate)))
+                            tPostInd.append(tPostInd[-1] + np.random.exponential(1./(postRate-ppp*preRate)))
                     
                     
                     tPost = tPostCorr + tPostInd[1:]
@@ -452,7 +453,7 @@ class timeAboveThreshold():
             # construction of the spike train
             # tStart = 0.1 # start time at 100 ms
 
-            random.seed(7)
+            np.random.seed(7)
 
             tPre = []
             tPostCorr = []
@@ -462,21 +463,21 @@ class timeAboveThreshold():
             tPostInd.append(0)
 
             for i in range(2000):
-                tPre.append(tPre[-1] + random.exponential(1. / preRate))
-                if rand() < ppp:
+                tPre.append(tPre[-1] + np.random.exponential(1. / preRate))
+                if np.random.rand() < ppp:
                     tPostCorr.append(tPre[-1] + deltaT)
                 if (postRate - ppp * preRate) > 0.:
-                    tPostInd.append(tPostInd[-1] + random.exponential(1. / (postRate - ppp * preRate)))
+                    tPostInd.append(tPostInd[-1] + np.random.exponential(1. / (postRate - ppp * preRate)))
 
             tPost = tPostCorr + tPostInd[1:]
 
             tPostSorted = sorted(tPost, key=lambda tPost: tPost)
 
-            tAll = zeros((len(tPre[1:]) + len(tPostSorted), 3))
+            tAll = np.zeros((len(tPre[1:]) + len(tPostSorted), 3))
 
-            tAll[:, 0] = hstack((tPre[1:], tPostSorted))
-            tAll[:, 1] = hstack((zeros(len(tPre[1:])), ones(len(tPostSorted))))
-            tAll[:, 2] = hstack((repeat(self.Cpre, len(tPre[1:])), repeat(self.Cpost, len(tPostSorted))))
+            tAll[:, 0] = np.hstack((tPre[1:], tPostSorted))
+            tAll[:, 1] = np.hstack((np.zeros(len(tPre[1:])), np.ones(len(tPostSorted))))
+            tAll[:, 2] = np.hstack((np.repeat(self.Cpre, len(tPre[1:])), np.repeat(self.Cpost, len(tPostSorted))))
 
             tList = tAll.tolist()
             tListSorted = sorted(tList, key=lambda tList: tList[0])
@@ -510,7 +511,7 @@ class timeAboveThreshold():
 
                 for i in range(50000):
                         tPre.append(tPre[-1] + random.exponential(1. / preRate))
-                        if rand() < ppp:
+                        if np.random.rand() < ppp:
                                 tPostCorr.append(tPre[-1] + deltaT)
                         if (postRate - ppp * preRate) > 0.:
                                 tPostInd.append(
@@ -575,7 +576,7 @@ class timeAboveThreshold():
 
                 for i in range(NpreSpikes):
                         tPre.append(tPre[-1] + random.exponential(1. / preRate))
-                        if rand() < ppp:
+                        if np.random.rand() < ppp:
                                 tPostCorr.append(tPre[-1] + deltaT)
                         if (postRate - ppp * preRate) > 0.:
                                 tPostInd.append(
@@ -592,8 +593,8 @@ class timeAboveThreshold():
                 timesAbove = zeros((NrepetitionsStoch, 2))
                 #tP = 0.
                 for r in range(NrepetitionsStoch):
-                        Vesicles = ones((len(tPre), Nves))
-                        Release = random.rand(len(tPre), Nves) < pRelease
+                        Vesicles = np.ones((len(tPre), Nves))
+                        Release = np.random.rand(len(tPre), Nves) < pRelease
                         #VesTimes = transpose(np.tile(tPre, (Nves, 1)))
                         for i in range(len(tPre)):
                                 nRel = sum(Release[i])
@@ -648,7 +649,7 @@ class timeAboveThreshold():
 
                 for i in range(10000):
                         tPre.append(tPre[-1] + random.exponential(1. / preRate))
-                        if rand() < ppp:
+                        if np.random.rand() < ppp:
                                 tPostCorr.append(tPre[-1] + deltaT)
                         if (postRate - ppp * preRate) > 0.:
                                 tPostInd.append(
@@ -709,8 +710,8 @@ class timeAboveThreshold():
                 tD = 0.
                 tP = 0.
                 random.seed(7)
-                tPre = arange(Npres)/freq + tStart + (DeltaTStart + rand(Npres)*(DeltaTEnd-DeltaTStart))
-                tPost = tPre +  (DeltaTStart + rand(Npres)*(DeltaTEnd-DeltaTStart))
+                tPre = arange(Npres)/freq + tStart + (DeltaTStart + np.random.rand(Npres)*(DeltaTEnd-DeltaTStart))
+                tPost = tPre +  (DeltaTStart + np.random.rand(Npres)*(DeltaTEnd-DeltaTStart))
                 
                 tAll = zeros((2*Npres,3))
                 
@@ -788,8 +789,8 @@ class timeAboveThreshold():
                 timesAbove = zeros((NrepetitionsStoch, 2))
                 # tP = 0.
                 for r in range(NrepetitionsStoch):
-                        Vesicles = ones((len(tPre), Nves))
-                        Release = random.rand(len(tPre), Nves) < pRelease
+                        Vesicles = np.ones((len(tPre), Nves))
+                        Release = np.random.rand(len(tPre), Nves) < pRelease
                         # VesTimes = transpose(np.tile(tPre, (Nves, 1)))
                         for i in range(len(tPre)):
                                 nRel = sum(Release[i])

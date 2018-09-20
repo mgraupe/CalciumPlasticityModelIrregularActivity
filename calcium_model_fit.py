@@ -1,10 +1,8 @@
 import numpy as np
 from scipy.optimize import fmin as simplex
-import os
 import pickle
-import random as rrr
 import time
-#from synUtils import *
+
 import params as par
 
 from timeAboveThreshold import timeAboveThreshold
@@ -78,7 +76,7 @@ def errFunc(params, stimFrequencies, fitWeights, fitData1Hz,fitData3Hz,fitData5H
 def initialGuess(lim):
     nParams = len(lim)
     params = np.zeros(nParams)
-    rrr.seed(np.int64((time.time()-base)*100))
+    np.random.seed(np.int64((time.time()-base)*100))
     randTemp = np.random.rand(nParams)
     n = 0
     for k in lim:

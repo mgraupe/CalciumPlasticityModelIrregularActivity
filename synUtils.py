@@ -19,7 +19,7 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
         #self.Npresentations = Npresentations
         #self.w0 = w0
         self.modelVersion = modelV
-        self.nonlinear = 1.
+        #self.nonlinear = 1.
         # read in experimental data
         #dataDir = '/home/mgraupe/theobio/network_1/fit_all_models/calcium_nonlinear_python_parameter_search/experimental_data/'
         self.dataDir = 'experimental_data/'
@@ -255,22 +255,21 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
                 print 'problem in model choice'
                 sys.exit(1)
 
-        deltaT = linspace(deltaTstart, deltaTend, steps)
-        synChange = zeros((len(deltaT), len(self.stimFrequencies)+1))
-
         sChange = synapticChange('Venance') #,threshold=par.thetaP)
         sChange.choseParameterSet(paraName, source='fromFile')
         # initiate class to calculate fraction of time above threshold
-        tat = timeAboveThreshold(sChange.tauCa, sChange.Cpre, sChange.Cpost, sChange.thetaD, sChange.thetaP, nonlinear=1.)
+        tat = timeAboveThreshold(sChange.tauCa, sChange.Cpre, sChange.Cpost, sChange.thetaD, sChange.thetaP)
         print 'Parameters :', sChange.tauCa, sChange.Cpre, sChange.Cpost, sChange.thetaD, sChange.thetaP
 
-        for n in range(len(self.stimFrequencies)):
+        deltaT = linspace(deltaTstart, deltaTend, steps)
+        synChange = zeros((len(deltaT), len(sChange.stimFrequencies) + 1))
+        for n in range(len(sChange.stimFrequencies)):
             #frequency = stimFreq[n]
-            interval = 1. / self.stimFrequencies[n]
+            interval = 1. / sChange.stimFrequencies[n]
             for i in range(len(deltaT)):
-                (alphaD, alphaP) = tat.spikePairFrequencyNonlinear(deltaT[i] - sChange.D, self.stimFrequencies[n])
+                (alphaD, alphaP) = tat.spikePairFrequencyNonlinear(deltaT[i] - sChange.D, sChange.stimFrequencies[n])
                 # print dT, preRate, alphaD, alphaP
-                sChange.changeInSynapticStrength(self.Npresentations / self.stimFrequencies[n], self.w0, alphaD, alphaP)
+                sChange.changeInSynapticStrength(sChange.Npresentations / sChange.stimFrequencies[n], self.w0, alphaD, alphaP)
 
                 if n == 0:
                     synChange[i, 0] = deltaT[i]
@@ -537,7 +536,10 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
         ax3.set_xlim(-300, 300)
         # legends and labels
         # plt.legend(loc=1,frameon=False)
-        ax3.text(100,230,'%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s' % (paraOpt[0][0],paraOpt[0][1],paraOpt[0][2],sChange.thetaD,sChange.thetaP,paraOpt[0][3],paraOpt[0][4],paraOpt[0][5],paraOpt[0][6]),fontsize=9)
+        if len(paraOpt[0])==7:
+            ax3.text(100,230,'%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s' % (paraOpt[0][0],paraOpt[0][1],paraOpt[0][2],sChange.thetaD,sChange.thetaP,paraOpt[0][3],paraOpt[0][4],paraOpt[0][5],paraOpt[0][6]),fontsize=9)
+        elif len(paraOpt[0])==8:
+            ax3.text(100,230,'%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s' % (paraOpt[0][0],paraOpt[0][1],paraOpt[0][2],sChange.thetaD,paraOpt[0][3],paraOpt[0][4],paraOpt[0][5],paraOpt[0][6],paraOpt[0][7]),fontsize=9)
 
         if not irrData :
             plt.xlabel(r'$\Delta t$ (ms)')
