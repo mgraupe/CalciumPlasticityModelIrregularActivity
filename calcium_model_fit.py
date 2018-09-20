@@ -20,20 +20,19 @@ import params as par
 def errFunc(params, stimFrequencies, fitWeights, fitData1Hz,fitData3Hz,fitData5Hz,fitData10Hz):
     # mse for data vs. model
     chi2 = 0.
-    chi3 = 0.
     for n in range(len(stimFrequencies)):
         exec('dataSet = fitData%sHz' % stimFrequencies[n])
         # print stimFrequencies[n], dataSet
         if fitWeights[n]:
             for i in range(len(dataSet)):
-                    yModel = synU.calculateChangeInSynapticStrength(float(stimFrequencies[n]),dataSet[i,0]/1000.,params)
-                    #
-                    #if stimFrequencies[n] == 1:
-                    #    chi2 += fitWeights[n] * ((dataSet[i, 1] / 100. - yModel) ** 2) * (dataSet[i, 2])
-                    #    #print dataSet[i,0]/1000., yModel, dataSet[i,1]/100., dataSet[i,2]
-                    #else:
-                    chi2+= fitWeights[n]*((dataSet[i,1]/100. - yModel)**2) #*(dataSet[i,2])
-                    #chi3+= ((dataSet[i,1]/100. - 1.)**2)/((dataSet[i,2]/100.)**2)
+                yModel = synU.calculateChangeInSynapticStrength(float(stimFrequencies[n]),dataSet[i,0]/1000.,params)
+                #
+                #if stimFrequencies[n] == 1:
+                #    chi2 += fitWeights[n] * ((dataSet[i, 1] / 100. - yModel) ** 2) * (dataSet[i, 2])
+                #    #print dataSet[i,0]/1000., yModel, dataSet[i,1]/100., dataSet[i,2]
+                #else:
+                chi2+= fitWeights[n]*((dataSet[i,1]/100. - yModel)**2) #*(dataSet[i,2])
+                #chi3+= ((dataSet[i,1]/100. - 1.)**2)/((dataSet[i,2]/100.)**2)
 
 
     # add smoothness constraint

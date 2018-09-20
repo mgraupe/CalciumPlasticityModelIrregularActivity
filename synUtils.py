@@ -6,6 +6,7 @@ import os
 import time
 
 from timeAboveThreshold import *
+import parameter_fit_solutions as pfs
 
 class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
     ###############################################################################
@@ -21,6 +22,7 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
         # read in experimental data
         #dataDir = '/home/mgraupe/theobio/network_1/fit_all_models/calcium_nonlinear_python_parameter_search/experimental_data/'
         self.dataDir = 'experimental_data/'
+        self.figDir = 'FigsSimResults/'
 
         if dataSet == 'sjoestroem':
             jesperReg = loadtxt(self.dataDir+'sjoestroem_regular_all.dat')
@@ -86,11 +88,13 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
         
         interval    = 1./frequency
         ####
-        tat = timeAboveThreshold(self.thetaD, self.thetaP, tauCa, self.Cpre, self.Cpost, self.nonlinear)
+        #print tauCa, self.Cpre, self.Cpost,self.thetaD, self.thetaP, self.nonlinear
+        tat = timeAboveThreshold(tauCa, self.Cpre, self.Cpost,self.thetaD, self.thetaP, nonlinear=self.nonlinear)
         (timeD,timeP) = tat.spikePairFrequencyNonlinear(deltaT-D,frequency)
+        #print deltaT, frequency, timeD,timeP
         # average potentiation and depression rates
-        GammaP = gammaP*timeP/interval
-        GammaD = gammaD*timeD/interval
+        GammaP = gammaP*timeP #/interval
+        GammaD = gammaD*timeD #/interval
         # rhoBar: average value of rho in the limit of a very long protocol equivalent to the minimum of the quadratic potentia
         try :
             rhoBar = GammaP/(GammaP + GammaD)
@@ -108,7 +112,9 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
             mean =  self.w0 + self.Npresentations*interval*(GammaP-GammaD)/tau
         # change in synaptic strength after/before
         return (mean/self.w0)
-    
+
+
+
     #############################################################################################
     # calculate change for regular spike-pair vs frequency protocol
     def calculateChangeInSynapticStrengthStochastic(self, frequency,params,DeltaTRange):
@@ -341,16 +347,17 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
         else:
             fname = 'synChangeCa-ModelFit' #os.path.basename(__file__)
 
-        savefig(fname+'.png')
-        savefig(fname+'.pdf')
+        savefig(self.figDir + fname+'.png')
+        savefig(self.figDir + fname+'.pdf')
         # close figures to avoid out of memory
         if figName:
             plt.close(fig)
             #fig.clf()
 
     ################################################################################################
-    def generateVenFig(self, paraOpt, figName=None):
+    def generateVenFig(self, paraName, figName=None, modelV = None):
 
+        exec('paraOpt = pfs.%s' % paraName)
         #synapticChange.choseParameterSet(analyticalLocation + 'parameters.par', fromFile=True)
         stdp1Hz = np.loadtxt(self.dataDir + 'STDP_1Hz_100pairings.dat')
         stdp3Hz = np.loadtxt(self.dataDir + 'STDP_2.5-3Hz_100pairings.dat')
@@ -363,6 +370,10 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
         stdp10binned = np.copy(self.rawData10Hz)
         ##########################################################
         # generate analytical results for regular pairs
+        if os.path.isfile(self.figDir+'irregularSpikePairs_vs_deltaT_differentFreqs_%s.npy' % paraName):
+            irrData = True
+            modelNew = np.load(self.figDir+'irregularSpikePairs_vs_deltaT_differentFreqs_%s.npy' % paraName)
+            modelNewReg = np.load(self.figDir+'regularSpikePairs_vs_deltaT_differentFreqs_%s.npy' % paraName)
         #Npairs = 100.
         #tat = timeAboveThreshold(synapticChange.thetaD, synapticChange.thetaP, synapticChange.tauCa, synapticChange.Cpre * CaTest / Ca0, synapticChange.Cpost * CaTest / Ca0)
 
@@ -373,6 +384,15 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
         steps = 3001.
 
         #stimFreq = [1,3,5,10]
+
+        if modelV is not None:
+            if modelV == 'a':
+                self.modelVersion = 'additive'
+            elif modelV == 'm':
+                self.modelVersion = 'multiplicative'
+            else:
+                print 'problem in model choice'
+                sys.exit(1)
 
         deltaT = linspace(deltaTstart, deltaTend, steps)
         synChange = zeros((len(deltaT), len(self.stimFrequencies)+1))
@@ -386,6 +406,7 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
                 #  calculateChangeInSynapticStrength(self, frequency,deltaT,params):
                 #sol = [0.0667179, 1.45248, 0.405039, 2.0, 15.973, 16.3457, -0.00156591]
                 synChange[i, n+1] = self.calculateChangeInSynapticStrength(self.stimFrequencies[n], deltaT[i], paraOpt[0])
+                #print self.stimFrequencies[n], deltaT[i], synChange[i, n+1]
             #
         #pdb.set_trace()
 
@@ -497,6 +518,9 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
         ax0.plot(stdp1Hz[:, 0], stdp1Hz[:, 1], 'o', ms=4, c='0.5', markeredgecolor='0.5')
         ax0.errorbar(stdp1binned[:, 0], stdp1binned[:, 1], yerr=stdp1binned[:, 2], fmt='o-', markeredgecolor='C0')
         ax0.plot(synChange[:, 0] * 1000., synChange[:, 1] * 100.)
+        if irrData:
+            ax0.plot(modelNew[:,0]*1000.,modelNew[:,10]*100./0.5)
+            ax0.plot(modelNewReg[:, 0] * 1000., modelNewReg[:, 10] * 100. / 0.5,ls='--')
         # if oldNew == 'old':
         #    #print len(-model1Hz[:,3]+2.*synapticChange.D*1000.), -model1Hz[:,3]+2.*synapticChange.D*1000.
         #    ax0.plot(-model1Hz[:,3]+2.*synapticChange.D*1000.,model1Hz[:,18]*100.)
@@ -537,7 +561,10 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
         ax_inset.plot(stdp1Hz[:, 0], stdp1Hz[:, 1], 'o', ms=4, c='0.5', markeredgecolor='0.5')
         ax_inset.errorbar(stdp1binned[:, 0], stdp1binned[:, 1], yerr=stdp1binned[:, 2], fmt='o-', markeredgecolor='C0')
         ax_inset.plot(synChange[:, 0] * 1000., synChange[:, 1] * 100.)
-        # if oldNew == 'old':
+        if irrData:
+            ax_inset.plot(modelNew[:,0]*1000.,modelNew[:,10]*100./0.5)
+
+            # if oldNew == 'old':
         #    ax_inset.plot(-model1Hz[:,3]+2.*synapticChange.D*1000.,model1Hz[:,18]*100.)
         # else:
         #ax_inset.plot(modelNew[:, 0] * 1000., modelNew[:, 1] * 100.)
@@ -573,9 +600,12 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
         # ax1.axvline(x=-250,ls='--',color='turquoise',lw=2)
         # ax1.axvline(x=250,ls='--',color='turquoise',lw=2)
         ax1.plot(stdp3Hz[:, 0], stdp3Hz[:, 1], 'o', ms=4, c='0.5', markeredgecolor='0.5')
-        ax1.errorbar(stdp3binned[:, 0], stdp3binned[:, 1], yerr=stdp3binned[:, 2], fmt='o-', markeredgecolor='C0', label=r'exp. data: reg. pairs, Ca$_{\rm ext} = 2$ mM')
-        ax1.plot(synChange[:, 0] * 1000., synChange[:, 2] * 100., label=r'model fit: reg. pairs, Ca$_{\rm ext} = 2$ mM')
-        # if 'old'==oldNew:
+        ax1.errorbar(stdp3binned[:, 0], stdp3binned[:, 1], yerr=stdp3binned[:, 2], fmt='o-', markeredgecolor='C0', label=r'exp. data: reg. pairs')
+        ax1.plot(synChange[:, 0] * 1000., synChange[:, 2] * 100., label=r'model fit: reg. pairs')
+        if irrData:
+            ax1.plot(modelNew[:,0]*1000.,modelNew[:,11]*100./0.5, label=r'model pred.: irregular pairs')
+            ax1.plot(modelNewReg[:, 0] * 1000., modelNewReg[:, 11] * 100. / 0.5,ls='--')
+            # if 'old'==oldNew:
         # ax1.plot(-model3Hz[:,3]+2.*synapticChange.D*1000.,model3Hz[:,18]*100.)
         # else:
         #ax1.plot(modelNew[:, 0] * 1000., modelNew[:, 2] * 100., label=r'model prediction: irr. pairs, Ca$_{\rm ext} = 2$ mM')
@@ -613,7 +643,10 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
         ax2.plot(stdp5Hz[:, 0], stdp5Hz[:, 1], 'o', ms=4, c='0.5', markeredgecolor='0.5')
         ax2.errorbar(stdp5binned[:, 0], stdp5binned[:, 1], yerr=stdp5binned[:, 2], fmt='o-', markeredgecolor='C0')
         ax2.plot(synChange[:, 0] * 1000., synChange[:, 3] * 100.)
-        # if 'old'==oldNew:
+        if irrData:
+            ax2.plot(modelNew[:,0]*1000.,modelNew[:,12]*100./0.5)
+            ax2.plot(modelNewReg[:, 0] * 1000., modelNewReg[:, 12] * 100. / 0.5,ls='--')
+            # if 'old'==oldNew:
         # ax2.plot(-model5Hz[:,3]+2.*synapticChange.D*1000.,model5Hz[:,18]*100.)
         # else:
         #ax2.plot(modelNew[:, 0] * 1000., modelNew[:, 3] * 100.)
@@ -646,7 +679,10 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
         ax3.plot(stdp10Hz[:, 0], stdp10Hz[:, 1], 'o', ms=4, c='0.5', markeredgecolor='0.5', clip_on=False)
         ax3.errorbar(stdp10binned[:, 0], stdp10binned[:, 1], yerr=stdp10binned[:, 2], fmt='o-', markeredgecolor='C0')
         ax3.plot(synChange[:, 0] * 1000., synChange[:, 4] * 100.)
-        # if 'old'==oldNew:
+        if irrData:
+            ax3.plot(modelNew[:,0]*1000.,modelNew[:,13]*100./0.5)
+            ax3.plot(modelNewReg[:, 0] * 1000., modelNewReg[:, 13] * 100. / 0.5,ls='--')
+            # if 'old'==oldNew:
         # ax3.plot(-model10Hz[:,3]+2.*synapticChange.D*1000.,model10Hz[:,18]*100.)
         # else:
         #ax3.plot(modelNew[:, 0] * 1000., modelNew[:, 4] * 100.)
@@ -663,15 +699,17 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
         ax3.set_xlim(-300, 300)
         # legends and labels
         # plt.legend(loc=1,frameon=False)
+        ax3.text(100,250,'%s\n%s\n%s\n%s\n%s\n%s\n%s' % (paraOpt[0][0],paraOpt[0][1],paraOpt[0][2],paraOpt[0][3],paraOpt[0][4],paraOpt[0][5],paraOpt[0][6]),fontsize=9)
 
-        plt.xlabel(r'$\Delta t$ (ms)')
+        if not irrData :
+            plt.xlabel(r'$\Delta t$ (ms)')
         # plt.ylabel('change in synaptic strength')
 
         # third sub-plot #######################################################
         ax4 = plt.subplot(gs[4])
 
         # title
-        ax4.set_title('all frequency solutions')
+        ax4.set_title('regular : all frequency solutions')
 
         # diplay of data
         ax4.axhline(y=100, ls='--', color='0.7', lw=2)
@@ -704,12 +742,54 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
         plt.xlabel(r'$\Delta t$ (ms)')
         plt.ylabel('change in synaptic strength')
 
+        # third sub-plot #######################################################
+        if irrData :
+            ax5 = plt.subplot(gs[5])
 
-        ax4.text(400,100,'%s\n%s\n%s\n%s\n%s\n%s\n%s' % (paraOpt[0][0],paraOpt[0][1],paraOpt[0][2],paraOpt[0][3],paraOpt[0][4],paraOpt[0][5],paraOpt[0][6]))
+            # title
+            ax5.set_title('irregular : all frequency solutions')
+
+            # diplay of data
+            ax5.axhline(y=100, ls='--', color='0.7', lw=2)
+            ax5.axvline(x=0, ls='--', color='0.7', lw=2)
+            # ax4.plot(stdp5Hz[:, 0], stdp5Hz[:, 1], 'o', ms=4, c='0.5', markeredgecolor='0.5')
+            # ax4.errorbar(stdp5binned[:, 0], stdp5binned[:, 1], yerr=stdp5binned[:, 2], fmt='o-', markeredgecolor='C0')
+            for i in range(len(self.stimFrequencies)):
+                ax5.plot(modelNew[:,0]*1000.,modelNew[:,(10+i)]*100./0.5)
+                #ax5.plot(synChange[:, 0] * 1000., synChange[:, i + 1] * 100., label=str(self.stimFrequencies[i]))
+            # ax4.plot(synChange[:, 0] * 1000., synChange[:, 2] * 100.)
+            # ax4.plot(synChange[:, 0] * 1000., synChange[:, 3] * 100.)
+
+            # if 'old'==oldNew:
+            # ax2.plot(-model5Hz[:,3]+2.*synapticChange.D*1000.,model5Hz[:,18]*100.)
+            # else:
+            # ax2.plot(modelNew[:, 0] * 1000., modelNew[:, 3] * 100.)
+
+            # removes upper and right axes
+            # and moves left and bottom axes away
+            ax5.spines['top'].set_visible(False)
+            ax5.spines['right'].set_visible(False)
+            ax5.spines['bottom'].set_position(('outward', 10))
+            ax5.spines['left'].set_position(('outward', 10))
+            ax5.yaxis.set_ticks_position('left')
+            ax5.xaxis.set_ticks_position('bottom')
+
+            ax5.set_xlim(-300, 300)
+            # legends and labels
+            plt.legend(loc=1, frameon=False)
+
+            plt.xlabel(r'$\Delta t$ (ms)')
+            #plt.ylabel('change in synaptic strength')
+
         ## save figure ############################################################
-        fname = 'regularDataFitVenance' #_dataSet#' + str(dataSetNumber)
+        #fname = 'regularDataFitVenance' #_dataSet#' + str(dataSetNumber)
 
-        savefig(fname + '.png')
-        savefig(fname + '.pdf')
+        if irrData:
+            fname = 'regular-irregular-DataFitVenance_%s' % paraName #os.path.basename(__file__)
+        else:
+            fname = 'regularDataFitVenance_%s' % paraName #os.path.basename(__file__)
+
+        savefig(self.figDir + fname + '.png')
+        savefig(self.figDir + fname + '.pdf')
         #clf()
         #dsN += 1
