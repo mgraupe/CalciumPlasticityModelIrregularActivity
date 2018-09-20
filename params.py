@@ -4,12 +4,12 @@ from collections import *
 thetaP = 1.3 #2.009289 #1.3 #1.3
 nonlinear = 1. #2.
 w0 = 0.5
-modelVersion =  'multiplicative' #''additive'
+modelVersion =  'additive' #''additive'
 fitWeights = [2.,1.,1.,1.]
 
 # fitting loops 
 Nruns = 100
-threshold = 3. # lower threshold to include parameter set
+threshold = 4. # lower threshold to include parameter set
 
 # smoothnessWeight = 1.
 
@@ -18,6 +18,7 @@ limits = OrderedDict([
     ('tauCa',[0.02,0.1]),
     ('Cpre',[0.1,2.]),
     ('Cpost',[0.1,1.]),
+    ('thetaP',[1.2,4.]),
     ('gammaD',[0.1,1000.]),
     ('gammaP',[0.1,1000.]),
     ('tau',[1.,50000.]),

@@ -25,6 +25,7 @@ def errFunc(params, stimFrequencies, fitWeights, fitData1Hz,fitData3Hz,fitData5H
     chi2 = 0.
     sChange.choseParameterSet('Venance',source='fromDictionary',params=params)
     # initiate class to calculate fraction of time above threshold
+    #print sChange.thetaP
     tat = timeAboveThreshold(sChange.tauCa, sChange.Cpre, sChange.Cpost, sChange.thetaD, sChange.thetaP, nonlinear=par.nonlinear)
     #print 'Parameters :', sChange.tauCa, sChange.Cpre, sChange.Cpost, sChange.thetaD, sChange.thetaP, sChange.D
 
@@ -44,6 +45,7 @@ def errFunc(params, stimFrequencies, fitWeights, fitData1Hz,fitData3Hz,fitData5H
                 #else:
                 #print dataSet[i,1]/100., sChange.mean/par.w0
                 chi2+= fitWeights[n]*((dataSet[i,1]/100. - sChange.mean/par.w0)**2) #*(dataSet[i,2])
+                #print sChange.meanAdd
                 #chi3+= ((dataSet[i,1]/100. - 1.)**2)/((dataSet[i,2]/100.)**2)
 
 
@@ -112,6 +114,7 @@ for n in range(par.Nruns):
     #             3.97098825e+01,   1.00000000e+03,   1.00019323e+02,\
     #            -8.35150431e-04]
     # Apply downhill Simplex algorithm.
+    print 'Number of free parameters : ', len(params0)
     p1 = simplex(errFunc, params0, args=(sChange.stimFrequencies,par.fitWeights,sChange.rawData1Hz,sChange.rawData3Hz,sChange.rawData5Hz,sChange.rawData10Hz), full_output=1, disp=True,maxiter=1E4, maxfun=1E4)
     #print p1
     if p1[1] < par.threshold: 

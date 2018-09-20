@@ -316,7 +316,7 @@ class synapticChange():
                 self.D      = params[6]
                 self.beta   = 0.5
                 self.b      = 2.
-            elif len(sol[0]) == 8:
+            elif len(params) == 8:
                 #print sol
                 self.tauCa = params[0]
                 self.Cpre  = params[1]
