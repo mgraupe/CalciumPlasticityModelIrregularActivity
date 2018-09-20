@@ -36,7 +36,8 @@ def errFunc(params, stimFrequencies, fitWeights, fitData1Hz,fitData3Hz,fitData5H
             for i in range(len(dataSet)):
                 (alphaD, alphaP) = tat.spikePairFrequencyNonlinear(dataSet[i,0]/1000. - sChange.D, float(stimFrequencies[n]))
                 # print dT, preRate, alphaD, alphaP
-                sChange.changeInSynapticStrength(sChange.Npresentations/ float(stimFrequencies[n]), par.w0, alphaD, alphaP)
+                sChange.changeInSynapticStrength(sChange.Npresentations/float(stimFrequencies[n]), par.w0, alphaD, alphaP)
+                #print float(stimFrequencies[n]), sChange.Npresentations/float(stimFrequencies[n])
                 #yModel = synU.calculateChangeInSynapticStrength(float(stimFrequencies[n]),dataSet[i,0]/1000.,params)
                 #
                 #if stimFrequencies[n] == 1:
@@ -44,7 +45,7 @@ def errFunc(params, stimFrequencies, fitWeights, fitData1Hz,fitData3Hz,fitData5H
                 #    #print dataSet[i,0]/1000., yModel, dataSet[i,1]/100., dataSet[i,2]
                 #else:
                 #print dataSet[i,1]/100., sChange.mean/par.w0
-                chi2+= fitWeights[n]*((dataSet[i,1]/100. - sChange.mean/par.w0)**2) #*(dataSet[i,2])
+                chi2+= fitWeights[n]*((dataSet[i,1]/100. - sChange.meanAdd/par.w0)**2) #*(dataSet[i,2])
                 #print sChange.meanAdd
                 #chi3+= ((dataSet[i,1]/100. - 1.)**2)/((dataSet[i,2]/100.)**2)
 

@@ -53,7 +53,7 @@ class synapticChange():
 
         elif plasticityCase == 'Venance':
             self.stimFrequencies = [1,3,5,10]
-            self.Npresentations = 100
+            self.Npresentations = 100.
             #self.fitWeights = [4.,1.,1.,1.]
             self.dataDir = 'experimental_data/'
             self.rawData1Hz  = np.loadtxt(self.dataDir+'STDP_1Hz_100pairings_binned.dat')
@@ -117,7 +117,7 @@ class synapticChange():
         #     #print mean, rhoBar, self.w0, self.Npresentations, interval, tauEff
         # elif self.modelVersion == 'additive':
         #     mean =  self.w0 + self.Npresentations*interval*(GammaP-GammaD)/tau
-        self.meanAdd   = rho0 + T_total*(self.gammaP-self.gammaD)/self.tau
+        self.meanAdd   = rho0 + T_total*(self.GammaP-self.GammaD)/self.tau
         self.mean     =  self.rhoBar - (self.rhoBar - rho0)*np.exp(-T_total/self.tauEff)
         
         # change in synaptic strength after/before

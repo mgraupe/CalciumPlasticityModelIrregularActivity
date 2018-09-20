@@ -275,7 +275,10 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
                     synChange[i, 0] = deltaT[i]
                 #  calculateChangeInSynapticStrength(self, frequency,deltaT,params):
                 #sol = [0.0667179, 1.45248, 0.405039, 2.0, 15.973, 16.3457, -0.00156591]
-                synChange[i, n+1] = sChange.mean/self.w0
+                if self.modelVersion == 'additive':
+                    synChange[i, n+1] = sChange.meanAdd/self.w0
+                elif self.modelVersion == 'multiplicative':
+                    synChange[i, n+1] = sChange.mean/self.w0
                 #print self.stimFrequencies[n], deltaT[i], synChange[i, n+1]
             #
         #pdb.set_trace()
