@@ -20,7 +20,7 @@ from synapticChange import synapticChange
 
 ###########################################################################
 # the calcuation of mse is defined here 
-def errFunc(params, stimFrequencies, fitWeights, fitData1Hz,fitData3Hz,fitData5Hz,fitData10Hz):
+def errFunc(params, stimFrequencies, fitWeights, fitData1Hz,fitData3Hz,fitData5Hz,fitData10Hz,fitIrrData1Hz,fitIrrData3Hz):
     # mse for data vs. model
     chi2 = 0.
     sChange.choseParameterSet('Venance',source='fromDictionary',params=params)
@@ -45,10 +45,16 @@ def errFunc(params, stimFrequencies, fitWeights, fitData1Hz,fitData3Hz,fitData5H
                 #    #print dataSet[i,0]/1000., yModel, dataSet[i,1]/100., dataSet[i,2]
                 #else:
                 #print dataSet[i,1]/100., sChange.mean/par.w0
-                chi2+= fitWeights[n]*((dataSet[i,1]/100. - sChange.meanAdd/par.w0)**2) #*(dataSet[i,2])
+                chi2+= fitWeights[n]*((dataSet[i,1]/100. - sChange.mean/par.w0)**2) #*(dataSet[i,2])
                 #print sChange.meanAdd
                 #chi3+= ((dataSet[i,1]/100. - 1.)**2)/((dataSet[i,2]/100.)**2)
-
+        if stimFrequencies[n] in [1,3]:
+            exec('dataSet = fitIrrData%sHz' % stimFrequencies[n])
+            #print dataSet
+            for i in range(len(dataSet)): #irregularSpikePairsEventBased(self, deltaT, preRate, postRate, ppp)
+                (alphaD, alphaP) = tat.irregularSpikePairsEventBased(dataSet[i,0] - sChange.D, float(stimFrequencies[n]),float(stimFrequencies[n]),1.)
+                sChange.changeInSynapticStrength(sChange.Npresentations/float(stimFrequencies[n]), par.w0, alphaD, alphaP)
+                chi2+= ((dataSet[i,2] - sChange.mean/par.w0)**2) #*(dataSet[i,2])
 
     # add smoothness constraint
     #frequencies = linspace(1.,50.,50)
@@ -116,7 +122,7 @@ for n in range(par.Nruns):
     #            -8.35150431e-04]
     # Apply downhill Simplex algorithm.
     print 'Number of free parameters : ', len(params0)
-    p1 = simplex(errFunc, params0, args=(sChange.stimFrequencies,par.fitWeights,sChange.rawData1Hz,sChange.rawData3Hz,sChange.rawData5Hz,sChange.rawData10Hz), full_output=1, disp=True,maxiter=1E4, maxfun=1E4)
+    p1 = simplex(errFunc, params0, args=(sChange.stimFrequencies,par.fitWeights,sChange.rawData1Hz,sChange.rawData3Hz,sChange.rawData5Hz,sChange.rawData10Hz,sChange.rawIrregularData1Hz,sChange.rawIrregularData3Hz), full_output=1, disp=True,maxiter=1E4, maxfun=1E4)
     #print p1
     if p1[1] < par.threshold: 
         solutions.append(p1)
