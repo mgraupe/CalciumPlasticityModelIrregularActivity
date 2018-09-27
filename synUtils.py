@@ -39,13 +39,14 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
             self.yDataStoch = jesperStoch[:,1]+1. # Sjoestroem's data is normalized to 0
             self.sigmaDataStoch = jesperStoch[:,2]
         elif dataSet == 'venance':
-            self.stimFrequencies = [1,3,5,10]
+            pass
+            #self.stimFrequencies = [1,3,5,10]
             #self.fitWeights = [4.,1.,1.,1.]
-            self.Npresentations = 100
-            self.rawData1Hz  = loadtxt(self.dataDir+'STDP_1Hz_100pairings_binned.dat')
-            self.rawData3Hz = loadtxt(self.dataDir+'STDP_2.5-3Hz_100pairings_binned.dat')
-            self.rawData5Hz = loadtxt(self.dataDir+'STDP_5Hz_100pairings_binned.dat')
-            self.rawData10Hz = loadtxt(self.dataDir+'STDP_10Hz_100pairings_binned.dat')
+            #self.Npresentations = 100
+            #self.rawData1Hz  = loadtxt(self.dataDir+'STDP_1Hz_100pairings_binned.dat')
+            #self.rawData3Hz = loadtxt(self.dataDir+'STDP_2.5-3Hz_100pairings_binned.dat')
+            #self.rawData5Hz = loadtxt(self.dataDir+'STDP_5Hz_100pairings_binned.dat')
+            #self.rawData10Hz = loadtxt(self.dataDir+'STDP_10Hz_100pairings_binned.dat')
 
             #self.fitData = {}
             #self.fitData[0] = {'freq':1.,'data':rawData1Hz}
@@ -223,10 +224,9 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
         stdp5Hz = np.loadtxt(self.dataDir + 'STDP_5Hz_100pairings.dat')
         stdp10Hz = np.loadtxt(self.dataDir+ 'STDP_10Hz_100pairings.dat')
 
-        stdp1binned = np.copy(self.rawData1Hz)
-        stdp3binned = np.copy(self.rawData3Hz)
-        stdp5binned = np.copy(self.rawData5Hz)
-        stdp10binned = np.copy(self.rawData10Hz)
+        irrSTDP1Hz = np.load(self.dataDir + '18-09-27_experimentOverview_1Hz.npy')
+        irrSTDP3Hz = np.load(self.dataDir + '18-09-27_experimentOverview_3Hz.npy')
+
         ##########################################################
         # generate analytical results for regular pairs
         if os.path.isfile(self.figDir+'irregularSpikePairs_vs_deltaT_differentFreqs_%s.npy' % paraName):
@@ -280,7 +280,15 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
                 elif self.modelVersion == 'multiplicative':
                     synChange[i, n+1] = sChange.mean/self.w0
                 #print self.stimFrequencies[n], deltaT[i], synChange[i, n+1]
-            #
+        ##################################################################
+
+        stdp1binned = np.copy(sChange.rawData1Hz)
+        stdp3binned = np.copy(sChange.rawData3Hz)
+        stdp5binned = np.copy(sChange.rawData5Hz)
+        stdp10binned = np.copy(sChange.rawData10Hz)
+
+        stdpIrr1HzBinned = np.copy(sChange.rawIrregularData1Hz)
+        stdpIrr3HzBinned = np.copy(sChange.rawIrregularData3Hz)
         #pdb.set_trace()
         #######################################################
         # plot data
@@ -358,9 +366,10 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
         ax0.plot(stdp1Hz[:, 0], stdp1Hz[:, 1], 'o', ms=4, c='0.5', markeredgecolor='0.5')
         ax0.errorbar(stdp1binned[:, 0], stdp1binned[:, 1], yerr=stdp1binned[:, 2], fmt='o-', markeredgecolor='C0')
         ax0.plot(synChange[:, 0] * 1000., synChange[:, 1] * 100.)
+        ax0.errorbar(stdpIrr1HzBinned[:,0]*1000., stdpIrr1HzBinned[:,2]*100., xerr=stdpIrr1HzBinned[:,1]*1000., yerr=stdpIrr1HzBinned[:,3]*100., fmt='o-')
         if irrData:
             ax0.plot(modelNew[:,0]*1000.,modelNew[:,10]*100./0.5)
-            ax0.plot(modelNewReg[:, 0] * 1000., modelNewReg[:, 10] * 100. / 0.5,ls='--')
+            #ax0.plot(modelNewReg[:, 0] * 1000., modelNewReg[:, 10] * 100. / 0.5,ls='--')
         # if oldNew == 'old':
         #    #print len(-model1Hz[:,3]+2.*synapticChange.D*1000.), -model1Hz[:,3]+2.*synapticChange.D*1000.
         #    ax0.plot(-model1Hz[:,3]+2.*synapticChange.D*1000.,model1Hz[:,18]*100.)
@@ -442,9 +451,10 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
         ax1.plot(stdp3Hz[:, 0], stdp3Hz[:, 1], 'o', ms=4, c='0.5', markeredgecolor='0.5')
         ax1.errorbar(stdp3binned[:, 0], stdp3binned[:, 1], yerr=stdp3binned[:, 2], fmt='o-', markeredgecolor='C0', label=r'exp. data: reg. pairs')
         ax1.plot(synChange[:, 0] * 1000., synChange[:, 2] * 100., label=r'model fit: reg. pairs')
+        ax1.errorbar(stdpIrr1HzBinned[:, 0] * 1000., stdpIrr1HzBinned[:, 2] * 100., xerr=stdpIrr1HzBinned[:, 1] * 1000., yerr=stdpIrr1HzBinned[:, 3] * 100., fmt='o-', label=r'exp. data: irr. pairs')
         if irrData:
-            ax1.plot(modelNew[:,0]*1000.,modelNew[:,11]*100./0.5, label=r'model pred.: irregular pairs')
-            ax1.plot(modelNewReg[:, 0] * 1000., modelNewReg[:, 11] * 100. / 0.5,ls='--')
+            ax1.plot(modelNew[:,0]*1000.,modelNew[:,11]*100./0.5,c='C3', label=r'model fit: irregular pairs')
+            #ax1.plot(modelNewReg[:, 0] * 1000., modelNewReg[:, 11] * 100. / 0.5,ls='--')
             # if 'old'==oldNew:
         # ax1.plot(-model3Hz[:,3]+2.*synapticChange.D*1000.,model3Hz[:,18]*100.)
         # else:
@@ -484,8 +494,8 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
         ax2.errorbar(stdp5binned[:, 0], stdp5binned[:, 1], yerr=stdp5binned[:, 2], fmt='o-', markeredgecolor='C0')
         ax2.plot(synChange[:, 0] * 1000., synChange[:, 3] * 100.)
         if irrData:
-            ax2.plot(modelNew[:,0]*1000.,modelNew[:,12]*100./0.5)
-            ax2.plot(modelNewReg[:, 0] * 1000., modelNewReg[:, 12] * 100. / 0.5,ls='--')
+            ax2.plot(modelNew[:,0]*1000.,modelNew[:,12]*100./0.5,c='C3')
+            #ax2.plot(modelNewReg[:, 0] * 1000., modelNewReg[:, 12] * 100. / 0.5,ls='--')
             # if 'old'==oldNew:
         # ax2.plot(-model5Hz[:,3]+2.*synapticChange.D*1000.,model5Hz[:,18]*100.)
         # else:
@@ -520,8 +530,8 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
         ax3.errorbar(stdp10binned[:, 0], stdp10binned[:, 1], yerr=stdp10binned[:, 2], fmt='o-', markeredgecolor='C0')
         ax3.plot(synChange[:, 0] * 1000., synChange[:, 4] * 100.)
         if irrData:
-            ax3.plot(modelNew[:,0]*1000.,modelNew[:,13]*100./0.5)
-            ax3.plot(modelNewReg[:, 0] * 1000., modelNewReg[:, 13] * 100. / 0.5,ls='--')
+            ax3.plot(modelNew[:,0]*1000.,modelNew[:,13]*100./0.5,c='C3')
+            #ax3.plot(modelNewReg[:, 0] * 1000., modelNewReg[:, 13] * 100. / 0.5,ls='--')
             # if 'old'==oldNew:
         # ax3.plot(-model10Hz[:,3]+2.*synapticChange.D*1000.,model10Hz[:,18]*100.)
         # else:
@@ -559,8 +569,8 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
         ax4.axvline(x=0, ls='--', color='0.7', lw=2)
         #ax4.plot(stdp5Hz[:, 0], stdp5Hz[:, 1], 'o', ms=4, c='0.5', markeredgecolor='0.5')
         #ax4.errorbar(stdp5binned[:, 0], stdp5binned[:, 1], yerr=stdp5binned[:, 2], fmt='o-', markeredgecolor='C0')
-        for i in range(len(self.stimFrequencies)):
-            ax4.plot(synChange[:, 0] * 1000., synChange[:, i+1] * 100.,label=str(self.stimFrequencies[i]))
+        for i in range(len(sChange.stimFrequencies)):
+            ax4.plot(synChange[:, 0] * 1000., synChange[:, i+1] * 100.,label=str(sChange.stimFrequencies[i]))
         #ax4.plot(synChange[:, 0] * 1000., synChange[:, 2] * 100.)
         #ax4.plot(synChange[:, 0] * 1000., synChange[:, 3] * 100.)
 
@@ -597,7 +607,7 @@ class synUtils(): # synUtils(thetaD,thetaP,nonlinear,Npresentations,w0)
             ax5.axvline(x=0, ls='--', color='0.7', lw=2)
             # ax4.plot(stdp5Hz[:, 0], stdp5Hz[:, 1], 'o', ms=4, c='0.5', markeredgecolor='0.5')
             # ax4.errorbar(stdp5binned[:, 0], stdp5binned[:, 1], yerr=stdp5binned[:, 2], fmt='o-', markeredgecolor='C0')
-            for i in range(len(self.stimFrequencies)):
+            for i in range(len(sChange.stimFrequencies)):
                 ax5.plot(modelNew[:,0]*1000.,modelNew[:,(10+i)]*100./0.5)
                 #ax5.plot(synChange[:, 0] * 1000., synChange[:, i + 1] * 100., label=str(self.stimFrequencies[i]))
             # ax4.plot(synChange[:, 0] * 1000., synChange[:, 2] * 100.)

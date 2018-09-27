@@ -76,12 +76,12 @@ nl = 1.  # nonlinearity factor
 # initiate synaptic change class and chose parameter set from file
 
 #params = 'VenanceSmult9'
-params = 'linearCaModel'
+params = 'VenanceSmult15'
 synChange = synapticChange('Venance')
 synChange.choseParameterSet(params,source='fromFile') #params,source='fromFile', nonlinear=nl) #,threshold=par.thetaP)
 
 # initiate class to calculate fraction of time above threshold
-print 'Parameters :',synChange.tauCa, synChange.Cpre, synChange.Cpost, synChange.thetaD, synChange.thetaP, nl
+print 'Parameters :', params,synChange.tauCa, synChange.Cpre, synChange.Cpost, synChange.thetaD, synChange.thetaP, nl
 tat = timeAboveThreshold(synChange.tauCa, synChange.Cpre, synChange.Cpost, synChange.thetaD, synChange.thetaP, nonlinear=nl)
 
 pool = multiprocessing.Pool()

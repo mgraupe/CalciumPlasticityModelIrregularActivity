@@ -462,7 +462,7 @@ class timeAboveThreshold():
             tPre.append(0)
             tPostInd.append(0)
 
-            for i in range(2000):
+            for i in range(4000):
                 tPre.append(tPre[-1] + np.random.exponential(1. / preRate))
                 if np.random.rand() < ppp:
                     tPostCorr.append(tPre[-1] + deltaT)

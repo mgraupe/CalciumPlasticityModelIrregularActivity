@@ -2,6 +2,8 @@ import numpy as np
 from scipy.optimize import fmin as simplex
 import pickle
 import time
+import multiprocessing
+import pdb
 
 import params as par
 
@@ -17,6 +19,13 @@ from synapticChange import synapticChange
 # X      ... array holding x-positions of observed data.
 # Y      ... array holding y-values of observed data.
 # Err    ... array holding errors of observed data.
+
+
+###########################################################################
+def fitData(params):
+    print params
+    p1 = simplex(errFunc, params, args=(sChange.stimFrequencies,par.fitWeights,sChange.rawData1Hz,sChange.rawData3Hz,sChange.rawData5Hz,sChange.rawData10Hz,sChange.rawIrregularData1Hz,sChange.rawIrregularData3Hz), full_output=1, disp=True,maxiter=1E4, maxfun=1E4)
+    return p1
 
 ###########################################################################
 # the calcuation of mse is defined here 
@@ -50,7 +59,7 @@ def errFunc(params, stimFrequencies, fitWeights, fitData1Hz,fitData3Hz,fitData5H
                 #chi3+= ((dataSet[i,1]/100. - 1.)**2)/((dataSet[i,2]/100.)**2)
         if stimFrequencies[n] in [1,3]:
             exec('dataSet = fitIrrData%sHz' % stimFrequencies[n])
-            #print dataSet
+            #print 'irregular', stimFrequencies[n], dataSet
             for i in range(len(dataSet)): #irregularSpikePairsEventBased(self, deltaT, preRate, postRate, ppp)
                 (alphaD, alphaP) = tat.irregularSpikePairsEventBased(dataSet[i,0] - sChange.D, float(stimFrequencies[n]),float(stimFrequencies[n]),1.)
                 sChange.changeInSynapticStrength(sChange.Npresentations/float(stimFrequencies[n]), par.w0, alphaD, alphaP)
@@ -85,7 +94,7 @@ def errFunc(params, stimFrequencies, fitWeights, fitData1Hz,fitData3Hz,fitData5H
 def initialGuess(lim):
     nParams = len(lim)
     params = np.zeros(nParams)
-    np.random.seed(np.int64((time.time()-base)*100))
+    #np.random.seed(np.int64((time.time()-base)*100))
     randTemp = np.random.rand(nParams)
     n = 0
     for k in lim:
@@ -104,28 +113,30 @@ sChange = synapticChange('Venance') #, source='fromDictionary', nonlinear=par.no
 
 #synU = synUtils(par.thetaD,par.thetaP,par.nonlinear,par.Npresentations,par.w0,dataSet='venance',modelV=par.modelVersion)
 
+nProcessors = 5
+pool = multiprocessing.Pool(nProcessors)
+
 #############################################################################
 #pdb.set_trace()
 solutions = []
 for n in range(par.Nruns):
     #Initial guess of parameters
     #params0  = [0.0667179, 1.45248, 0.405039, 2.0, 15.973, 16.3457, -0.00156591] #
-    params0 = initialGuess(par.limits)
-    #print params0
-    #synU.determineGammaP(1.,-0.2,params0)
-    #params0 = [0.0667179, 1.45248, 0.405039, 2.0, 15.973, 16.3457, -0.00156591]
-    #params0 = [  8.65515703e-02,   1.00000000e+00,   4.99651697e-01,
-    #      4.22749986e+01,   7.90669559e+02,   4.45068348e+02,
-    #     -5.18967722e-03]
-    #[  1.95999168e-02,   1.00006302e+00,   7.70511415e-01,\
-    #             3.97098825e+01,   1.00000000e+03,   1.00019323e+02,\
-    #            -8.35150431e-04]
+    params0 = []
+    for i in range(nProcessors):
+        params0.append(initialGuess(par.limits))
+    #pdb.set_trace()
+    rrr = pool.map(fitData,params0)
+
+    #pdb.set_trace()
     # Apply downhill Simplex algorithm.
-    print 'Number of free parameters : ', len(params0)
-    p1 = simplex(errFunc, params0, args=(sChange.stimFrequencies,par.fitWeights,sChange.rawData1Hz,sChange.rawData3Hz,sChange.rawData5Hz,sChange.rawData10Hz,sChange.rawIrregularData1Hz,sChange.rawIrregularData3Hz), full_output=1, disp=True,maxiter=1E4, maxfun=1E4)
+    #print 'Number of free parameters : ', len(params0)
+    #p1 = simplex(errFunc, params0, args=(sChange.stimFrequencies,par.fitWeights,sChange.rawData1Hz,sChange.rawData3Hz,sChange.rawData5Hz,sChange.rawData10Hz,sChange.rawIrregularData1Hz,sChange.rawIrregularData3Hz), full_output=1, disp=True,maxiter=1E4, maxfun=1E4)
     #print p1
-    if p1[1] < par.threshold: 
-        solutions.append(p1)
+    for i in range(len(rrr)):
+        print rrr[i]
+        if rrr[i][1] < par.threshold:
+            solutions.append(rrr[i])
 
     if solutions:
         solutions = sorted(solutions, key=lambda solutions: solutions[1])

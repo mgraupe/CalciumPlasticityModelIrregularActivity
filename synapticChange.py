@@ -60,8 +60,8 @@ class synapticChange():
             self.rawData3Hz = np.loadtxt(self.dataDir+'STDP_2.5-3Hz_100pairings_binned.dat')
             self.rawData5Hz = np.loadtxt(self.dataDir+'STDP_5Hz_100pairings_binned.dat')
             self.rawData10Hz = np.loadtxt(self.dataDir+'STDP_10Hz_100pairings_binned.dat')
-            self.rawIrregularData1Hz  = np.loadtxt(self.dataDir+'18-09-26_experimentOverview_1Hz.dat')
-            self.rawIrregularData3Hz = np.loadtxt(self.dataDir+'18-09-26_experimentOverview_3Hz.dat')
+            self.rawIrregularData1Hz  = np.loadtxt(self.dataDir+'18-09-27_experimentOverview_binned1Hz.dat')
+            self.rawIrregularData3Hz = np.loadtxt(self.dataDir+'18-09-27_experimentOverview_binned3Hz.dat')
 
         # self.xDataReg = jesperReg[:,[0,1]]
         # self.xDataReg[:,1] = self.xDataReg[:,1]/1000. # everything in sec
