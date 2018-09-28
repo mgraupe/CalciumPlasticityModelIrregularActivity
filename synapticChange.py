@@ -99,11 +99,16 @@ class synapticChange():
         
         # rhoBar: average value of rho in the limit of a very long protocol equivalent to the minimum of the quadratic potentia
         self.rhoBar = self.GammaP/(self.GammaP + self.GammaD)
+        if np.isnan(self.rhoBar):
+            self.rhoBar = rho0
+
         
         # sigmaRhoSquared L standard deviation of rho in the same limit
-        self.sigmaRhoSquared = (self.alphaP + self.alphaD)*(self.sigma**2)/(self.GammaP + self.GammaD)
+        #self.sigmaRhoSquared = (self.alphaP + self.alphaD)*(self.sigma**2)/(self.GammaP + self.GammaD)
         # tauEff : characteristic time scale of the temporal evolution of the pdf of rho
         self.tauEff = self.tau/(self.GammaP + self.GammaD)
+        if np.isnan(self.tauEff):
+            self.tauEff = self.tau/(1e+10)
         #
         # UP and the DOWN transition probabilities
         #self.UP   = self.transitionProbability(T_total,0.,self.rhoBar,self.sigmaRhoSquared,self.tauEff)

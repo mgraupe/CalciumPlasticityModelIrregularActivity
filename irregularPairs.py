@@ -76,7 +76,7 @@ nl = 1.  # nonlinearity factor
 # initiate synaptic change class and chose parameter set from file
 
 #params = 'VenanceSmult9'
-params = 'VenanceSmult15'
+params = 'VenanceSmult14'
 synChange = synapticChange('Venance')
 synChange.choseParameterSet(params,source='fromFile') #params,source='fromFile', nonlinear=nl) #,threshold=par.thetaP)
 

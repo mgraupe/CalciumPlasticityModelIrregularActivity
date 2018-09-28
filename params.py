@@ -8,7 +8,7 @@ modelVersion =  'multiplicative' #''additive' , 'multiplicative'
 fitWeights = [2.,1.,1.,1.]
 
 # fitting loops 
-Nruns = 10000
+Nruns = 100000
 threshold = 5. # lower threshold to include parameter set
 
 # smoothnessWeight = 1.

@@ -23,7 +23,7 @@ from synapticChange import synapticChange
 
 ###########################################################################
 def fitData(params):
-    print params
+    #print params
     p1 = simplex(errFunc, params, args=(sChange.stimFrequencies,par.fitWeights,sChange.rawData1Hz,sChange.rawData3Hz,sChange.rawData5Hz,sChange.rawData10Hz,sChange.rawIrregularData1Hz,sChange.rawIrregularData3Hz), full_output=1, disp=True,maxiter=1E4, maxfun=1E4)
     return p1
 
@@ -44,7 +44,7 @@ def errFunc(params, stimFrequencies, fitWeights, fitData1Hz,fitData3Hz,fitData5H
         if fitWeights[n]:
             for i in range(len(dataSet)):
                 (alphaD, alphaP) = tat.spikePairFrequencyNonlinear(dataSet[i,0]/1000. - sChange.D, float(stimFrequencies[n]))
-                # print dT, preRate, alphaD, alphaP
+                #print dataSet[i,0]/1000., alphaD, alphaP
                 sChange.changeInSynapticStrength(sChange.Npresentations/float(stimFrequencies[n]), par.w0, alphaD, alphaP)
                 #print float(stimFrequencies[n]), sChange.Npresentations/float(stimFrequencies[n])
                 #yModel = synU.calculateChangeInSynapticStrength(float(stimFrequencies[n]),dataSet[i,0]/1000.,params)
@@ -54,16 +54,17 @@ def errFunc(params, stimFrequencies, fitWeights, fitData1Hz,fitData3Hz,fitData5H
                 #    #print dataSet[i,0]/1000., yModel, dataSet[i,1]/100., dataSet[i,2]
                 #else:
                 #print dataSet[i,1]/100., sChange.mean/par.w0
+                #print sChange.synChange, sChange.mean
                 chi2+= fitWeights[n]*((dataSet[i,1]/100. - sChange.mean/par.w0)**2) #*(dataSet[i,2])
                 #print sChange.meanAdd
                 #chi3+= ((dataSet[i,1]/100. - 1.)**2)/((dataSet[i,2]/100.)**2)
         if stimFrequencies[n] in [1,3]:
-            exec('dataSet = fitIrrData%sHz' % stimFrequencies[n])
+            exec('irrDataSet = fitIrrData%sHz' % stimFrequencies[n])
             #print 'irregular', stimFrequencies[n], dataSet
-            for i in range(len(dataSet)): #irregularSpikePairsEventBased(self, deltaT, preRate, postRate, ppp)
-                (alphaD, alphaP) = tat.irregularSpikePairsEventBased(dataSet[i,0] - sChange.D, float(stimFrequencies[n]),float(stimFrequencies[n]),1.)
+            for i in range(len(irrDataSet)): #irregularSpikePairsEventBased(self, deltaT, preRate, postRate, ppp)
+                (alphaD, alphaP) = tat.irregularSpikePairsEventBased(irrDataSet[i,0] - sChange.D, float(stimFrequencies[n]),float(stimFrequencies[n]),1.)
                 sChange.changeInSynapticStrength(sChange.Npresentations/float(stimFrequencies[n]), par.w0, alphaD, alphaP)
-                chi2+= ((dataSet[i,2] - sChange.mean/par.w0)**2) #*(dataSet[i,2])
+                chi2+= ((irrDataSet[i,2] - sChange.mean/par.w0)**2) #*(dataSet[i,2])
 
     # add smoothness constraint
     #frequencies = linspace(1.,50.,50)
