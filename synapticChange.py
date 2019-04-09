@@ -56,12 +56,12 @@ class synapticChange():
             self.Npresentations = 100.
             #self.fitWeights = [4.,1.,1.,1.]
             self.dataDir = 'experimental_data/'
-            self.rawData1Hz  = np.loadtxt(self.dataDir+'STDP_1Hz_100pairings_binned.dat')
-            self.rawData3Hz = np.loadtxt(self.dataDir+'STDP_2.5-3Hz_100pairings_binned.dat')
+            self.rawData1Hz  = np.load(self.dataDir+'regular1Hzbinned.npy','r')#np.loadtxt(self.dataDir+'STDP_1Hz_100pairings_binned.dat')
+            self.rawData3Hz = np.load(self.dataDir+'regular3Hzbinned.npy','r') #np.loadtxt(self.dataDir+'STDP_2.5-3Hz_100pairings_binned.dat')
             self.rawData5Hz = np.loadtxt(self.dataDir+'STDP_5Hz_100pairings_binned.dat')
             self.rawData10Hz = np.loadtxt(self.dataDir+'STDP_10Hz_100pairings_binned.dat')
-            self.rawIrregularData1Hz  = np.loadtxt(self.dataDir+'18-09-27_experimentOverview_binned1Hz.dat')
-            self.rawIrregularData3Hz = np.loadtxt(self.dataDir+'18-09-27_experimentOverview_binned3Hz.dat')
+            self.rawIrregularData1Hz  = np.loadtxt(self.dataDir+'18-10-29_experimentOverview_binned1Hz.dat')
+            self.rawIrregularData3Hz = np.loadtxt(self.dataDir+'18-10-29_experimentOverview_binned3Hz.dat')
 
         # self.xDataReg = jesperReg[:,[0,1]]
         # self.xDataReg[:,1] = self.xDataReg[:,1]/1000. # everything in sec
@@ -98,21 +98,25 @@ class synapticChange():
         self.GammaD = self.gammaD*self.alphaD
         
         # rhoBar: average value of rho in the limit of a very long protocol equivalent to the minimum of the quadratic potentia
-        self.rhoBar = self.GammaP/(self.GammaP + self.GammaD)
-        if np.isnan(self.rhoBar):
+
+        if self.GammaP == 0. and self.GammaD == 0.:
+            #print 'yes'
             self.rhoBar = rho0
+            self.tauEff = self.tau/(1.e+6)
+            self.sigmaRhoSquared = (self.alphaP + self.alphaD) * (self.sigma ** 2) / (1.e+10)
+        else:
+            self.tauEff = self.tau/(self.GammaP + self.GammaD)
+            self.rhoBar = self.GammaP / (self.GammaP + self.GammaD)
+            self.sigmaRhoSquared = (self.alphaP + self.alphaD) * (self.sigma ** 2) / (self.GammaP + self.GammaD)
 
         
         # sigmaRhoSquared L standard deviation of rho in the same limit
-        #self.sigmaRhoSquared = (self.alphaP + self.alphaD)*(self.sigma**2)/(self.GammaP + self.GammaD)
+
         # tauEff : characteristic time scale of the temporal evolution of the pdf of rho
-        self.tauEff = self.tau/(self.GammaP + self.GammaD)
-        if np.isnan(self.tauEff):
-            self.tauEff = self.tau/(1e+10)
         #
         # UP and the DOWN transition probabilities
-        #self.UP   = self.transitionProbability(T_total,0.,self.rhoBar,self.sigmaRhoSquared,self.tauEff)
-        #self.DOWN = self.transitionProbability(T_total,1.,self.rhoBar,self.sigmaRhoSquared,self.tauEff)
+        self.UP   = self.transitionProbability(T_total,0.,self.rhoBar,self.sigmaRhoSquared,self.tauEff)
+        self.DOWN = self.transitionProbability(T_total,1.,self.rhoBar,self.sigmaRhoSquared,self.tauEff)
         
         # mean value of the synaptic strength right at the end of the stimulation protocol
         self.meanUP   =  self.rhoBar - (self.rhoBar - 0.)*np.exp(-T_total/self.tauEff)
@@ -128,7 +132,7 @@ class synapticChange():
         self.mean     =  self.rhoBar - (self.rhoBar - rho0)*np.exp(-T_total/self.tauEff)
         
         # change in synaptic strength after/before
-        #self.synChange = ((self.beta*(1.-self.UP) + (1.-self.beta)*self.DOWN) + (self.beta*self.UP+ (1.-self.beta)*(1.-self.DOWN))*self.b)/(self.beta + (1.-self.beta)*self.b)
+        self.synChange = ((self.beta*(1.-self.UP) + (1.-self.beta)*self.DOWN) + (self.beta*self.UP+ (1.-self.beta)*(1.-self.DOWN))*self.b)/(self.beta + (1.-self.beta)*self.b)
         
         #synChange = synapticChange.changeSynapticStrength(synapticChange.beta,UP,DOWN,synapticChange.b)
         
@@ -137,7 +141,7 @@ class synapticChange():
     # chose parameter set or read file
     def choseParameterSet(self, plasticityCase,source=False,params=None):
         if plasticityCase == 'DP':
-            print 'DP'
+            print('DP')
             self.tauCa = 0.02 # in sec
             self.Cpre = 1.
             self.Cpost = 2.
@@ -152,7 +156,7 @@ class synapticChange():
             self.beta    = 0.5
             self.b       = 5.
         elif plasticityCase == 'DPD':
-            print 'DPD'
+            print('DPD')
             self.tauCa = 0.02 # in sec
             self.Cpre = 0.9
             self.Cpost = 0.9
@@ -167,7 +171,7 @@ class synapticChange():
             self.beta    = 0.5
             self.b       = 5.
         elif plasticityCase == 'DPDprime':
-            print 'DPDprime'
+            print('DPDprime')
             self.tauCa = 0.02 # in sec
             self.Cpre = 1.
             self.Cpost = 2.
@@ -182,7 +186,7 @@ class synapticChange():
             self.beta    = 0.5
             self.b       = 5.
         elif plasticityCase == 'P':
-            print 'P'
+            print('P')
             self.tauCa = 0.02 # in sec
             self.Cpre = 2.
             self.Cpost = 2.
@@ -197,7 +201,7 @@ class synapticChange():
             self.beta    = 0.5
             self.b       = 5.
         elif plasticityCase == 'D':
-            print 'D'
+            print('D')
             self.tauCa = 0.02 # in sec
             self.Cpre = 0.6
             self.Cpost = 0.6
@@ -212,7 +216,7 @@ class synapticChange():
             self.beta    = 0.5
             self.b       = 5.
         elif plasticityCase == 'Dprime':
-            print 'Dprime'
+            print('Dprime')
             self.tauCa = 0.02 # in sec
             self.Cpre = 1.
             self.Cpost = 2.
@@ -227,7 +231,7 @@ class synapticChange():
             self.beta    = 0.5
             self.b       = 5.
         elif plasticityCase == 'hippocampal slices':
-            print 'hippocampal slices'
+            print('hippocampal slices')
             self.tauCa = 0.0488373 # in sec
             self.Cpre = 1.
             self.Cpost = 0.275865
@@ -242,7 +246,7 @@ class synapticChange():
             self.beta    = 0.7
             self.b       = 5.28145
         elif plasticityCase == 'hippocampal cultures':
-            print 'hippocampal cultures'
+            print('hippocampal cultures')
             self.tauCa = 0.0119536 # in sec
             self.Cpre = 0.58156
             self.Cpost = 1.76444
@@ -257,7 +261,7 @@ class synapticChange():
             self.beta    = 0.5
             self.b       = 36.0263
         elif plasticityCase == 'cortical slices':
-            print 'cortical slices'
+            print('cortical slices')
             self.tauCa = 0.0226936 # in sec
             self.Cpre = 0.5617539
             self.Cpost = 1.23964
@@ -274,7 +278,7 @@ class synapticChange():
         
         elif source == 'fromFile':
             exec('sol = pfs.%s' % plasticityCase)
-            
+            #print(sol)
             if len(sol[0]) == 7 :
                 #print sol
                 self.tauCa = sol[0][0]
@@ -305,6 +309,21 @@ class synapticChange():
                 self.D      = sol[0][7]
                 self.beta   = 0.5
                 self.b      = 2.
+            elif len(sol[0]) == 9:
+                #print sol
+                self.tauCa = sol[0][0]
+                self.Cpre  = sol[0][1]
+                self.Cpost = sol[0][2]
+                self.thetaD = 1.
+                self.thetaP = par.thetaP
+                self.gammaD = sol[0][3]
+                self.gammaP = sol[0][4]
+                self.sigma  = sol[0][5]
+                self.tau    = sol[0][6]
+                self.rhoStar= 0.5
+                self.D      = sol[0][7]
+                self.beta   = 0.5
+                self.b      = sol[0][8]
             self.mse= sol[1]
         # required for the data fitting routine
         elif source == 'fromDictionary':
@@ -338,9 +357,24 @@ class synapticChange():
                 self.D      = params[7]
                 self.beta   = 0.5
                 self.b      = 2.
+            elif len(params) == 9:
+                #print sol
+                self.tauCa = params[0]
+                self.Cpre  = params[1]
+                self.Cpost = params[2]
+                self.thetaD = 1.
+                self.thetaP = par.thetaP
+                self.gammaD = params[3]
+                self.gammaP = params[4]
+                self.sigma  = params[5]
+                self.tau    = params[6]
+                self.rhoStar= 0.5
+                self.D      = params[7]
+                self.beta   = 0.5
+                self.b      = params[8]
             #self.mse= sol[1]
         else:
-            print 'Choose from one of the available parameter sets!'
+            print('Choose from one of the available parameter sets!')
             sys.exit(1)
 
 

@@ -2,7 +2,7 @@
 import numpy as np
 import pdb
 import sys
-import commands
+#import commands
 #import random as rrr
 
 class timeAboveThreshold():
@@ -81,8 +81,8 @@ class timeAboveThreshold():
                                 elif ( A <= Ct and B <= Ct and D <= Ct and C <= Ct ) :
                                         I = 0.
                                 else :
-                                        print A, B, C, D, Ct, frequency, deltaT 
-                                        print "post-pre : Problem in spikePairFrequency!"
+                                        print(A, B, C, D, Ct, frequency, deltaT)
+                                        print("post-pre : Problem in spikePairFrequency!")
                                         sys.exit(1)
                         # pre-post
                         else:
@@ -101,8 +101,8 @@ class timeAboveThreshold():
                                 elif ( E <= Ct and F <= Ct and G <= Ct and H <= Ct ) :
                                         I = 0.
                                 else :
-                                        print E, F, G, H, Ct, frequency, deltaT
-                                        print "pre-post : Problem in spikePairFrequency! " 
+                                        print(E, F, G, H, Ct, frequency, deltaT)
+                                        print("pre-post : Problem in spikePairFrequency! ")
                                         sys.exit(1)
                         #
                         timeAbove[i] = I
@@ -170,8 +170,8 @@ class timeAboveThreshold():
                                 elif ( A <= Ct and B <= Ct and D <= Ct and C <= Ct ) :
                                         I = 0.
                                 else :
-                                        print A, B, C, D, Ct, frequency, deltaT 
-                                        print "post-pre : Problem in spikePairFrequency!"
+                                        print(A, B, C, D, Ct, frequency, deltaT)
+                                        print("post-pre : Problem in spikePairFrequency!")
                                         sys.exit(1)
                         # pre-post
                         else:
@@ -190,8 +190,8 @@ class timeAboveThreshold():
                                 elif ( E <= Ct and F <= Ct and G <= Ct and H <= Ct ) :
                                         I = 0.
                                 else :
-                                        print E, F, G, H, Ct, frequency, deltaT
-                                        print "pre-post : Problem in spikePairFrequency! " 
+                                        print(E, F, G, H, Ct, frequency, deltaT)
+                                        print("pre-post : Problem in spikePairFrequency! ")
                                         sys.exit(1)
                         #
                         timeAbove[i] = I
@@ -295,8 +295,8 @@ class timeAboveThreshold():
                                 elif ( (A+self.Cpost) <= Ct and O <= Ct and P <= Ct) :
                                         Int = 0.
                                 else :
-                                        print "post-post-pre : Problem !"
-                                        print deltaT, A, (A+self.Cpost), M, N, O, P, Int
+                                        print("post-post-pre : Problem !")
+                                        print(deltaT, A, (A+self.Cpost), M, N, O, P, Int)
                                         sys.exit(1)
                         # post-pre-post 
                         elif ( deltaT >= 0.  and deltaT <= deltaBurst )  :
@@ -330,8 +330,8 @@ class timeAboveThreshold():
                                 elif ( (A+self.Cpost) <= Ct and S <= Ct and T <= Ct) :
                                         Int = 0.
                                 else :
-                                        print "post-pre-post : Problem !"
-                                        print deltaT, A, Q, R, (A+self.Cpost), S, T, Int 
+                                        print("post-pre-post : Problem !")
+                                        print(deltaT, A, Q, R, (A+self.Cpost), S, T, Int)
                                         sys.exit(1)
                         # pre-post-post 
                         elif ( deltaT >= 0.  and deltaT > deltaBurst)  :
@@ -365,11 +365,11 @@ class timeAboveThreshold():
                                 elif ( (A+self.Cpre) <= Ct  and W <= Ct and X <= Ct ) :
                                         Int = 0.
                                 else :
-                                        print "pre-post-post : Problem !"
-                                        print deltaT, A, (A+self.Cpre), U, V, W, X, Int
+                                        print("pre-post-post : Problem !")
+                                        print(deltaT, A, (A+self.Cpre), U, V, W, X, Int)
                                         sys.exit(1)
                         else :
-                                print "Problem in preSpikePostPair routine!"
+                                print("Problem in preSpikePostPair routine!")
                                 sys.exit(1)
                         #
                         timeAbove[i] = Int
@@ -391,7 +391,7 @@ class timeAboveThreshold():
                             arguments = str(deltaT) + ' ' + str(self.tauCa) + ' ' + str(self.Cpre) + ' ' + str(self.Cpost) + ' ' + str(self.thetaD) + ' ' + str(self.thetaP) + ' ' + str(preRate) + ' ' + str(postRate) + ' ' + str(ppp) + ' ' + str(deltaCa)
         
                     #print arguments
-                    (out,err) = commands.getstatusoutput('./timeAboveThreshold/poissonPairs_timeAboveThreshold ' + arguments) 
+                    #(out,err) = commands.getstatusoutput('./timeAboveThreshold/poissonPairs_timeAboveThreshold ' + arguments)
                     alphaD = float(err.split()[0])
                     alphaP = float(err.split()[1])
                     
@@ -445,7 +445,7 @@ class timeAboveThreshold():
 
         ###############################################################################
         # irregular spike-pairs, the numerical integration is run in an external C++ code for performance improvment
-        def irregularSpikePairsEventBased(self, deltaT, preRate, postRate, ppp):
+        def irregularSpikePairsEventBased(self, deltaT, preRate, postRate, ppp, nSpikes=10000):
 
 
             # print 'time above threshold : NONLINEAR calcium dynamics'
@@ -453,7 +453,7 @@ class timeAboveThreshold():
             # construction of the spike train
             # tStart = 0.1 # start time at 100 ms
 
-            np.random.seed(7)
+            #np.random.seed(7)
 
             tPre = []
             tPostCorr = []
@@ -462,7 +462,7 @@ class timeAboveThreshold():
             tPre.append(0)
             tPostInd.append(0)
 
-            for i in range(4000):
+            for i in range(nSpikes):
                 tPre.append(tPre[-1] + np.random.exponential(1. / preRate))
                 if np.random.rand() < ppp:
                     tPostCorr.append(tPre[-1] + deltaT)
@@ -492,6 +492,141 @@ class timeAboveThreshold():
 
             return (alphaD, alphaP)
 
+        ############################################################################################
+        ## single out bursts from plasticity trace #################################################
+        def separateBursts(self,spikeTimes,burstInterval):
+            onlyBurstsTemp = []
+            onlyBursts = []
+            noBursts =  []
+            #onlyBursts.append(spikeTimes[0])
+            noBursts.append(spikeTimes[0])
+            for i in range(1,len(spikeTimes)):
+                if (spikeTimes[i] - spikeTimes[i-1])<burstInterval:
+                    onlyBurstsTemp.append(spikeTimes[i-1])
+                    onlyBurstsTemp.append(spikeTimes[i])
+                else:
+                    noBursts.append(spikeTimes[i])
+
+
+            # remove duplicates
+            for i in onlyBurstsTemp:
+                if i not in onlyBursts:
+                    onlyBursts.append(i)
+
+            onlyBursts = np.asarray(onlyBursts)
+            noBursts = np.asarray(noBursts)
+            # count bursts and number of spikes in bursts
+            diffB = onlyBursts[1:]-onlyBursts[:-1]
+            numberOfBursts = np.sum(diffB>burstInterval) + 1 # number of bursts is given by intervals larger than the 'burstInterval'
+            boolBursts = diffB<burstInterval
+            boolBursts = np.concatenate((np.array([False]),boolBursts))
+            boolBursts = np.concatenate((np.diff(boolBursts),np.array([True])))
+            startStopBursts = np.arange(len(boolBursts))[boolBursts]
+            #[i for i,(m,n) in enumerate(zip([2]+boolBursts,boolBursts+[2])) if m!=n]
+            #startStopBursts = np.asarray(startStopBursts)
+            numberSpikesInBursts = (startStopBursts[1::2]-startStopBursts[:-1:2])+1
+            #pdb.set_trace()
+            return (onlyBursts,noBursts,numberOfBursts,numberSpikesInBursts)
+
+        ###############################################################################
+        # irregular spike-pairs, bursts only, the numerical integration is run in an external C++ code for performance improvment
+        def irregularBurstPairsEventBased(self, deltaT, preRate, postRate, ppp,nSpikes=2000):
+
+                # print 'time above threshold : NONLINEAR calcium dynamics'
+
+                # construction of the spike train
+                # tStart = 0.1 # start time at 100 ms
+
+                #np.random.seed(7)
+
+                tPre = []
+                tPostCorr = []
+                tPostInd = []
+
+                tPre.append(0)
+                tPostInd.append(0)
+
+                for i in range(nSpikes):
+                        tPre.append(tPre[-1] + np.random.exponential(1. / preRate))
+                        if np.random.rand() < ppp:
+                                tPostCorr.append(tPre[-1] + deltaT)
+                        if (postRate - ppp * preRate) > 0.:
+                                tPostInd.append(tPostInd[-1] + np.random.exponential(1. / (postRate - ppp * preRate)))
+
+                tPost = tPostCorr + tPostInd[1:]
+
+                tPostSorted = sorted(tPost, key=lambda tPost: tPost)
+
+                (tPreBursts,_,numberOfBursts,numberSpikesInBursts)  = self.separateBursts(tPre[1:],0.15)
+                (tPostBursts,_,numberOfBursts,numberSpikesInBursts) = self.separateBursts(tPostSorted,0.15)
+                #print numberOfBursts, numberSpikesInBursts
+                tAll = np.zeros((len(tPreBursts) + len(tPostBursts), 3))
+
+                tAll[:, 0] = np.hstack((tPreBursts, tPostBursts))
+                tAll[:, 1] = np.hstack((np.zeros(len(tPreBursts)), np.ones(len(tPostBursts))))
+                tAll[:, 2] = np.hstack((np.repeat(self.Cpre, len(tPreBursts)), np.repeat(self.Cpost, len(tPostBursts))))
+
+                tList = tAll.tolist()
+                tListSorted = sorted(tList, key=lambda tList: tList[0])
+
+                # tListSorted.append([Npres/freq,2])
+
+                (tD, tP) = self.eventBasedIntegration(tListSorted)
+
+                alphaD = tD / tListSorted[-1][0]
+                alphaP = tP / tListSorted[-1][0]  # print alphaD, alphaP
+                normalizeF = nSpikes/100.
+                return (alphaD, alphaP,numberOfBursts/normalizeF,numberSpikesInBursts)
+
+        ###############################################################################
+        # irregular spike-pairs, bursts only, the numerical integration is run in an external C++ code for performance improvment
+        def irregularIndSpikePairsEventBased(self, deltaT, preRate, postRate, ppp,nSpikes=2000):
+
+                # print 'time above threshold : NONLINEAR calcium dynamics'
+
+                # construction of the spike train
+                # tStart = 0.1 # start time at 100 ms
+
+                #np.random.seed(7)
+
+                tPre = []
+                tPostCorr = []
+                tPostInd = []
+
+                tPre.append(0)
+                tPostInd.append(0)
+
+                for i in range(nSpikes):
+                        tPre.append(tPre[-1] + np.random.exponential(1. / preRate))
+                        if np.random.rand() < ppp:
+                                tPostCorr.append(tPre[-1] + deltaT)
+                        if (postRate - ppp * preRate) > 0.:
+                                tPostInd.append(tPostInd[-1] + np.random.exponential(1. / (postRate - ppp * preRate)))
+
+                tPost = tPostCorr + tPostInd[1:]
+
+                tPostSorted = sorted(tPost, key=lambda tPost: tPost)
+
+                (_,tPreNoBursts, _, _) = self.separateBursts(tPre[1:], 0.15)
+                (_, tPostNoBursts, _, _) = self.separateBursts(tPostSorted, 0.15)
+
+                tAll = np.zeros((len(tPreNoBursts) + len(tPostNoBursts), 3))
+
+                tAll[:, 0] = np.hstack((tPreNoBursts, tPostNoBursts))
+                tAll[:, 1] = np.hstack((np.zeros(len(tPreNoBursts)), np.ones(len(tPostNoBursts))))
+                tAll[:, 2] = np.hstack((np.repeat(self.Cpre, len(tPreNoBursts)), np.repeat(self.Cpost, len(tPostNoBursts))))
+
+                tList = tAll.tolist()
+                tListSorted = sorted(tList, key=lambda tList: tList[0])
+
+                # tListSorted.append([Npres/freq,2])
+
+                (tD, tP) = self.eventBasedIntegration(tListSorted)
+
+                alphaD = tD / tListSorted[-1][0]
+                alphaP = tP / tListSorted[-1][0]  # print alphaD, alphaP
+
+                return (alphaD, alphaP)
         ###############################################################################
         # irregular spike-pairs and deterministic short-term plasticity, event-based integration
         def irregularSpikePairsSTPDeterministic(self, deltaT, preRate, postRate, ppp, tauRec, U):

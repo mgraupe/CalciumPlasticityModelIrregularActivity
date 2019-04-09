@@ -18,12 +18,13 @@ import matplotlib.gridspec as gridspec
 #######################################################
 # bins data and calculates average/STD within bins
 def binned_averages_std(stdpData,bins):
-        binnedData = zeros((len(bins)-1,3))
+        binnedData = zeros((len(bins)-1,4))
         for i in range(len(bins)-1):
                 mask = (stdpData[:,0] >= bins[i]) & (stdpData[:,0]< bins[i+1])
                 binnedData[i,0] = average(stdpData[mask][:,0])
                 binnedData[i,1] = average(stdpData[mask][:,1])
                 binnedData[i,2] = std(stdpData[mask][:,1])
+                binnedData[i,3] = std(stdpData[mask][:,0])
         return binnedData
         
 

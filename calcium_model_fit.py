@@ -29,7 +29,7 @@ def fitData(params):
 
 ###########################################################################
 # the calcuation of mse is defined here 
-def errFunc(params, stimFrequencies, fitWeights, fitData1Hz,fitData3Hz,fitData5Hz,fitData10Hz,fitIrrData1Hz,fitIrrData3Hz):
+def errFunc(params, stimFrequencies, fitWeights, fitData1Hz,fitData3Hz, fitData5Hz,fitData10Hz,fitIrrData1Hz,fitIrrData3Hz):
     # mse for data vs. model
     chi2 = 0.
     sChange.choseParameterSet('Venance',source='fromDictionary',params=params)
@@ -38,7 +38,7 @@ def errFunc(params, stimFrequencies, fitWeights, fitData1Hz,fitData3Hz,fitData5H
     tat = timeAboveThreshold(sChange.tauCa, sChange.Cpre, sChange.Cpost, sChange.thetaD, sChange.thetaP, nonlinear=par.nonlinear)
     #print 'Parameters :', sChange.tauCa, sChange.Cpre, sChange.Cpost, sChange.thetaD, sChange.thetaP, sChange.D
 
-    for n in range(len(stimFrequencies)):
+    for n in range(4):
         exec('dataSet = fitData%sHz' % stimFrequencies[n])
         # print stimFrequencies[n], dataSet
         if fitWeights[n]:
@@ -55,16 +55,24 @@ def errFunc(params, stimFrequencies, fitWeights, fitData1Hz,fitData3Hz,fitData5H
                 #else:
                 #print dataSet[i,1]/100., sChange.mean/par.w0
                 #print sChange.synChange, sChange.mean
-                chi2+= fitWeights[n]*((dataSet[i,1]/100. - sChange.mean/par.w0)**2) #*(dataSet[i,2])
+                if stimFrequencies[n] < 4.:
+                    #chi2+= fitWeights[n]*((dataSet[i,1] - sChange.mean/par.w0)**2) #*(dataSet[i,2])
+                    # for binary case
+                    chi2 += fitWeights[n] * ((dataSet[i, 1] - sChange.synChange) ** 2)  # *(dataSet[i,2])
+                else:
+                    # for mean case
+                    #chi2+= fitWeights[n]*((dataSet[i,1]/100. - sChange.mean/par.w0)**2) #*(dataSet[i,2])
+                    # for binary case
+                    chi2 += fitWeights[n] * ((dataSet[i, 1] / 100. - sChange.synChange) ** 2)  # *(dataSet[i,2])
                 #print sChange.meanAdd
                 #chi3+= ((dataSet[i,1]/100. - 1.)**2)/((dataSet[i,2]/100.)**2)
-        if stimFrequencies[n] in [1,3]:
-            exec('irrDataSet = fitIrrData%sHz' % stimFrequencies[n])
-            #print 'irregular', stimFrequencies[n], dataSet
-            for i in range(len(irrDataSet)): #irregularSpikePairsEventBased(self, deltaT, preRate, postRate, ppp)
-                (alphaD, alphaP) = tat.irregularSpikePairsEventBased(irrDataSet[i,0] - sChange.D, float(stimFrequencies[n]),float(stimFrequencies[n]),1.)
-                sChange.changeInSynapticStrength(sChange.Npresentations/float(stimFrequencies[n]), par.w0, alphaD, alphaP)
-                chi2+= ((irrDataSet[i,2] - sChange.mean/par.w0)**2) #*(dataSet[i,2])
+        # if stimFrequencies[n] in [1,3]:
+        #     exec('irrDataSet = fitIrrData%sHz' % stimFrequencies[n])
+        #     #print 'irregular', stimFrequencies[n], dataSet
+        #     for i in range(len(irrDataSet)): #irregularSpikePairsEventBased(self, deltaT, preRate, postRate, ppp)
+        #         (alphaD, alphaP) = tat.irregularSpikePairsEventBased(irrDataSet[i,0] - sChange.D, float(stimFrequencies[n]),float(stimFrequencies[n]),1.)
+        #         sChange.changeInSynapticStrength(sChange.Npresentations/float(stimFrequencies[n]), par.w0, alphaD, alphaP)
+        #         chi2+= ((irrDataSet[i,2] - sChange.mean/par.w0)**2) #*(dataSet[i,2])
 
     # add smoothness constraint
     #frequencies = linspace(1.,50.,50)
@@ -114,7 +122,7 @@ sChange = synapticChange('Venance') #, source='fromDictionary', nonlinear=par.no
 
 #synU = synUtils(par.thetaD,par.thetaP,par.nonlinear,par.Npresentations,par.w0,dataSet='venance',modelV=par.modelVersion)
 
-nProcessors = 5
+nProcessors = 4
 pool = multiprocessing.Pool(nProcessors)
 
 #############################################################################
@@ -135,7 +143,7 @@ for n in range(par.Nruns):
     #p1 = simplex(errFunc, params0, args=(sChange.stimFrequencies,par.fitWeights,sChange.rawData1Hz,sChange.rawData3Hz,sChange.rawData5Hz,sChange.rawData10Hz,sChange.rawIrregularData1Hz,sChange.rawIrregularData3Hz), full_output=1, disp=True,maxiter=1E4, maxfun=1E4)
     #print p1
     for i in range(len(rrr)):
-        print rrr[i]
+        #print rrr[i]
         if rrr[i][1] < par.threshold:
             solutions.append(rrr[i])
 
