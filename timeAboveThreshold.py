@@ -462,7 +462,7 @@ class timeAboveThreshold():
             tPre.append(0)
             tPostInd.append(0)
 
-            for i in range(nSpikes):
+            for i in range(int(nSpikes)):
                 tPre.append(tPre[-1] + np.random.exponential(1. / preRate))
                 if np.random.rand() < ppp:
                     tPostCorr.append(tPre[-1] + deltaT)
@@ -546,7 +546,7 @@ class timeAboveThreshold():
                 tPre.append(0)
                 tPostInd.append(0)
 
-                for i in range(nSpikes):
+                for i in range(int(nSpikes)):
                         tPre.append(tPre[-1] + np.random.exponential(1. / preRate))
                         if np.random.rand() < ppp:
                                 tPostCorr.append(tPre[-1] + deltaT)
@@ -596,7 +596,7 @@ class timeAboveThreshold():
                 tPre.append(0)
                 tPostInd.append(0)
 
-                for i in range(nSpikes):
+                for i in range(int(nSpikes)):
                         tPre.append(tPre[-1] + np.random.exponential(1. / preRate))
                         if np.random.rand() < ppp:
                                 tPostCorr.append(tPre[-1] + deltaT)
