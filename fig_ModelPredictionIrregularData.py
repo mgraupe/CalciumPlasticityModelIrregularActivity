@@ -97,7 +97,7 @@ def generateFitRegDataFig(paraName, dataDir, figDir, modelV=None):
     #######################################################
     # plot data
     fig_width = 9  # width in inches
-    fig_height = 4  # height in inches
+    fig_height = 8  # height in inches
     fig_size = [fig_width, fig_height]
     params = {'axes.labelsize': 14, 'axes.titlesize': 13, 'font.size': 11, 'xtick.labelsize': 11, 'ytick.labelsize': 11, 'figure.figsize': fig_size,  # 'savefig.dpi': 600,
               'axes.linewidth': 1.3, 'ytick.major.size': 4,  # major tick size in points
@@ -128,7 +128,7 @@ def generateFitRegDataFig(paraName, dataDir, figDir, modelV=None):
     fig = plt.figure()
 
     # define sub-panel grid and possibly width and height ratios
-    gs = gridspec.GridSpec(1, 2  # width_ratios=[1,1.2],
+    gs = gridspec.GridSpec(2, 2  # width_ratios=[1,1.2],
                            # height_ratios=[1,1]
                            )
 
@@ -138,16 +138,16 @@ def generateFitRegDataFig(paraName, dataDir, figDir, modelV=None):
     #fig.suptitle(r'STDP data, %s, $C_{\rm pre} = %s$, $C_{\rm post} = %s$, (RMS = %s)' % (modelVersion, np.round(sChange.Cpre, 4), np.round(sChange.Cpost, 4), np.round(paraOpt[1], 4)),
     #    fontsize=14)
     # possibly change outer margins of the figure
-    plt.subplots_adjust(left=0.1, right=0.96, top=0.92, bottom=0.16)
+    plt.subplots_adjust(left=0.1, right=0.96, top=0.92, bottom=0.1)
 
     # sub-panel enumerations
-    plt.figtext(0.0, 0.93, 'A',clip_on=False,color='black', weight='bold',size=22)
-    plt.figtext(0.51, 0.93, 'B',clip_on=False,color='black', weight='bold',size=22)
+    plt.figtext(0.0, 0.48, 'B',clip_on=False,color='black', weight='bold',size=22)
+    plt.figtext(0.51, 0.48, 'C',clip_on=False,color='black', weight='bold',size=22)
     #plt.figtext(0.0, 0.47, 'C',clip_on=False,color='black', weight='bold',size=22)
     #plt.figtext(0.51, 0.47, 'D',clip_on=False,color='black', weight='bold',size=22)
 
     # panel 0 #######################################################
-    ax0 = plt.subplot(gs[0])
+    ax0 = plt.subplot(gs[2])
 
     # title
     ax0.set_title('1 Hz')
@@ -209,7 +209,7 @@ def generateFitRegDataFig(paraName, dataDir, figDir, modelV=None):
     plt.ylabel('change in synaptic strength')
 
     # panel 1 #############################################
-    ax1 = plt.subplot(gs[1])
+    ax1 = plt.subplot(gs[3])
 
     # title
     ax1.set_title('2.5 - 3 Hz')

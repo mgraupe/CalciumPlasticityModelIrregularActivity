@@ -39,7 +39,7 @@ def runIrregularPairSimulations(args):
     #if synChange.Cpre > synChange.Cpost:
     #    (alphaD, alphaP) = tat.irregularSpikePairsEventBased(dT + synChange.D, preRate, postRate, p)
     #else:
-    (alphaD, alphaP) = tat.irregularSpikePairsEventBased(dT - synChange.D, preRate, postRate, p, nSpikes=1E6)
+    (alphaD, alphaP) = tat.irregularSpikePairsEventBased(dT - synChange.D, preRate, postRate, p, nSpikes=NumberOfSpikesToGenerate)
     #synChange.changeInSynapticStrength(N_pres/preRate, rho0, alphaD, alphaP)
     synChange.changeInSynapticStrength(N_pres/preRate, rho0, alphaD, alphaP)
 
@@ -55,7 +55,7 @@ def runIrregularBurstPairSimulations(args):
     #if synChange.Cpre > synChange.Cpost:
     #    (alphaD, alphaP) = tat.irregularSpikePairsEventBased(dT + synChange.D, preRate, postRate, p)
     #else:
-    (alphaD, alphaP,nBursts,nSpikesInBursts) = tat.irregularBurstPairsEventBased(dT - synChange.D, preRate, postRate, p, nSpikes=1E6)
+    (alphaD, alphaP,nBursts,nSpikesInBursts) = tat.irregularBurstPairsEventBased(dT - synChange.D, preRate, postRate, p, nSpikes=NumberOfSpikesToGenerate)
     #synChange.changeInSynapticStrength(N_pres/preRate, rho0, alphaD, alphaP)
     synChange.changeInSynapticStrength(N_pres/preRate, rho0, alphaD, alphaP)
 
@@ -71,7 +71,7 @@ def runIrregularIndPairSimulations(args):
     #if synChange.Cpre > synChange.Cpost:
     #    (alphaD, alphaP) = tat.irregularSpikePairsEventBased(dT + synChange.D, preRate, postRate, p)
     #else:
-    (alphaD, alphaP) = tat.irregularIndSpikePairsEventBased(dT - synChange.D, preRate, postRate, p, nSpikes=1E6)
+    (alphaD, alphaP) = tat.irregularIndSpikePairsEventBased(dT - synChange.D, preRate, postRate, p, nSpikes=NumberOfSpikesToGenerate)
     #synChange.changeInSynapticStrength(N_pres/preRate, rho0, alphaD, alphaP)
     synChange.changeInSynapticStrength(N_pres/preRate, rho0, alphaD, alphaP)
 
@@ -103,6 +103,8 @@ N_pres = 100.
 rho0 = 0.5
 nl = 1.  # nonlinearity factor
 
+NumberOfSpikesToGenerate = 500000
+
 ###########################################################
 # initiate synaptic change class and chose parameter set from file
 
@@ -121,7 +123,7 @@ pool = multiprocessing.Pool()
 # synaptic change vs Delta T for irregular Pairs
 #################################################################################################
 
-print 'irregular pairs : synaptic change vs Delta T for four frequencies and one p\'s'
+#print 'irregular pairs : synaptic change vs Delta T for four frequencies and one p\'s'
 
 # Parameter of the stimulation protocol
 frequencies =  array([1.,3.,5.,10.])  # frequency of spike-pair presentations in pairs/sec
@@ -141,9 +143,11 @@ resultsIrrInd = zeros(len(frequencies) * 3 + 2)
 
 ###########################################################
 # simulation loop over range of deltaT values
+print('computing irregular pairs : synaptic change vs Delta T for four frequencies and one p\'s')
 for i in range(len(deltaT)):
     #
-    print 'deltaT : ', deltaT[i]
+    if not i%10:
+        print 'deltaT : ', deltaT[i]
 
     args = column_stack((ones(nCases) * deltaT[i], frequencies, frequencies, ones(nCases) * ppp))
 
@@ -160,10 +164,12 @@ np.save(outputDir + 'irregularSpikePairs_vs_deltaT_differentFreqs_%s.npy' % para
 np.savetxt(outputDir + 'irregularSpikePairs_vs_deltaT_differentFreqs_%s.dat' % params, resultsIrr)
 
 ###########################################################
-# bursts : simulation loop over range of deltaT values
+# bursts : simulation loop over range of deltaT value
+print('computing irregular bursts')
 for i in range(len(deltaT)):
     #
-    print 'deltaT : ', deltaT[i]
+    if not i%10:
+        print 'deltaT : ', deltaT[i]
 
     args = column_stack((ones(nCases) * deltaT[i], frequencies, frequencies, ones(nCases) * ppp))
 
@@ -180,26 +186,29 @@ np.save(outputDir + 'irregularBurstSpikePairs_vs_deltaT_differentFreqs_%s.npy' %
 np.savetxt(outputDir + 'irregularBurstSpikePairs_vs_deltaT_differentFreqs_%s.dat' % params, resultsIrrBursts)
 
 
-nBurst1L = []
-nSpikesInBurst1L = []
-nBurst3L = []
-nSpikesInBurst3L = []
-for i in range(20): #len(deltaT)):
-    (_, _,nBursts,nSpikesInBursts) = tat.irregularBurstPairsEventBased(deltaT[i] - synChange.D, 1., 1., ppp, nSpikes=10000)
-    #synChange.changeInSynapticStrength(N_pres/preRate, rho0, alphaD, alphaP)
-    nBurst1L.append(nBursts)
-    nSpikesInBurst1L.extend(nSpikesInBursts)
-    (_, _,nBursts,nSpikesInBursts) = tat.irregularBurstPairsEventBased(deltaT[i] - synChange.D, 3., 3., ppp, nSpikes=10000)
-    #synChange.changeInSynapticStrength(N_pres/preRate, rho0, alphaD, alphaP)
-    nBurst3L.append(nBursts)
-    nSpikesInBurst3L.extend(nSpikesInBursts)
+# nBurst1L = []
+# nSpikesInBurst1L = []
+# nBurst3L = []
+# nSpikesInBurst3L = []
+# for i in range(20): #len(deltaT)):
+#     (_, _,nBursts,nSpikesInBursts) = tat.irregularBurstPairsEventBased(deltaT[i] - synChange.D, 1., 1., ppp, nSpikes=10000)
+#     #synChange.changeInSynapticStrength(N_pres/preRate, rho0, alphaD, alphaP)
+#     nBurst1L.append(nBursts)
+#     nSpikesInBurst1L.extend(nSpikesInBursts)
+#     (_, _,nBursts,nSpikesInBursts) = tat.irregularBurstPairsEventBased(deltaT[i] - synChange.D, 3., 3., ppp, nSpikes=10000)
+#     #synChange.changeInSynapticStrength(N_pres/preRate, rho0, alphaD, alphaP)
+#     nBurst3L.append(nBursts)
+#     nSpikesInBurst3L.extend(nSpikesInBursts)
 
 
 ###########################################################
 # individual spikes : simulation loop over range of deltaT values
+print('computing individual spikes')
+
 for i in range(len(deltaT)):
     #
-    print 'deltaT : ', deltaT[i]
+    if not i%10:
+        print 'deltaT : ', deltaT[i]
 
     args = column_stack((ones(nCases) * deltaT[i], frequencies, frequencies, ones(nCases) * ppp))
 
@@ -220,14 +229,14 @@ np.savetxt(outputDir + 'irregularIndividualSpikePairs_vs_deltaT_differentFreqs_%
 ##########################################################
 # synaptic change vs Delta T for regular Pairs
 ##########################################################
-print 'regular pairs : synaptic change vs Delta T for six frequencies and one p'
+print 'computing regular pairs : synaptic change vs Delta T for six frequencies and one p'
 
 resultsReg = zeros(len(frequencies)*3+2)
 
 # simulation loop over range of deltaT values
 for i in range(len(deltaT)):
-    #
-    print 'deltaT : ', deltaT[i]
+    if not i%10:
+        print 'deltaT : ', deltaT[i]
 
     args = column_stack((ones(nCases) * deltaT[i], frequencies, frequencies, ones(nCases) * ppp))
 

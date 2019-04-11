@@ -445,7 +445,7 @@ class timeAboveThreshold():
 
         ###############################################################################
         # irregular spike-pairs, the numerical integration is run in an external C++ code for performance improvment
-        def irregularSpikePairsEventBased(self, deltaT, preRate, postRate, ppp, nSpikes=10000):
+        def irregularSpikePairsEventBased(self, deltaT, preRate, postRate, ppp, nSpikes=2000):
 
 
             # print 'time above threshold : NONLINEAR calcium dynamics'
@@ -488,7 +488,7 @@ class timeAboveThreshold():
 
             alphaD = tD / tListSorted[-1][0]
             alphaP = tP / tListSorted[-1][0]  # print alphaD, alphaP
-            ####################################################################
+
 
             return (alphaD, alphaP)
 
@@ -530,7 +530,7 @@ class timeAboveThreshold():
 
         ###############################################################################
         # irregular spike-pairs, bursts only, the numerical integration is run in an external C++ code for performance improvment
-        def irregularBurstPairsEventBased(self, deltaT, preRate, postRate, ppp,nSpikes=2000):
+        def irregularBurstPairsEventBased(self, deltaT, preRate, postRate, ppp, nSpikes=2000):
 
                 # print 'time above threshold : NONLINEAR calcium dynamics'
 
@@ -580,7 +580,7 @@ class timeAboveThreshold():
 
         ###############################################################################
         # irregular spike-pairs, bursts only, the numerical integration is run in an external C++ code for performance improvment
-        def irregularIndSpikePairsEventBased(self, deltaT, preRate, postRate, ppp,nSpikes=2000):
+        def irregularIndSpikePairsEventBased(self, deltaT, preRate, postRate, ppp, nSpikes=2000):
 
                 # print 'time above threshold : NONLINEAR calcium dynamics'
 

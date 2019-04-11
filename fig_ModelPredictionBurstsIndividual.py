@@ -97,7 +97,7 @@ def generateFitRegDataFig(paraName, dataDir, figDir, modelV=None):
     #######################################################
     # plot data
     fig_width = 9  # width in inches
-    fig_height = 4  # height in inches
+    fig_height = 6  # height in inches
     fig_size = [fig_width, fig_height]
     params = {'axes.labelsize': 14, 'axes.titlesize': 13, 'font.size': 11, 'xtick.labelsize': 11, 'ytick.labelsize': 11, 'figure.figsize': fig_size,  # 'savefig.dpi': 600,
               'axes.linewidth': 1.3, 'ytick.major.size': 4,  # major tick size in points
@@ -128,8 +128,8 @@ def generateFitRegDataFig(paraName, dataDir, figDir, modelV=None):
     fig = plt.figure()
 
     # define sub-panel grid and possibly width and height ratios
-    gs = gridspec.GridSpec(1, 2  # width_ratios=[1,1.2],
-                           # height_ratios=[1,1]
+    gs = gridspec.GridSpec(2, 2, # width_ratios=[1,1.2],
+                           height_ratios=[1,2]
                            )
 
     # define vertical and horizontal spacing between panels
@@ -138,16 +138,17 @@ def generateFitRegDataFig(paraName, dataDir, figDir, modelV=None):
     #fig.suptitle(r'STDP data, %s, $C_{\rm pre} = %s$, $C_{\rm post} = %s$, (RMS = %s)' % (modelVersion, np.round(sChange.Cpre, 4), np.round(sChange.Cpost, 4), np.round(paraOpt[1], 4)),
     #    fontsize=14)
     # possibly change outer margins of the figure
-    plt.subplots_adjust(left=0.1, right=0.96, top=0.92, bottom=0.16)
+    plt.subplots_adjust(left=0.1, right=0.96, top=0.92, bottom=0.11)
 
     # sub-panel enumerations
-    plt.figtext(0.0, 0.93, 'A',clip_on=False,color='black', weight='bold',size=22)
-    plt.figtext(0.51, 0.93, 'B',clip_on=False,color='black', weight='bold',size=22)
+    plt.figtext(0.0, 0.95, 'A',clip_on=False,color='black', weight='bold',size=22)
+    plt.figtext(0.0, 0.61, 'B',clip_on=False,color='black', weight='bold',size=22)
+    plt.figtext(0.51, 0.61, 'C',clip_on=False,color='black', weight='bold',size=22)
     #plt.figtext(0.0, 0.47, 'C',clip_on=False,color='black', weight='bold',size=22)
     #plt.figtext(0.51, 0.47, 'D',clip_on=False,color='black', weight='bold',size=22)
 
     # panel 0 #######################################################
-    ax0 = plt.subplot(gs[0])
+    ax0 = plt.subplot(gs[2])
 
     # title
     ax0.set_title('1 Hz')
@@ -199,6 +200,7 @@ def generateFitRegDataFig(paraName, dataDir, figDir, modelV=None):
 
     ax0.set_xlim(-240, 240)
     ax0.set_ylim(60, 200)
+    ax0.yaxis.set_major_locator(MultipleLocator(25))
     # legends and labels
     plt.legend(loc=(0.55,0.65), frameon=False)
     leg = plt.gca().get_legend()
@@ -210,7 +212,7 @@ def generateFitRegDataFig(paraName, dataDir, figDir, modelV=None):
 
 
     # panel 1 #############################################
-    ax1 = plt.subplot(gs[1])
+    ax1 = plt.subplot(gs[3])
 
     # title
     ax1.set_title('2.5 - 3 Hz')
@@ -224,13 +226,13 @@ def generateFitRegDataFig(paraName, dataDir, figDir, modelV=None):
     # ax1.axvline(x=250,ls='--',color='turquoise',lw=2)
     #ax1.plot(stdp3Hz[:, 0], stdp3Hz[:, 1], 'o', ms=4, c='0.5', markeredgecolor='0.5')
     #ax1.errorbar(stdp3binned[:, 0], stdp3binned[:, 1] * 100., yerr=stdp3binned[:, 2], fmt='o-',lw=2, markeredgecolor='C0', label=r'exp. data: reg. pairs')
-    ax1.plot(synChange[:, 0] * 1000., synChange[:, 2] * 100., c='C0', label=r'model fit: reg. pairs',lw=2)
+    ax1.plot(synChange[:, 0] * 1000., synChange[:, 2] * 100., c='C0',lw=2, label=r'model fit: reg. pairs')
     #ax1.errorbar(stdpIrr3HzBinned[:, 0] * 1000., stdpIrr3HzBinned[:, 2] * 100., xerr=stdpIrr3HzBinned[:, 1] * 1000., yerr=stdpIrr3HzBinned[:, 3] * 100., fmt='o-',
     #             c='C3',label=r'exp. data: irr. pairs')
     if irrData:
         ax1.plot(modelNew[:, 0] * 1000., modelNew[:, 11] * 100., lw=2,c='C2',label=r'model fit: irregular pairs')
-        ax1.plot(modelBurstsNew[:, 0] * 1000., modelBurstsNew[:, 11] * 100.,c='C4', label=r'model fit: irregular bursts')
-        ax1.plot(modelIndNew[:, 0] * 1000., modelIndNew[:, 11] * 100.,c='C5', label=r'model fit: irregular ind. spikes')
+        ax1.plot(modelBurstsNew[:, 0] * 1000., modelBurstsNew[:, 11] * 100.,lw=2,c='C4', label=r'model fit: irregular bursts')
+        ax1.plot(modelIndNew[:, 0] * 1000., modelIndNew[:, 11] * 100.,lw=2,c='C5', label=r'model fit: irregular ind. spikes')
     #for i in range(len(allData)):
     #    if allData[i][1] == 3:
     #        ax1.plot(allData[i][3] * 1000., allData[i][6] * 100., 'o', ms=4, c='0.5', label='exp. data: irregular pairs' if i == 0 else None)
@@ -250,8 +252,9 @@ def generateFitRegDataFig(paraName, dataDir, figDir, modelV=None):
     ax1.xaxis.set_ticks_position('bottom')
 
     #ax1.set_ylim(ymax=350)
-    ax1.set_xlim(-260, 260)
-    ax1.set_ylim(20, 320)
+    ax1.set_xlim(-240, 240)
+    ax1.set_ylim(60, 200)
+    ax1.yaxis.set_major_locator(MultipleLocator(25))
     # legends and labels
     #plt.legend(frameon=False, loc=1)
     #leg = plt.gca().get_legend()
@@ -267,7 +270,8 @@ def generateFitRegDataFig(paraName, dataDir, figDir, modelV=None):
     fname = 'fig_modelPredictionBurstsIndividual_%s' % paraName  # os.path.basename(__file__)
 
     savefig(figDir + fname + '.png')
-    savefig(figDir + fname + '.pdf')  # clf()  # dsN += 1
+    savefig(figDir + fname + '.pdf')
+    savefig(figDir + fname + '.svg')  # clf()  # dsN += 1
 
 
 ##############################################################################
