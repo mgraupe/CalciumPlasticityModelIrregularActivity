@@ -495,38 +495,32 @@ class timeAboveThreshold():
         ############################################################################################
         ## single out bursts from plasticity trace #################################################
         def separateBursts(self,spikeTimes,burstInterval):
-            onlyBurstsTemp = []
-            onlyBursts = []
-            noBursts =  []
-            #onlyBursts.append(spikeTimes[0])
-            noBursts.append(spikeTimes[0])
-            for i in range(1,len(spikeTimes)):
-                if (spikeTimes[i] - spikeTimes[i-1])<burstInterval:
-                    onlyBurstsTemp.append(spikeTimes[i-1])
-                    onlyBurstsTemp.append(spikeTimes[i])
-                else:
-                    noBursts.append(spikeTimes[i])
+                # extract bursts ###############################
+                spikeTimesA = np.asarray(spikeTimes)
+                diffSpikeTimes = np.diff(spikeTimesA)
+                boolBursts = diffSpikeTimes < burstInterval
+                # displace bool array to include also last spikes in bursts
+                boolBurstsAll = np.concatenate((boolBursts, np.array([False]))) | np.concatenate((np.array([False]), boolBursts))
+                onlyBursts = spikeTimesA[boolBurstsAll]
+                # extract single spikes ########################
+                boolBurstsAllInt = np.array(boolBursts, dtype=int)
+                diffBurst = np.diff(boolBurstsAllInt)
+                noBurstsBool = (np.invert(boolBurstsAll)) | (np.concatenate((np.array([1]), diffBurst, np.array([0]))) == 1)
+                noBursts = spikeTimesA[noBurstsBool]
 
+                # count bursts and number of spikes in bursts
+                diffB = onlyBursts[1:] - onlyBursts[:-1]
+                numberOfBursts = np.sum(diffB > burstInterval) + 1  # number of bursts is given by intervals larger than the 'burstInterval'
+                boolBursts = diffB < burstInterval
+                boolBursts = np.concatenate((np.array([False]), boolBursts))
+                boolBursts = np.concatenate((np.diff(boolBursts), np.array([True])))
+                startStopBursts = np.arange(len(boolBursts))[boolBursts]
+                # [i for i,(m,n) in enumerate(zip([2]+boolBursts,boolBursts+[2])) if m!=n]
+                # startStopBursts = np.asarray(startStopBursts)
+                numberSpikesInBursts = (startStopBursts[1::2] - startStopBursts[:-1:2]) + 1
+                # pdb.set_trace()
+                return (onlyBursts, noBursts, numberOfBursts, numberSpikesInBursts)
 
-            # remove duplicates
-            for i in onlyBurstsTemp:
-                if i not in onlyBursts:
-                    onlyBursts.append(i)
-
-            onlyBursts = np.asarray(onlyBursts)
-            noBursts = np.asarray(noBursts)
-            # count bursts and number of spikes in bursts
-            diffB = onlyBursts[1:]-onlyBursts[:-1]
-            numberOfBursts = np.sum(diffB>burstInterval) + 1 # number of bursts is given by intervals larger than the 'burstInterval'
-            boolBursts = diffB<burstInterval
-            boolBursts = np.concatenate((np.array([False]),boolBursts))
-            boolBursts = np.concatenate((np.diff(boolBursts),np.array([True])))
-            startStopBursts = np.arange(len(boolBursts))[boolBursts]
-            #[i for i,(m,n) in enumerate(zip([2]+boolBursts,boolBursts+[2])) if m!=n]
-            #startStopBursts = np.asarray(startStopBursts)
-            numberSpikesInBursts = (startStopBursts[1::2]-startStopBursts[:-1:2])+1
-            #pdb.set_trace()
-            return (onlyBursts,noBursts,numberOfBursts,numberSpikesInBursts)
 
         ###############################################################################
         # irregular spike-pairs, bursts only, the numerical integration is run in an external C++ code for performance improvment
@@ -557,8 +551,10 @@ class timeAboveThreshold():
 
                 tPostSorted = sorted(tPost, key=lambda tPost: tPost)
 
+                #print('finding bursts ... ',)
                 (tPreBursts,_,numberOfBursts,numberSpikesInBursts)  = self.separateBursts(tPre[1:],0.15)
                 (tPostBursts,_,numberOfBursts,numberSpikesInBursts) = self.separateBursts(tPostSorted,0.15)
+                #print('done')
                 #print numberOfBursts, numberSpikesInBursts
                 tAll = np.zeros((len(tPreBursts) + len(tPostBursts), 3))
 
