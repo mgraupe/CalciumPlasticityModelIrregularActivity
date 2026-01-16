@@ -45,15 +45,15 @@ _Experimental data of for regular spike-pair stimulation_
 
 Reads and plots the experimental data for regular spike-pair data.  
 
-**Input:** Experiemental data for 1, 3, 5, and 10 Hz spike-pair stimulation
+**Input:** Experimental data for 1, 3, 5, and 10 Hz spike-pair stimulation
 
 **Output:** PDF/PNG Figure  <br/>   <br/>![fig_regularPlasticityData_v2](publicationFigures/fig_regularPlasticityData_v2.png)
 
 ### [`fig_ModelFitToRegularData.py`](fig_ModelFitToRegularData.py)
 
-_Computation and visualization of regular plasticity data_
+_Computation and visualization of regular plasticity data and model fit_
 
-Generates and plots the model fit to the regular spike-pair data.  Note that the model is fitted to the binned data (black points).
+Generates and plots the model fit to the regular spike-pair data.  Note that the model is fitted using the binned data (black points).
 
 **Input:** Uses the fitted parameter set `VenancesBin0` 
 
@@ -62,19 +62,29 @@ Generates and plots the model fit to the regular spike-pair data.  Note that the
 
 
 ### [`fig_ModelRegularIrregularFrequencies.py`](fig_ModelRegularIrregularFrequencies.py)  
-_Computation and visualization of regular and irregular plasticity data_
+_Computation and comparison of regular and irregular plasticity data_
 
-Generates and plots the model prediction for irregular spike-pair data based the parameter set obtained from fitting regular spike-pair data 
+Generates and plots the model prediction for regular and irregular spike-pair data based the parameter set obtained from fitting regular spike-pair data. Plasticity outcomes are shown for 1, 3, 5 and 10 spk/s spike-pair stimulations.
 
 **Input:** Uses the fitted parameter set `VenancesBin0`     
 
 **Output:** PDF/PNG  <br/>   <br/>![fig_regularIrregularFrequencies_VenancesBin0_v3](publicationFigures/fig_regularIrregularFrequencies_VenancesBin0_v3.png)                                                                                              
+### [`fig_ModelAndDataIrregularStim.py`](fig_ModelAndDataIrregularStim.py)
+
+_Experimental data and model prediction for irregular spike-pair stimulation_
+
+Generates and plots the model fit to regular data and the prediction for irregular spike-pairs for 1 and 3 spk/s stimulation protocols. 
+
+
+**Input:** Uses the fitted parameter set `VenancesBin0` 
+
+**Output:** PDF/PNG Figure  <br/>   <br/>![fig_modelAndDataIrregularStim_VenancesBin0](publicationFigures/fig_modelAndDataIrregularStim_VenancesBin0.png) 
 
 ### [`fig_ModelAndDataBurstStim.py`](fig_ModelAndDataBurstStim.py)
 
 _Experimental data for burst-only stimulation_
 
-Reads and plots the experimental data for burst-only spike-pair data. 
+Reads and plots the experimental data for burst-only spike-pair data. The number of spikes in burst and number of bursts is quantified for all instances of the used stimulation protocols in experiments. 
 
 **Input:** Experimental data
 
@@ -83,24 +93,15 @@ Reads and plots the experimental data for burst-only spike-pair data.
 
 ### [`fig_ModelPredictionBurstsIndividual.py`](fig_ModelPredictionBurstsIndividual.py)
 
-_Spike pattern and plasticity outcomes for burst stimulation from the model_
+_Spike pattern and plasticity outcomes for burst stimulation_
 
-The burst-only protocol is run in simulation and the spiking pattern is analyzed in terms of number of spikes in burst and number of bursts. The plasticity outcome as predicted by the calcium-based model is simulated. 
+The burst-only protocol is run as simulation and the spiking pattern is analyzed in terms of number of spikes in burst and number of bursts. The plasticity outcome as predicted by the calcium-based model is computed. 
 
 **Input:** Uses the fitted parameter set `VenancesBin0` 
 
 **Output:** PDF/PNG Figure  <br/>   <br/>![fig_modelPredictionBurstsIndividual_VenancesBin0_v2](publicationFigures/fig_modelPredictionBurstsIndividual_VenancesBin0_v2.png) 
 
-### [`fig_ModelAndDataIrregularStim.py`](fig_ModelAndDataIrregularStim.py)
 
-_Experimental data and model prediction for irregular spike-pair stimulation_
-
-Generates and plots the model fit to regular data and the prediction for irregular spike-pairs for 1 and 3 spk/s stimulation protcols. 
-
-
-**Input:** Uses the fitted parameter set `VenancesBin0` 
-
-**Output:** PDF/PNG Figure  <br/>   <br/>![fig_modelAndDataIrregularStim_VenancesBin0](publicationFigures/fig_modelAndDataIrregularStim_VenancesBin0.png) 
 
 
 
