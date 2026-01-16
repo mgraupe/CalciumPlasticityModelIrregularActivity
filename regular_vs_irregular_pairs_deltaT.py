@@ -93,7 +93,7 @@ amountOfChange = zeros((len(paramSets),3))
 
 dsN = 0
 
-solutions = pickle.load(open('solutions.py'))
+solutions = pickle.load(open('solutions.p'))
 print solutions
 
 for dataSetNumber in paramSets:

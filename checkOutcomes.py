@@ -26,7 +26,7 @@ def generateAllFigs(sol,fn):
 # instance of synaptic Change and figure class  
 synU = synUtils(dataSet='venance',modelV=par.modelVersion)
 
-#s0 = readSol('solutions.py')
+#s0 = readSol('solutions.p')
 #s6 = readSol('solutions_stoch6.py')
 #s0 = readSol('solutions_thetap0.py')
 #s1 = readSol('solutions_thetap1.py')

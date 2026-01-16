@@ -149,7 +149,7 @@ for n in range(par.Nruns):
 
     if solutions:
         solutions = sorted(solutions, key=lambda solutions: solutions[1])
-        pickle.dump(solutions,open('solutions.py','w'))
+        pickle.dump(solutions,open('solutions.p','w'))
 
 
 print solutions[0]
