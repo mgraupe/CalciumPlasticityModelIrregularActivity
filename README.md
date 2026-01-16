@@ -47,6 +47,8 @@ Reads and plots the experimental data for regular spike-pair data.
 
 **Input:** Experiemental data for 1, 3, 5, and 10 Hz spike-pair stimulation
 
+**Output:** PDF/PNG Figure  <br/>   <br/>![fig_regularPlasticityData_v2](publicationFigures/fig_regularPlasticityData_v2.png)
+
 ### [`fig_ModelFitToRegularData.py`](fig_ModelFitToRegularData.py)
 
 _Computation and visualization of regular plasticity data_
@@ -78,7 +80,6 @@ Reads and plots the experimental data for burst-only spike-pair data.
 
 **Output:** PDF/PNG Figure  <br/>   <br/>![fig_modelAndDataBurstStim_VenancesBin0](publicationFigures/fig_modelAndDataBurstStim_VenancesBin0.png) 
 
-**Output:** PDF/PNG Figure  <br/>   <br/>![fig_regularPlasticityData_v2](publicationFigures/fig_regularPlasticityData_v2.png)
 
 ### [`fig_ModelPredictionBurstsIndividual.py`](fig_ModelPredictionBurstsIndividual.py)
 
