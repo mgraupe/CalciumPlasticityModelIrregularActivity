@@ -39,14 +39,13 @@ Generates figures from regular and irregular spike-pair stimulatoin containing r
 
 **Output:** PDF/PNG matplotlib figures for [regular](FigsSimResults/regularDataFitVenance_VenancesBin0.pdf) and [irregular stim.](FigsSimResults/regular-irregular-DataFitVenance_VenancesBin0.pdf) 
 
-### [`fig_ModelRegularIrregularFrequencies.py`](fig_ModelRegularIrregularFrequencies.py)  
-_Computation and visualization of regular and irregular plasticity data_
+### [`fig_regularPlasticityData.py`](fig_regularPlasticityData.py)
 
-Generates and plots the model prediction for irregular spike-pair data based the parameter set obtained from fitting regular spike-pair data 
+_Experimental data of for regular spike-pair stimulation_
 
-**Input:** Uses the fitted parameter set `VenancesBin0`     
+Reads and plots the experimental data for regular spike-pair data.  
 
-**Output:** PDF/PNG  <br/>   <br/>![fig_regularIrregularFrequencies_VenancesBin0_v3](publicationFigures/fig_regularIrregularFrequencies_VenancesBin0_v3.png)                                                                                              
+**Input:** Experiemental data for 1, 3, 5, and 10 Hz spike-pair stimulation
 
 ### [`fig_ModelFitToRegularData.py`](fig_ModelFitToRegularData.py)
 
@@ -58,14 +57,26 @@ Generates and plots the model fit to the regular spike-pair data.  Note that the
 
 **Output:** PDF/PNG  <br/>   <br/>![fig_regularDataFitVenance_VenancesBin0_v3](publicationFigures/fig_regularDataFitVenance_VenancesBin0_v3.png)    
 
-### [`fig_regularPlasticityData.py`](fig_regularPlasticityData.py)
 
-_Experimental data of for regular spike-pair stimulation_
 
-Reads and plots the experimental data for regular spike-pair data.  
+### [`fig_ModelRegularIrregularFrequencies.py`](fig_ModelRegularIrregularFrequencies.py)  
+_Computation and visualization of regular and irregular plasticity data_
 
-**Input:** Experiemental data for 1, 3, 5, and 10 Hz spike-pair stimulation
+Generates and plots the model prediction for irregular spike-pair data based the parameter set obtained from fitting regular spike-pair data 
 
+**Input:** Uses the fitted parameter set `VenancesBin0`     
+
+**Output:** PDF/PNG  <br/>   <br/>![fig_regularIrregularFrequencies_VenancesBin0_v3](publicationFigures/fig_regularIrregularFrequencies_VenancesBin0_v3.png)                                                                                              
+
+### [`fig_ModelAndDataBurstStim.py`](fig_ModelAndDataBurstStim.py)
+
+_Experimental data for burst-only stimulation_
+
+Reads and plots the experimental data for burst-only spike-pair data. 
+
+**Input:** Experimental data
+
+**Output:** PDF/PNG Figure  <br/>   <br/>![fig_modelAndDataBurstStim_VenancesBin0](publicationFigures/fig_modelAndDataBurstStim_VenancesBin0.png) 
 
 **Output:** PDF/PNG Figure  <br/>   <br/>![fig_regularPlasticityData_v2](publicationFigures/fig_regularPlasticityData_v2.png)
 
@@ -90,15 +101,7 @@ Generates and plots the model fit to regular data and the prediction for irregul
 
 **Output:** PDF/PNG Figure  <br/>   <br/>![fig_modelAndDataIrregularStim_VenancesBin0](publicationFigures/fig_modelAndDataIrregularStim_VenancesBin0.png) 
 
-### [`fig_ModelAndDataBurstStim.py`](fig_ModelAndDataBurstStim.py)
 
-_Experimental data for burst-only stimulation_
-
-Reads and plots the experimental data for burst-only spike-pair data. 
-
-**Input:** Experimental data
-
-**Output:** PDF/PNG Figure  <br/>   <br/>![fig_modelAndDataBurstStim_VenancesBin0](publicationFigures/fig_modelAndDataBurstStim_VenancesBin0.png) 
 
 
 
