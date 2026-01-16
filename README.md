@@ -55,7 +55,7 @@ _Computation and visualization of regular plasticity data and model fit_
 
 Generates and plots the model fit to the regular spike-pair data.  Note that the model is fitted using the binned data (black points).
 
-**Input:** Uses the fitted parameter set `VenancesBin0` 
+**Input:** Uses the fitted parameter set `VenancesBin0`; experimental data for 1, 3, 5, and 10 Hz spike-pair stimulation
 
 **Output:** PDF/PNG  <br/>   <br/>![fig_regularDataFitVenance_VenancesBin0_v3](publicationFigures/fig_regularDataFitVenance_VenancesBin0_v3.png)    
 
@@ -73,10 +73,10 @@ Generates and plots the model prediction for regular and irregular spike-pair da
 
 _Experimental data and model prediction for irregular spike-pair stimulation_
 
-Generates and plots the model fit to regular data and the prediction for irregular spike-pairs for 1 and 3 spk/s stimulation protocols. 
+Generates and plots the model fit to regular data as well as the data and the model prediction for irregular spike-pairs for 1 and 3 spk/s stimulation protocols. 
 
 
-**Input:** Uses the fitted parameter set `VenancesBin0` 
+**Input:** Uses the fitted parameter set `VenancesBin0`; experimental data for 1, and 3 spk/s irregular spike-pair stimulation
 
 **Output:** PDF/PNG Figure  <br/>   <br/>![fig_modelAndDataIrregularStim_VenancesBin0](publicationFigures/fig_modelAndDataIrregularStim_VenancesBin0.png) 
 
