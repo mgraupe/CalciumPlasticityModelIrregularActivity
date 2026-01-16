@@ -16,15 +16,55 @@ These scripts are associated with the following manuscript, currently submitted 
 - It then uses the obtained parameter set to predict plasticity results for irregular spike-pairs and burts. 
 - Includes scripts for reproducing figures from the associated manuscript
 
-## Script  Reference
+## Scripts
 
-The below table describe the indidvual scripts and their purpose. 
+The below list describes the individual scripts and their purpose. 
 
-| Script                                         | Purpose                                                                                                                                                                 | Input                                                                                                                                                        | Output                                                                                                                                                                                  | Notes                                                      |
-|------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------|
-| [`calcium_model_fit.py`](calcium_model_fit.py) | Fits the calcium-based plasticity model to the experimental of 1, 3, 5 and 10 Hz regular spike-pair stimulation.                                                        | Experimental data for the four stimulation protocols (in [experimental_data](experimental_data/)                                                             | Saves solutions in the pickled [`solutions.p`](solutions.p) file                                                                                                                        | Parameter fitting script                                   |
-| [`checkOutcomes.py`](checkOutcomes.py)         | Generates figures from regular and irregular spike-pair stimulatoin containing regular exp. data and mdoel fit/predictions                                              | The paramter sets for which the figure is generated is specified in the script. Note that the publicaiton is based on the parameter set named `VenancesBin0` | PDF/PNG matplotlib figures for [regular](FigsSimResults/regularDataFitVenance_VenancesBin0.pdf) and [irregular stim.](FigsSimResults/regular-irregular-DataFitVenance_VenancesBin0.pdf) | Plotting model output                                      |
-| [`fig_ModelRegularIrregularFrequencies.py`](fig_ModelRegularIrregularFrequencies.py)  | Generates and plots the model prediction for irregular spike-pair data based the parameter set obtained from fitting regular spike-pair data | Uses the fitted parameter set `VenancesBin0`                                                                                                                              | PDF/PNG Figure with the model plasticity outcome for regular and irregular spike-pairs <br/>   <br/>![Analysis pipline](publicationFigures/fig_regularIrregularFrequencies_VenancesBin0_v3.png)                                                                                              | Computation and visualization of irregular plasticity data |
+### [`calcium_model_fit.py`](calcium_model_fit.py)
+_Parameter fitting script_
+
+Fits the calcium-based plasticity model to the experimental of 1, 3, 5 and 10 Hz regular spike-pair stimulation. 
+
+**Input:** Experimental data for the four stimulation protocols (in [experimental_data](experimental_data/) 
+
+**Output:** Saves solutions in the pickled [`solutions.p`](solutions.p) file
+
+
+### [`checkOutcomes.py`](checkOutcomes.py)    
+_Plotting model output_
+Generates figures from regular and irregular spike-pair stimulatoin containing regular exp. data and mdoel fit/predictions                                              
+
+**Input:** The paramter sets for which the figure is generated is specified in the script. Note that the publicaiton is based on the parameter set named `VenancesBin0`
+
+**Output:** PDF/PNG matplotlib figures for [regular](FigsSimResults/regularDataFitVenance_VenancesBin0.pdf) and [irregular stim.](FigsSimResults/regular-irregular-DataFitVenance_VenancesBin0.pdf) 
+
+### [`fig_ModelRegularIrregularFrequencies.py`](fig_ModelRegularIrregularFrequencies.py)  
+_Computation and visualization of regular and irregular plasticity data_
+Generates and plots the model prediction for irregular spike-pair data based the parameter set obtained from fitting regular spike-pair data 
+
+**Input:** Uses the fitted parameter set `VenancesBin0`     
+
+**Output:** PDF/PNG  <br/>   <br/>![fig_regularIrregularFrequencies_VenancesBin0_v3](publicationFigures/fig_regularIrregularFrequencies_VenancesBin0_v3.png)                                                                                              
+
+### [`fig_ModelFitToRegularData.py`](fig_ModelFitToRegularData.py)
+
+**Output:** PDF/PNG  <br/>   <br/>![fig_regularDataFitVenance_VenancesBin0_v3](publicationFigures/fig_regularDataFitVenance_VenancesBin0_v3.png)    
+
+### [`fig_regularPlasticityData.py`](fig_regularPlasticityData.py)
+
+**Output:** PDF/PNG Figure  <br/>   <br/>![fig_regularPlasticityData_v2](publicationFigures/fig_regularPlasticityData_v2.png) 
+
+### [`fig_ModelPredictionBurstsIndividual.py`](fig_ModelPredictionBurstsIndividual.py)
+
+**Output:** PDF/PNG Figure  <br/>   <br/>![fig_modelPredictionBurstsIndividual_VenancesBin0_v2](publicationFigures/fig_modelPredictionBurstsIndividual_VenancesBin0_v2.png) 
+
+### [`fig_ModelAndDataIrregularStim.py`](fig_ModelAndDataIrregularStim.py)
+
+**Output:** PDF/PNG Figure  <br/>   <br/>![fig_modelAndDataIrregularStim_VenancesBin0](publicationFigures/fig_modelAndDataIrregularStim_VenancesBin0.png) 
+
+### [`fig_ModelAndDataBurstStim.py`](fig_ModelAndDataBurstStim.py)
+
+**Output:** PDF/PNG Figure  <br/>   <br/>![fig_modelAndDataBurstStim_VenancesBin0](publicationFigures/fig_modelAndDataBurstStim_VenancesBin0.png) 
 
 ## Requires
 
