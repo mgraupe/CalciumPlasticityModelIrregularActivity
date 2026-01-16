@@ -290,7 +290,7 @@ def generateFitRegDataFig(paraName, allData, figDir, modelV=None):
 
 ##############################################################################
 # instance of synaptic Change and figure class  
-dataDir = '/media/HDnyc_data/data_analysis/SinglePlasticityTraces/'
+dataDir = 'experimental_data/'
 figDir = 'publicationFigures/'
 
 experimentalPlasticityData = pickle.load(open(dataDir+'experimentalPlasticityData.p', 'rb'))
