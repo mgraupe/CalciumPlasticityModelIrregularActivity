@@ -60,8 +60,8 @@ class synapticChange():
             self.rawData3Hz = np.load(self.dataDir+'regular3Hzbinned.npy','r') #np.loadtxt(self.dataDir+'STDP_2.5-3Hz_100pairings_binned.dat')
             self.rawData5Hz = np.loadtxt(self.dataDir+'STDP_5Hz_100pairings_binned.dat')
             self.rawData10Hz = np.loadtxt(self.dataDir+'STDP_10Hz_100pairings_binned.dat')
-            self.rawIrregularData1Hz  = np.loadtxt(self.dataDir+'18-10-29_experimentOverview_binned1Hz.dat')
-            self.rawIrregularData3Hz = np.loadtxt(self.dataDir+'18-10-29_experimentOverview_binned3Hz.dat')
+            self.rawIrregularData1Hz  = np.loadtxt(self.dataDir+'19-11-12_experimentOverview_binned1Hz.dat')
+            self.rawIrregularData3Hz = np.loadtxt(self.dataDir+'19-11-12_experimentOverview_binned3Hz.dat')
 
         # self.xDataReg = jesperReg[:,[0,1]]
         # self.xDataReg[:,1] = self.xDataReg[:,1]/1000. # everything in sec
@@ -277,7 +277,9 @@ class synapticChange():
             self.b       = 5.40988
         
         elif source == 'fromFile':
-            exec('sol = pfs.%s' % plasticityCase)
+            exec('sol = pfs.%s' % plasticityCase,globals())
+            #exec('sol = parameter_fit_solutions.%s' % plasticityCase,globals())
+            #pdb.set_trace()
             #print(sol)
             if len(sol[0]) == 7 :
                 #print sol

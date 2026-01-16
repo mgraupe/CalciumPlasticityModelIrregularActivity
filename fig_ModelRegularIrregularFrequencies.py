@@ -9,16 +9,15 @@ import parameter_fit_solutions as pfs
 
 ################################################################################################
 def generateFitRegDataFig(paraName, dataDir, figDir,modelV=None):
-
     w0 = 0.5
     exec('paraOpt = pfs.%s' % paraName)
     # synapticChange.choseParameterSet(analyticalLocation + 'parameters.par', fromFile=True)
-    stdp1Hz = np.loadtxt(dataDir + 'STDP_1Hz_100pairings.dat')
-    stdp3Hz = np.loadtxt(dataDir + 'STDP_2.5-3Hz_100pairings.dat')
-    stdp5Hz = np.loadtxt(dataDir + 'STDP_5Hz_100pairings.dat')
-    stdp10Hz = np.loadtxt(dataDir + 'STDP_10Hz_100pairings.dat')
-
-    allData = pickle.load(open(dataDir + "allIrregularData.p", "rb"))
+    # stdp1Hz = np.loadtxt(dataDir + 'STDP_1Hz_100pairings.dat')
+    # stdp3Hz = np.loadtxt(dataDir + 'STDP_2.5-3Hz_100pairings.dat')
+    # stdp5Hz = np.loadtxt(dataDir + 'STDP_5Hz_100pairings.dat')
+    # stdp10Hz = np.loadtxt(dataDir + 'STDP_10Hz_100pairings.dat')
+    #
+    # allData = pickle.load(open(dataDir + "allIrregularData.p", "rb"))
 
     # irrSTDP1Hz = np.load(self.dataDir + '18-10-05_experimentOverview_1Hz.npy')
     # irrSTDP3Hz = np.load(self.dataDir + '18-10-05_experimentOverview_3Hz.npy')
@@ -61,10 +60,9 @@ def generateFitRegDataFig(paraName, dataDir, figDir,modelV=None):
     sChange.choseParameterSet(paraName, source='fromFile')
     # initiate class to calculate fraction of time above threshold
     tat = timeAboveThreshold(sChange.tauCa, sChange.Cpre, sChange.Cpost, sChange.thetaD, sChange.thetaP)
-    print
-    'Parameters :', sChange.tauCa, sChange.Cpre, sChange.Cpost, sChange.thetaD, sChange.thetaP
+    print('Parameters :', sChange.tauCa, sChange.Cpre, sChange.Cpost, sChange.thetaD, sChange.thetaP)
 
-    deltaT = linspace(deltaTstart, deltaTend, steps)
+    deltaT = linspace(deltaTstart, deltaTend, int(steps))
     synChange = zeros((len(deltaT), len(sChange.stimFrequencies) + 1))
     for n in range(len(sChange.stimFrequencies)):
         # frequency = stimFreq[n]
@@ -94,10 +92,12 @@ def generateFitRegDataFig(paraName, dataDir, figDir,modelV=None):
     stdpIrr1HzBinned = np.copy(sChange.rawIrregularData1Hz)
     stdpIrr3HzBinned = np.copy(sChange.rawIrregularData3Hz)
     # pdb.set_trace()
+    ylowerLimit = 70
+    yupperLimit = 185
     #######################################################
     # plot data
-    fig_width = 9  # width in inches
-    fig_height = 4  # height in inches
+    fig_width = 10  # width in inches
+    fig_height = 7  # height in inches
     fig_size = [fig_width, fig_height]
     params = {'axes.labelsize': 14, 'axes.titlesize': 13, 'font.size': 11, 'xtick.labelsize': 11, 'ytick.labelsize': 11, 'figure.figsize': fig_size,  # 'savefig.dpi': 600,
               'axes.linewidth': 1.3, 'ytick.major.size': 4,  # major tick size in points
@@ -128,7 +128,7 @@ def generateFitRegDataFig(paraName, dataDir, figDir,modelV=None):
     fig = plt.figure()
 
     # define sub-panel grid and possibly width and height ratios
-    gs = gridspec.GridSpec(1, 2  # width_ratios=[1,1.2],
+    gs = gridspec.GridSpec(2, 2  # width_ratios=[1,1.2],
                            # height_ratios=[1,1]
                            )
 
@@ -138,28 +138,30 @@ def generateFitRegDataFig(paraName, dataDir, figDir,modelV=None):
     #fig.suptitle(r'STDP data, %s, $C_{\rm pre} = %s$, $C_{\rm post} = %s$, (RMS = %s)' % (self.modelVersion, np.round(sChange.Cpre, 4), np.round(sChange.Cpost, 4), np.round(paraOpt[1], 4)),
     #    fontsize=14)
     # possibly change outer margins of the figure
-    plt.subplots_adjust(left=0.1, right=0.96, top=0.92, bottom=0.16)
+    plt.subplots_adjust(left=0.1, right=0.98, top=0.95, bottom=0.12)
 
     # sub-panel enumerations
-    plt.figtext(0.01, 0.93, 'A',clip_on=False,color='black', weight='bold',size=22)
-    plt.figtext(0.5, 0.93, 'B',clip_on=False,color='black', weight='bold',size=22)
-    # plt.figtext(0.06, 0.47, 'C',clip_on=False,color='black', weight='bold',size=22)
-    # plt.figtext(0.47, 0.47, 'D',clip_on=False,color='black', weight='bold',size=22)
+    #plt.figtext(0.01, 0.93, 'A',clip_on=False,color='black', weight='bold',size=16)
+    #plt.figtext(0.5, 0.93, 'B',clip_on=False,color='black', weight='bold',size=16)
+    #plt.figtext(0.06, 0.47, 'C',clip_on=False,color='black', weight='bold',size=16)
+    #plt.figtext(0.47, 0.47, 'D',clip_on=False,color='black', weight='bold',size=16)
 
     lineStyles = ['-',':','-.','--']
     # third sub-plot #######################################################
     ax4 = plt.subplot(gs[0])
 
     # title
-    #ax4.set_title('regular : all frequency solutions')
+    ax4.set_title('1 spk/s')
 
     # diplay of data
     ax4.axhline(y=100, ls='--', color='0.7', lw=2)
     ax4.axvline(x=0, ls='--', color='0.7', lw=2)
     # ax4.plot(stdp5Hz[:, 0], stdp5Hz[:, 1], 'o', ms=4, c='0.5', markeredgecolor='0.5')
     # ax4.errorbar(stdp5binned[:, 0], stdp5binned[:, 1], yerr=stdp5binned[:, 2], fmt='o-', markeredgecolor='C0')
-    for i in range(len(sChange.stimFrequencies)):
-        ax4.plot(synChange[:, 0] * 1000., synChange[:, i + 1] * 100.,lw=2,alpha=(1-i*0.3),c='C0', label=str(sChange.stimFrequencies[i]))
+    #for i in range(len(sChange.stimFrequencies)):
+    i =0
+    ax4.plot(synChange[:, 0] * 1000., synChange[:, i + 1] * 100.,lw=2,c='C2', label='model fit to regular data')
+    ax4.plot(modelNew[:, 0] * 1000., modelNew[:, (10 + i)] * 100.,  c='C5', lw=2, label='model pred. for irregular stim.')
     # ax4.plot(synChange[:, 0] * 1000., synChange[:, 2] * 100.)
     # ax4.plot(synChange[:, 0] * 1000., synChange[:, 3] * 100.)
 
@@ -178,56 +180,140 @@ def generateFitRegDataFig(paraName, dataDir, figDir,modelV=None):
     ax4.xaxis.set_ticks_position('bottom')
 
     ax4.set_xlim(-260, 260)
-    ax4.set_ylim(75,185)
+    ax4.set_ylim(ylowerLimit,yupperLimit)
     # legends and labels
-    plt.legend(loc=(0.82,0.4), frameon=True)
-
-    plt.xlabel(r'time lag $\Delta t$ (ms)')
-    plt.ylabel('change in synaptic strength')
+    plt.legend(loc=(0.53,0.75), frameon=False)
+    leg = plt.gca().get_legend()
+    ltext = leg.get_texts()
+    plt.setp(ltext, fontsize=9)
+    majorLocator_x = MultipleLocator(25)
+    ax4.yaxis.set_major_locator(majorLocator_x)
+    #plt.xlabel(r'time lag $\Delta t$ (ms)')
+    #plt.ylabel('change in synaptic strength')
 
     # third sub-plot #######################################################
-    if irrData:
-        ax5 = plt.subplot(gs[1])
+    ax4 = plt.subplot(gs[1])
 
-        # title
-        #ax5.set_title('irregular : all frequency solutions')
+    # title
+    ax4.set_title('3 spk/s')
 
-        # diplay of data
-        ax5.axhline(y=100, ls='--', color='0.7', lw=2)
-        ax5.axvline(x=0, ls='--', color='0.7', lw=2)
-        # ax4.plot(stdp5Hz[:, 0], stdp5Hz[:, 1], 'o', ms=4, c='0.5', markeredgecolor='0.5')
-        # ax4.errorbar(stdp5binned[:, 0], stdp5binned[:, 1], yerr=stdp5binned[:, 2], fmt='o-', markeredgecolor='C0')
-        for i in range(len(sChange.stimFrequencies)):
-            ax5.plot(modelNew[:, 0] * 1000., modelNew[:, (10 + i)] * 100.,alpha=(1-i*0.3),c='C2',lw=2,label=str(sChange.stimFrequencies[i]))  # ax5.plot(synChange[:, 0] * 1000., synChange[:, i + 1] * 100., label=str(self.stimFrequencies[i]))
-        # ax4.plot(synChange[:, 0] * 1000., synChange[:, 2] * 100.)
-        # ax4.plot(synChange[:, 0] * 1000., synChange[:, 3] * 100.)
+    # diplay of data
+    ax4.axhline(y=100, ls='--', color='0.7', lw=2)
+    ax4.axvline(x=0, ls='--', color='0.7', lw=2)
+    # ax4.plot(stdp5Hz[:, 0], stdp5Hz[:, 1], 'o', ms=4, c='0.5', markeredgecolor='0.5')
+    # ax4.errorbar(stdp5binned[:, 0], stdp5binned[:, 1], yerr=stdp5binned[:, 2], fmt='o-', markeredgecolor='C0')
+    # for i in range(len(sChange.stimFrequencies)):
+    i = 1
+    ax4.plot(synChange[:, 0] * 1000., synChange[:, i + 1] * 100., lw=2,  c='C2', label=str(sChange.stimFrequencies[i]))
+    ax4.plot(modelNew[:, 0] * 1000., modelNew[:, (10 + i)] * 100.,  c='C5', lw=2, label=str(sChange.stimFrequencies[i]))
+    # ax4.plot(synChange[:, 0] * 1000., synChange[:, 2] * 100.)
+    # ax4.plot(synChange[:, 0] * 1000., synChange[:, 3] * 100.)
 
-        # if 'old'==oldNew:
-        # ax2.plot(-model5Hz[:,3]+2.*synapticChange.D*1000.,model5Hz[:,18]*100.)
-        # else:
-        # ax2.plot(modelNew[:, 0] * 1000., modelNew[:, 3] * 100.)
+    # if 'old'==oldNew:
+    # ax2.plot(-model5Hz[:,3]+2.*synapticChange.D*1000.,model5Hz[:,18]*100.)
+    # else:
+    # ax2.plot(modelNew[:, 0] * 1000., modelNew[:, 3] * 100.)
 
-        # removes upper and right axes
-        # and moves left and bottom axes away
-        ax5.spines['top'].set_visible(False)
-        ax5.spines['right'].set_visible(False)
-        ax5.spines['bottom'].set_position(('outward', 10))
-        ax5.spines['left'].set_position(('outward', 10))
-        ax5.yaxis.set_ticks_position('left')
-        ax5.xaxis.set_ticks_position('bottom')
+    # removes upper and right axes
+    # and moves left and bottom axes away
+    ax4.spines['top'].set_visible(False)
+    ax4.spines['right'].set_visible(False)
+    ax4.spines['bottom'].set_position(('outward', 10))
+    ax4.spines['left'].set_position(('outward', 10))
+    ax4.yaxis.set_ticks_position('left')
+    ax4.xaxis.set_ticks_position('bottom')
 
-        ax5.set_xlim(-260, 260)
-        ax5.set_ylim(75,185)
-        # legends and labels
-        plt.legend(loc=(0.82,0.4), frameon=True)
+    ax4.set_xlim(-260, 260)
+    ax4.set_ylim(ylowerLimit,yupperLimit)
+    # legends and labels
+    #plt.legend(loc=(0.82, 0.4), frameon=True)
+    ax4.yaxis.set_major_locator(majorLocator_x)
+    #plt.xlabel(r'time lag $\Delta t$ (ms)')
+    #plt.ylabel('change in synaptic strength')
 
-        plt.xlabel(r'time lag $\Delta t$ (ms)')  # plt.ylabel('change in synaptic strength')
+    # third sub-plot #######################################################
+    ax4 = plt.subplot(gs[2])
 
-    ## save figure ############################################################
-    # fname = 'regularDataFitVenance' #_dataSet#' + str(dataSetNumber)
+    # title
+    ax4.set_title('5 spk/s')
+
+    # diplay of data
+    ax4.axhline(y=100, ls='--', color='0.7', lw=2)
+    ax4.axvline(x=0, ls='--', color='0.7', lw=2)
+    # ax4.plot(stdp5Hz[:, 0], stdp5Hz[:, 1], 'o', ms=4, c='0.5', markeredgecolor='0.5')
+    # ax4.errorbar(stdp5binned[:, 0], stdp5binned[:, 1], yerr=stdp5binned[:, 2], fmt='o-', markeredgecolor='C0')
+    # for i in range(len(sChange.stimFrequencies)):
+    i = 2
+    ax4.plot(synChange[:, 0] * 1000., synChange[:, i + 1] * 100., lw=2, c='C2', label=str(sChange.stimFrequencies[i]))
+    ax4.plot(modelNew[:, 0] * 1000., modelNew[:, (10 + i)] * 100., c='C5', lw=2, label=str(sChange.stimFrequencies[i]))
+    # ax4.plot(synChange[:, 0] * 1000., synChange[:, 2] * 100.)
+    # ax4.plot(synChange[:, 0] * 1000., synChange[:, 3] * 100.)
+
+    # if 'old'==oldNew:
+    # ax2.plot(-model5Hz[:,3]+2.*synapticChange.D*1000.,model5Hz[:,18]*100.)
+    # else:
+    # ax2.plot(modelNew[:, 0] * 1000., modelNew[:, 3] * 100.)
+
+    # removes upper and right axes
+    # and moves left and bottom axes away
+    ax4.spines['top'].set_visible(False)
+    ax4.spines['right'].set_visible(False)
+    ax4.spines['bottom'].set_position(('outward', 10))
+    ax4.spines['left'].set_position(('outward', 10))
+    ax4.yaxis.set_ticks_position('left')
+    ax4.xaxis.set_ticks_position('bottom')
+
+    ax4.set_xlim(-140, 140)
+    ax4.set_ylim(ylowerLimit,yupperLimit)
+    # legends and labels
+    #plt.legend(loc=(0.82, 0.4), frameon=True)
+    ax4.yaxis.set_major_locator(majorLocator_x)
+    plt.xlabel(r'time lag $\Delta t$ (ms)',position=(1.1,-0.2))
+    plt.ylabel('change in synaptic strength',position=(1.,1.2))
+
+    # third sub-plot #######################################################
+    ax4 = plt.subplot(gs[3])
+
+    # title
+    ax4.set_title('10 spk/s')
+
+    # diplay of data
+    ax4.axhline(y=100, ls='--', color='0.7', lw=2)
+    ax4.axvline(x=0, ls='--', color='0.7', lw=2)
+    # ax4.plot(stdp5Hz[:, 0], stdp5Hz[:, 1], 'o', ms=4, c='0.5', markeredgecolor='0.5')
+    # ax4.errorbar(stdp5binned[:, 0], stdp5binned[:, 1], yerr=stdp5binned[:, 2], fmt='o-', markeredgecolor='C0')
+    # for i in range(len(sChange.stimFrequencies)):
+    i = 3
+    ax4.plot(synChange[:, 0] * 1000., synChange[:, i + 1] * 100., lw=2, c='C2', label=str(sChange.stimFrequencies[i]))
+    ax4.plot(modelNew[:, 0] * 1000., modelNew[:, (10 + i)] * 100., c='C5', lw=2, label=str(sChange.stimFrequencies[i]))
+    # ax4.plot(synChange[:, 0] * 1000., synChange[:, 2] * 100.)
+    # ax4.plot(synChange[:, 0] * 1000., synChange[:, 3] * 100.)
+
+    # if 'old'==oldNew:
+    # ax2.plot(-model5Hz[:,3]+2.*synapticChange.D*1000.,model5Hz[:,18]*100.)
+    # else:
+    # ax2.plot(modelNew[:, 0] * 1000., modelNew[:, 3] * 100.)
+
+    # removes upper and right axes
+    # and moves left and bottom axes away
+    ax4.spines['top'].set_visible(False)
+    ax4.spines['right'].set_visible(False)
+    ax4.spines['bottom'].set_position(('outward', 10))
+    ax4.spines['left'].set_position(('outward', 10))
+    ax4.yaxis.set_ticks_position('left')
+    ax4.xaxis.set_ticks_position('bottom')
+
+    ax4.set_xlim(-90, 90)
+    ax4.set_ylim(ylowerLimit,yupperLimit)
+    # legends and labels
+    #plt.legend(loc=(0.82, 0.4), frameon=True)
+    ax4.yaxis.set_major_locator(majorLocator_x)
+    #plt.xlabel(r'time lag $\Delta t$ (ms)')
+    #plt.ylabel('change in synaptic strength')
 
 
-    fname = 'fig_regularIrregularFrequencies_%s' % paraName
+    ##########################
+    fname = 'fig_regularIrregularFrequencies_%s_v3' % paraName
 
     savefig(figDir + fname + '.png')
     savefig(figDir + fname + '.pdf')  # clf()  # dsN += 1
@@ -240,9 +326,9 @@ def generateFitRegDataFig(paraName, dataDir, figDir,modelV=None):
 
 dataDir = 'experimental_data/'
 figDir = 'publicationFigures/'
-
+print('ho')
 
 generateFitRegDataFig('VenancesBin0',dataDir, figDir, modelV='bin')
 
-
+print('ho2')
 

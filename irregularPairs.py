@@ -168,8 +168,8 @@ np.savetxt(outputDir + 'irregularSpikePairs_vs_deltaT_differentFreqs_%s.dat' % p
 print('computing irregular bursts')
 for i in range(len(deltaT)):
     #
-    #if not i%10:
-    print 'deltaT : ', deltaT[i]
+    if not i%10:
+        print 'deltaT : ', deltaT[i]
 
     args = column_stack((ones(nCases) * deltaT[i], frequencies, frequencies, ones(nCases) * ppp))
 

@@ -1,6 +1,7 @@
 from pylab import *
 import os
 import pickle
+import pdb
 
 from synUtils import *
 import params as par
@@ -8,18 +9,23 @@ import parameter_fit_solutions as pfs
 
 
 ################################################################################################
-def generateFitRegDataFig(paraName, dataDir, figDir, modelV=None):
+def generateFitRegDataFig(paraName, allData, figDir, modelV=None):
 
     w0 = 0.5
     exec('paraOpt = pfs.%s' % paraName)
     # synapticChange.choseParameterSet(analyticalLocation + 'parameters.par', fromFile=True)
-    stdp1Hz = np.loadtxt(dataDir + 'STDP_1Hz_100pairings.dat')
-    stdp3Hz = np.loadtxt(dataDir + 'STDP_2.5-3Hz_100pairings.dat')
-    stdp5Hz = np.loadtxt(dataDir + 'STDP_5Hz_100pairings.dat')
-    stdp10Hz = np.loadtxt(dataDir + 'STDP_10Hz_100pairings.dat')
+    #stdp1Hz = np.loadtxt(dataDir + 'STDP_1Hz_100pairings.dat')
+    #stdp3Hz = np.loadtxt(dataDir + 'STDP_2.5-3Hz_100pairings.dat')
+    #stdp5Hz = np.loadtxt(dataDir + 'STDP_5Hz_100pairings.dat')
+    #stdp10Hz = np.loadtxt(dataDir + 'STDP_10Hz_100pairings.dat')
 
-    allData = pickle.load(open(dataDir + "allIrregularData.p", "rb")) #, encoding='latin1')
+    #allData = pickle.load(open(dataDir + "add.p", "rb")) #, encoding='latin1')
 
+    #allDataSort1 = sorted(allData, key=lambda allData: allData[3])
+    #allDataSort2 = sorted(allDataSort1, key=lambda allDataSort1: allDataSort1[1])
+    #pdb.set_trace()
+    #np.savetxt(dataDir + 'allIrregularData.csv',np.asarray(allDataSort2),delimiter=',',fmt='%s')
+    #pdb.set_trace()
     # irrSTDP1Hz = np.load(self.dataDir + '18-10-05_experimentOverview_1Hz.npy')
     # irrSTDP3Hz = np.load(self.dataDir + '18-10-05_experimentOverview_3Hz.npy')
 
@@ -86,18 +92,18 @@ def generateFitRegDataFig(paraName, dataDir, figDir, modelV=None):
                 synChange[i, n + 1] = sChange.synChange  # print self.stimFrequencies[n], deltaT[i], synChange[i, n+1]
     ##################################################################
 
-    stdp1binned = np.copy(sChange.rawData1Hz)
-    stdp3binned = np.copy(sChange.rawData3Hz)
-    stdp5binned = np.copy(sChange.rawData5Hz)
-    stdp10binned = np.copy(sChange.rawData10Hz)
+    #stdp1binned = np.copy(sChange.rawData1Hz)
+    #stdp3binned = np.copy(sChange.rawData3Hz)
+    #stdp5binned = np.copy(sChange.rawData5Hz)
+    #stdp10binned = np.copy(sChange.rawData10Hz)
 
-    stdpIrr1HzBinned = np.copy(sChange.rawIrregularData1Hz)
-    stdpIrr3HzBinned = np.copy(sChange.rawIrregularData3Hz)
+    #stdpIrr1HzBinned = np.copy(sChange.rawIrregularData1Hz)
+    #stdpIrr3HzBinned = np.copy(sChange.rawIrregularData3Hz)
     # pdb.set_trace()
     #######################################################
     # plot data
-    fig_width = 9  # width in inches
-    fig_height = 8  # height in inches
+    fig_width = 10  # width in inches
+    fig_height = 3.7  # height in inches
     fig_size = [fig_width, fig_height]
     params = {'axes.labelsize': 14, 'axes.titlesize': 13, 'font.size': 11, 'xtick.labelsize': 11, 'ytick.labelsize': 11, 'figure.figsize': fig_size,  # 'savefig.dpi': 600,
               'axes.linewidth': 1.3, 'ytick.major.size': 4,  # major tick size in points
@@ -128,7 +134,7 @@ def generateFitRegDataFig(paraName, dataDir, figDir, modelV=None):
     fig = plt.figure()
 
     # define sub-panel grid and possibly width and height ratios
-    gs = gridspec.GridSpec(2, 2  # width_ratios=[1,1.2],
+    gs = gridspec.GridSpec(1, 2  # width_ratios=[1,1.2],
                            # height_ratios=[1,1]
                            )
 
@@ -138,19 +144,19 @@ def generateFitRegDataFig(paraName, dataDir, figDir, modelV=None):
     #fig.suptitle(r'STDP data, %s, $C_{\rm pre} = %s$, $C_{\rm post} = %s$, (RMS = %s)' % (modelVersion, np.round(sChange.Cpre, 4), np.round(sChange.Cpost, 4), np.round(paraOpt[1], 4)),
     #    fontsize=14)
     # possibly change outer margins of the figure
-    plt.subplots_adjust(left=0.1, right=0.96, top=0.92, bottom=0.1)
+    plt.subplots_adjust(left=0.1, right=0.96, top=0.92, bottom=0.17)
 
     # sub-panel enumerations
-    plt.figtext(0.0, 0.48, 'B',clip_on=False,color='black', weight='bold',size=22)
-    plt.figtext(0.51, 0.48, 'C',clip_on=False,color='black', weight='bold',size=22)
+    plt.figtext(0.01, 0.94, 'N',clip_on=False,color='black', weight='bold',size=12)
+    plt.figtext(0.52, 0.94, 'O',clip_on=False,color='black', weight='bold',size=12)
     #plt.figtext(0.0, 0.47, 'C',clip_on=False,color='black', weight='bold',size=22)
     #plt.figtext(0.51, 0.47, 'D',clip_on=False,color='black', weight='bold',size=22)
 
     # panel 0 #######################################################
-    ax0 = plt.subplot(gs[2])
+    ax0 = plt.subplot(gs[0])
 
     # title
-    ax0.set_title('1 Hz')
+    ax0.set_title('1 spk/s')
 
     # diplay of data
     ax0.axhline(y=100, ls='--', color='0.7', lw=2)
@@ -161,16 +167,20 @@ def generateFitRegDataFig(paraName, dataDir, figDir, modelV=None):
     # ax0.axvline(x=200,ls='--',color='turquoise',lw=2)
     #ax0.plot(stdp1Hz[:, 0], stdp1Hz[:, 1], 'o', ms=4, c='0.5', markeredgecolor='0.5')
     #ax0.errorbar(stdp1binned[:, 0], stdp1binned[:, 1] * 100., yerr=stdp1binned[:, 2], fmt='o-',lw=2, markeredgecolor='C0')
-    ax0.plot(synChange[:, 0] * 1000., synChange[:, 1] * 100.,lw=2,label='model fit: reg. pairs')
-    ax0.errorbar(stdpIrr1HzBinned[:, 0] * 1000., stdpIrr1HzBinned[:, 2] * 100., xerr=stdpIrr1HzBinned[:, 1] * 1000., yerr=stdpIrr1HzBinned[:, 3] * 100., fmt='o-',c='C3',lw=1.5,label='binned exp. data')
+    ax0.plot(allData[4][2][:, 0]*1000., allData[4][2][:, 1] * 100., 'o', ms=5, c='white',alpha=0.7,markeredgecolor='C1',markeredgewidth=1,  label='irregular exp. data')
+    ax0.errorbar(allData[4][3][:, 0]*1000., allData[4][3][:, 1] * 100., xerr=allData[4][3][:, 2]*1000., yerr=allData[4][3][:, 3] * 100., c='C1', lw=2, fmt='o-', label='binned irregular exp. data')
+    ax0.plot(synChange[:, 0] * 1000., synChange[:, 1] * 100.,lw=2,c='C2',label='model fit: reg. pairs')
+    #ax0.errorbar(stdpIrr1HzBinned[:, 0] * 1000., stdpIrr1HzBinned[:, 2] * 100., xerr=stdpIrr1HzBinned[:, 1] * 1000., yerr=stdpIrr1HzBinned[:, 3] * 100., fmt='o-',c='C3',lw=1.5,label='binned exp. data')
     if irrData:
-        ax0.plot(modelNew[:, 0] * 1000., modelNew[:, 10] * 100.,lw=2,c='C2', label='model prediction: irreg. pairs')
+        ax0.plot(modelNew[:, 0] * 1000., modelNew[:, 10] * 100.,lw=2,c='C5',zorder=10, label='model prediction: irreg. pairs')
         #ax0.plot(modelBurstsNew[:, 0] * 1000., modelBurstsNew[:, 10] * 100., label='bursts')
         #ax0.plot(modelIndNew[:, 0] * 1000., modelIndNew[:, 10] * 100., label='ind. spikes')
 
-    for i in range(len(allData)):
-        if allData[i][1] == 1:
-            ax0.plot(allData[i][3] * 1000., allData[i][6] * 100., 'o', ms=4, c='0.5', label='exp. data' if i == 0 else None)
+    print('1 spk/s irreg data (binned) :')
+    print(allData[4][3])
+    #for i in range(len(allData)):
+    #    if allData[i][1] == 1:
+    #        ax0.plot(allData[i][3] * 1000., allData[i][6] * 100., 'o', ms=4, c='0.5', label='exp. data' if i == 0 else None)
 
         # ax0.plot(modelNewReg[:, 0] * 1000., modelNewReg[:, 10] * 100. / 0.5,ls='--')
     # if oldNew == 'old':
@@ -198,7 +208,7 @@ def generateFitRegDataFig(paraName, dataDir, figDir, modelV=None):
     ax0.xaxis.set_ticks_position('bottom')
 
     ax0.set_xlim(-260, 260)
-    ax0.set_ylim(50, 350)
+    ax0.set_ylim(55, 320)
     # legends and labels
     plt.legend(loc=(0.51,0.6), frameon=False)
     leg = plt.gca().get_legend()
@@ -209,10 +219,10 @@ def generateFitRegDataFig(paraName, dataDir, figDir, modelV=None):
     plt.ylabel('change in synaptic strength')
 
     # panel 1 #############################################
-    ax1 = plt.subplot(gs[3])
+    ax1 = plt.subplot(gs[1])
 
     # title
-    ax1.set_title('2.5 - 3 Hz')
+    ax1.set_title('3 spk/s')
 
     # diplay of data
     ax1.axhline(y=100, ls='--', color='0.7', lw=2)
@@ -223,21 +233,29 @@ def generateFitRegDataFig(paraName, dataDir, figDir, modelV=None):
     # ax1.axvline(x=250,ls='--',color='turquoise',lw=2)
     #ax1.plot(stdp3Hz[:, 0], stdp3Hz[:, 1], 'o', ms=4, c='0.5', markeredgecolor='0.5')
     #ax1.errorbar(stdp3binned[:, 0], stdp3binned[:, 1] * 100., yerr=stdp3binned[:, 2], fmt='o-',lw=2, markeredgecolor='C0', label=r'exp. data: reg. pairs')
-    ax1.plot(synChange[:, 0] * 1000., synChange[:, 2] * 100., label=r'model fit: reg. pairs',lw=2)
-    ax1.errorbar(stdpIrr3HzBinned[:, 0] * 1000., stdpIrr3HzBinned[:, 2] * 100., xerr=stdpIrr3HzBinned[:, 1] * 1000., yerr=stdpIrr3HzBinned[:, 3] * 100., fmt='o-',
-                 c='C3',label=r'exp. data: irr. pairs')
+    ax1.plot(allData[5][2][:, 0]*1000., allData[5][2][:, 1] * 100., 'o', ms=5, c='white',alpha=0.7,markeredgecolor='C1',markeredgewidth=1,  label='irregular exp. data')
+    ax1.errorbar(allData[5][3][:, 0]*1000., allData[5][3][:, 1] * 100., xerr=allData[5][3][:, 2]*1000., yerr=allData[5][3][:, 3] * 100., c='C1', lw=2, fmt='o-', label='binned irregular exp. data')
+    ax1.plot(synChange[:, 0] * 1000., synChange[:, 2] * 100.,c='C2', label=r'model fit: reg. pairs',lw=2)
+    #ax1.errorbar(stdpIrr3HzBinned[:, 0] * 1000., stdpIrr3HzBinned[:, 2] * 100., xerr=stdpIrr3HzBinned[:, 1] * 1000., yerr=stdpIrr3HzBinned[:, 3] * 100., fmt='o-',
+    #             c='C3',label=r'exp. data: irr. pairs')
     if irrData:
-        ax1.plot(modelNew[:, 0] * 1000., modelNew[:, 11] * 100., lw=2,c='C2',label=r'model fit: irregular pairs')
+        ax1.plot(modelNew[:, 0] * 1000., modelNew[:, 11] * 100., lw=2,zorder=10,c='C5',label=r'model fit: irregular pairs')
         #ax1.plot(modelBurstsNew[:, 0] * 1000., modelBurstsNew[:, 11] * 100., label=r'model fit: irregular bursts')
         #ax1.plot(modelIndNew[:, 0] * 1000., modelIndNew[:, 11] * 100., label=r'model fit: irregular ind. spikes')
-    for i in range(len(allData)):
-        if allData[i][1] == 3:
-            ax1.plot(allData[i][3] * 1000., allData[i][6] * 100., 'o', ms=4, c='0.5', label='exp. data: irregular pairs' if i == 0 else None)
+
+    print('3 spk/s irreg data (binned) :')
+    print(allData[5][3])
+
+    #for i in range(len(allData)):
+    #    if allData[i][1] == 3:
+    #        ax1.plot(allData[i][3] * 1000., allData[i][6] * 100., 'o', ms=4, c='0.5', label='exp. data: irregular pairs' if i == 0 else None)
 
         # ax1.plot(modelNewReg[:, 0] * 1000., modelNewReg[:, 11] * 100. / 0.5,ls='--')  # if 'old'==oldNew:
     # ax1.plot(-model3Hz[:,3]+2.*synapticChange.D*1000.,model3Hz[:,18]*100.)
     # else:
     # ax1.plot(modelNew[:, 0] * 1000., modelNew[:, 2] * 100., label=r'model prediction: irr. pairs, Ca$_{\rm ext} = 2$ mM')
+    #burstData3Hz = np.array([[-20,131.1,10.6],[35,138,5.6],[165,134.4,17.4]])
+    #ax1.errorbar(burstData3Hz[:,0],burstData3Hz[:,1],yerr=burstData3Hz[:,2], fmt='o-')
 
     # removes upper and right axes
     # and moves left and bottom axes away
@@ -251,7 +269,7 @@ def generateFitRegDataFig(paraName, dataDir, figDir, modelV=None):
     #ax1.set_ylim(ymax=350)
     ax1.set_xlim(-260, 260)
     #ax1.set_ylim(20, 320)
-    ax1.set_ylim(50, 350)
+    ax1.set_ylim(55, 320)
     # legends and labels
     #plt.legend(frameon=False, loc=1)
     #leg = plt.gca().get_legend()
@@ -264,7 +282,7 @@ def generateFitRegDataFig(paraName, dataDir, figDir, modelV=None):
     # plt.ylabel('change in synaptic strength')
 
 
-    fname = 'fig_modelPredictionIrregularData_%s' % paraName  # os.path.basename(__file__)
+    fname = 'fig_modelAndDataIrregularStim_%s' % paraName  # os.path.basename(__file__)
 
     savefig(figDir + fname + '.png')
     savefig(figDir + fname + '.pdf')  # clf()  # dsN += 1
@@ -272,8 +290,10 @@ def generateFitRegDataFig(paraName, dataDir, figDir, modelV=None):
 
 ##############################################################################
 # instance of synaptic Change and figure class  
-
-dataDir = 'experimental_data/'
+dataDir = '/media/HDnyc_data/data_analysis/SinglePlasticityTraces/'
 figDir = 'publicationFigures/'
 
-generateFitRegDataFig('VenancesBin0',dataDir, figDir, modelV='bin')
+experimentalPlasticityData = pickle.load(open(dataDir+'experimentalPlasticityData.p', 'rb'))
+
+#pdb.set_trace()
+generateFitRegDataFig('VenancesBin0',experimentalPlasticityData, figDir, modelV='bin')
