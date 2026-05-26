@@ -61,14 +61,14 @@ Generates and plots the model fit to the regular spike-pair data.  Note that the
 
 
 
-### [`fig_ModelRegularIrregularFrequencies.py`](fig_ModelRegularIrregularFrequencies.py)  
+### [`fig_ModelRegularIrregularFrequencies_moreFrequs.py`](fig_ModelRegularIrregularFrequencies_moreFrequs.py)  
 _Computation and comparison of regular and irregular plasticity data_
 
-Generates and plots the model prediction for regular and irregular spike-pair data based the parameter set obtained from fitting regular spike-pair data. Plasticity outcomes are shown for 1, 3, 5 and 10 spk/s spike-pair stimulations.
+Generates and plots the model prediction for regular and irregular spike-pair data based the parameter set obtained from fitting regular spike-pair data. Plasticity outcomes are shown for 0.2, 1, 2, 3, 5 and 10 spk/s spike-pair stimulations.
 
 **Input:** Uses the fitted parameter set `VenancesBin0`     
 
-**Output:** PDF/PNG  <br/>   <br/>![fig_regularIrregularFrequencies_VenancesBin0_v3](publicationFigures/fig_regularIrregularFrequencies_VenancesBin0_v3.png)                                                                                              
+**Output:** PDF/PNG  <br/>   <br/>![fig_regularIrregularFrequencies_moreFrequs_VenancesBin0_v0](publicationFigures/fig_regularIrregularFrequencies_moreFrequs_VenancesBin0_v0.png)                                                                                              
 ### [`fig_ModelAndDataIrregularStim.py`](fig_ModelAndDataIrregularStim.py)
 
 _Experimental data and model prediction for irregular spike-pair stimulation_

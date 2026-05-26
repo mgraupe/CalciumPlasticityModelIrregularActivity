@@ -404,5 +404,13 @@ dataDir = 'experimental_data/'
 figDir = 'publicationFigures/'
 
 experimentalPlasticityData = pickle.load(open(dataDir+'experimentalPlasticityData.p', 'rb'))
-
+allData = experimentalPlasticityData.copy()
+print('1 Hz reg data  (binned):')
+print(allData[0][3])
+print('3 Hz reg data (binned):')
+print(allData[1][3])
+print('5 Hz reg data (binned):')
+print(allData[2][3])
+print('10 Hz reg data (binned):')
+print(allData[3][3])
 generateFitRegDataFig('VenancesBin0',experimentalPlasticityData, figDir, modelV='bin')

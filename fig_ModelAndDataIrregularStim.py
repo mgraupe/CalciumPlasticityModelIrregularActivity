@@ -70,7 +70,8 @@ def generateFitRegDataFig(paraName, allData, figDir, modelV=None):
     print
     'Parameters :', sChange.tauCa, sChange.Cpre, sChange.Cpost, sChange.thetaD, sChange.thetaP
 
-    deltaT = linspace(deltaTstart, deltaTend, steps)
+
+    deltaT = linspace(deltaTstart, deltaTend, int(steps))
     synChange = zeros((len(deltaT), len(sChange.stimFrequencies) + 1))
     for n in range(len(sChange.stimFrequencies)):
         # frequency = stimFreq[n]
@@ -178,6 +179,7 @@ def generateFitRegDataFig(paraName, allData, figDir, modelV=None):
 
     print('1 spk/s irreg data (binned) :')
     print(allData[4][3])
+    #pdb.set_trace()
     #for i in range(len(allData)):
     #    if allData[i][1] == 1:
     #        ax0.plot(allData[i][3] * 1000., allData[i][6] * 100., 'o', ms=4, c='0.5', label='exp. data' if i == 0 else None)

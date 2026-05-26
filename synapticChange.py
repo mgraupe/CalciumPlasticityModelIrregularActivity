@@ -52,7 +52,7 @@ class synapticChange():
             jesperStoch = np.loadtxt(dataDir + 'sjoestroem_stochastic.dat')
 
         elif plasticityCase == 'Venance':
-            self.stimFrequencies = [1,3,5,10]
+            self.stimFrequencies = [0.2,1,2,3,5,10]
             self.Npresentations = 100.
             #self.fitWeights = [4.,1.,1.,1.]
             self.dataDir = 'experimental_data/'

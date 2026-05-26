@@ -55,7 +55,7 @@ def generateFitRegDataFig(paraName, dataDir, figDir,modelV=None):
             print
             'problem in model choice'
             sys.exit(1)
-
+    print('Model version : ', modelVersion)
     sChange = synapticChange('Venance')  # ,threshold=par.thetaP)
     sChange.choseParameterSet(paraName, source='fromFile')
     # initiate class to calculate fraction of time above threshold

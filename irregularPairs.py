@@ -114,7 +114,7 @@ synChange = synapticChange('Venance')
 synChange.choseParameterSet(params,source='fromFile') #params,source='fromFile', nonlinear=nl) #,threshold=par.thetaP)
 
 # initiate class to calculate fraction of time above threshold
-print 'Parameters :', params,synChange.tauCa, synChange.Cpre, synChange.Cpost, synChange.thetaD, synChange.thetaP, nl
+print('Parameters :', params,synChange.tauCa, synChange.Cpre, synChange.Cpost, synChange.thetaD, synChange.thetaP, nl)
 tat = timeAboveThreshold(synChange.tauCa, synChange.Cpre, synChange.Cpost, synChange.thetaD, synChange.thetaP, nonlinear=nl)
 
 pool = multiprocessing.Pool()
@@ -126,7 +126,7 @@ pool = multiprocessing.Pool()
 #print 'irregular pairs : synaptic change vs Delta T for four frequencies and one p\'s'
 
 # Parameter of the stimulation protocol
-frequencies =  array([1.,3.,5.,10.])  # frequency of spike-pair presentations in pairs/sec
+frequencies =  array([0.2,1.,2.,3.,5.,10.])  # frequency of spike-pair presentations in pairs/sec
 DeltaTstart = -0.3  # start time difference between pre- and post-spike, in sec
 DeltaTend = 0.3  # end time difference between pre- and post-spike, in sec
 DeltaTsteps = 301.  # steps between start and end value
@@ -136,7 +136,7 @@ nCases = len(frequencies)
 
 ###########################################################
 # initialize arrays
-deltaT = linspace(DeltaTstart, DeltaTend, DeltaTsteps)
+deltaT = linspace(DeltaTstart, DeltaTend, int(DeltaTsteps))
 resultsIrr = zeros(len(frequencies) * 3 + 2)
 resultsIrrBursts = zeros(len(frequencies) * 3 + 2)
 resultsIrrInd = zeros(len(frequencies) * 3 + 2)
@@ -147,7 +147,7 @@ print('computing irregular pairs : synaptic change vs Delta T for four frequenci
 for i in range(len(deltaT)):
     #
     if not i%10:
-        print 'deltaT : ', deltaT[i]
+        print('deltaT : ', deltaT[i])
 
     args = column_stack((ones(nCases) * deltaT[i], frequencies, frequencies, ones(nCases) * ppp))
 
@@ -160,16 +160,17 @@ resultsIrr = resultsIrr[1:]
 if not os.path.exists(outputDir):
     os.makedirs(outputDir)
 
-np.save(outputDir + 'irregularSpikePairs_vs_deltaT_differentFreqs_%s.npy' % params, resultsIrr)
-np.savetxt(outputDir + 'irregularSpikePairs_vs_deltaT_differentFreqs_%s.dat' % params, resultsIrr)
+np.save(outputDir + 'irregularSpikePairs_vs_deltaT_differentFreqs_Apr26_%s.npy' % params, resultsIrr)
+np.savetxt(outputDir + 'irregularSpikePairs_vs_deltaT_differentFreqs_Apr26_%s.dat' % params, resultsIrr)
 
+pdb.set_trace()
 ###########################################################
 # bursts : simulation loop over range of deltaT value
 print('computing irregular bursts')
 for i in range(len(deltaT)):
     #
     if not i%10:
-        print 'deltaT : ', deltaT[i]
+        print('deltaT : ', deltaT[i])
 
     args = column_stack((ones(nCases) * deltaT[i], frequencies, frequencies, ones(nCases) * ppp))
 
@@ -208,7 +209,7 @@ print('computing individual spikes')
 for i in range(len(deltaT)):
     #
     if not i%10:
-        print 'deltaT : ', deltaT[i]
+        print('deltaT : ', deltaT[i])
 
     args = column_stack((ones(nCases) * deltaT[i], frequencies, frequencies, ones(nCases) * ppp))
 
@@ -229,14 +230,14 @@ np.savetxt(outputDir + 'irregularIndividualSpikePairs_vs_deltaT_differentFreqs_%
 ##########################################################
 # synaptic change vs Delta T for regular Pairs
 ##########################################################
-print 'computing regular pairs : synaptic change vs Delta T for six frequencies and one p'
+print('computing regular pairs : synaptic change vs Delta T for six frequencies and one p')
 
 resultsReg = zeros(len(frequencies)*3+2)
 
 # simulation loop over range of deltaT values
 for i in range(len(deltaT)):
     if not i%10:
-        print 'deltaT : ', deltaT[i]
+        print('deltaT : ', deltaT[i])
 
     args = column_stack((ones(nCases) * deltaT[i], frequencies, frequencies, ones(nCases) * ppp))
 
